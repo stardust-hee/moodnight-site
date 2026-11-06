@@ -397,7 +397,7 @@ function renderHost(){
     <div class="stats">
       <div class="stat"><b>${gifts.length}</b><span>받은 선물</span></div>
       <div class="stat"><b>${opened}</b><span>열어본 선물</span></div>
-      <div class="stat"><b>${score}</b><span>추리 점수</span></div>
+      <div class="stat"><b>${gifts.filter(g=>g.result==="right").length}</b><span>맞힌 친구</span></div>
     </div>
     <div class="count ${isXmas?"xmas":""}">
       ${isXmas
@@ -501,7 +501,7 @@ function renderModal(){
       <div class="cands">${g.cands.map(c=>{
         const wrong=g.wrongs.includes(c), right=g.result&&c===g.from;
         return `<button class="cand ${wrong?"wrong":""} ${right?"right":""}" data-c="${esc(c)}" ${(wrong||g.result)?"disabled":""}>${esc(c)}</button>`;}).join("")}</div>
-      ${g.result==="right"?`<div class="result"><b>+${[300,200,100][g.wrongs.length]}점</b> 단서 ${g.wrongs.length+1}개 만에 맞혔어요. ${esc(g.from)}에게 고맙다고 답장해 보세요.</div>`:""}
+      ${g.result==="right"?`<div class="result"><b>정답!</b> 단서 ${g.wrongs.length+1}개 만에 맞혔어요. ${esc(g.from)}에게 고맙다고 답장해 보세요.</div>`:""}
       ${g.result==="miss"?`<div class="result"><b>아쉽게 놓쳤어요</b> 이 선물은 ${esc(g.from)}가 보냈어요.</div>`:""}`;
   }
   $("#overlay").innerHTML=`<div class="sheet" role="dialog" aria-modal="true" aria-label="선물 열기">${html}</div>`;
@@ -513,7 +513,7 @@ function renderModal(){
 }
 function guess(name){
   const g=gifts[cur];
-  if(name===g.from){ g.result="right"; score+=[300,200,100][g.wrongs.length]; }
+  if(name===g.from){ g.result="right"; }
   else { g.wrongs.push(name); if(g.wrongs.length>=3) g.result="miss"; else toast(`${name}는 아니에요. 단서 하나가 더 열렸어요`); }
   renderModal();
 }

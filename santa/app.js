@@ -19,7 +19,6 @@ const ITEMS = [
 ];
 const SLOTS = [{x:44,y:79},{x:60,y:80},{x:34,y:87},{x:52,y:90},{x:70,y:88},{x:24,y:95},{x:42,y:98},{x:62,y:98},{x:79,y:96},{x:28,y:79}];
 const slot = i => i < SLOTS.length ? SLOTS[i] : { x: 20 + ((i * 37) % 62), y: 79 + ((i * 13) % 19) };
-const SCORE = [300, 200, 100];
 
 const $ = s => document.querySelector(s);
 const item = id => ITEMS.find(i => i.id === id) || ITEMS[0];
@@ -122,14 +121,14 @@ function renderHost() {
   const boxes = room.boxes;
   const visible = boxes.filter(b => !b.hidden);
   const opened = visible.filter(b => b.opened).length;
-  const score = visible.reduce((s, b) => s + (b.result === "right" ? SCORE[Math.min(2, b.wrongs)] : 0), 0);
+  const solved = visible.filter(b => b.result === "right").length;
   panel(`
   <div class="stack">
     <div><h2>${esc(room.display_name)}의 선물방</h2><p class="sub">누가 보냈는지는 크리스마스에 직접 맞혀야 알 수 있어요.</p></div>
     <div class="stats">
       <div class="stat"><b>${visible.length}</b><span>받은 선물</span></div>
       <div class="stat"><b>${opened}</b><span>열어본 선물</span></div>
-      <div class="stat"><b>${score}</b><span>추리 점수</span></div>
+      <div class="stat"><b>${solved}</b><span>맞힌 친구</span></div>
     </div>
     <div class="count ${isOpen() ? "xmas" : ""}">
       ${isOpen()
@@ -322,7 +321,7 @@ function renderModal(reportOpen) {
          ${v.wrong_guesses.length ? `<p class="sub" style="margin:0">아니었던 이름: ${v.wrong_guesses.map(esc).join(", ")}</p>` : ""}`;
   }
   const result = v.result === "right"
-    ? `<div class="result"><b>+${SCORE[Math.min(2, v.wrong_guesses.length)]}점</b> 단서 ${v.wrong_guesses.length + 1}개 만에 맞혔어요. ${esc(v.sender_name)}에게 고맙다고 답장해 보세요.</div>`
+    ? `<div class="result"><b>정답!</b> 단서 ${v.wrong_guesses.length + 1}개 만에 맞혔어요. ${esc(v.sender_name)}에게 고맙다고 답장해 보세요.</div>`
     : v.result === "miss" ? `<div class="result"><b>아쉽게 놓쳤어요</b> 이 선물은 ${esc(v.sender_name)}님이 보냈어요.</div>` : "";
   sheet(`
     <div class="letter">
