@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>무드나잇 | 친구들과 함께 노는 겨울밤 웹 놀이</title>
+<meta name="description" content="무드나잇은 링크 하나로 친구들과 함께 즐기는 시즌 웹 놀이를 만듭니다. 익명 선물 추리 게임 '산타의 비밀 택배', 친구들이 내 눈사람을 꾸미는 '눈망진창'을 만나 보세요.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="무드나잇">
+<meta property="og:title" content="무드나잇 | 친구들과 함께 노는 겨울밤 웹 놀이">
+<meta property="og:description" content="링크 하나로 친구들과 함께 여는 크리스마스. 산타의 비밀 택배, 눈망진창.">
+<meta property="og:url" content="https://moodnight.co.kr/">
+<link rel="canonical" href="https://moodnight.co.kr/">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23151A2E'/%3E%3Cpath d='M21 7a9 9 0 1 0 5 15A10 10 0 0 1 21 7z' fill='%23F2C46B'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&family=Gowun+Dodum&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="site-head">
+  <div class="wrap">
+    <a class="logo" href="/" aria-label="무드나잇 홈">
+      <svg width="30" height="30" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#232B4A"/><path d="M21 7a9 9 0 1 0 5 15A10 10 0 0 1 21 7z" fill="#F2C46B"/></svg>
+      무드나잇
+    </a>
+    <nav class="nav" aria-label="주요 메뉴">
+      <a href="#services">서비스</a>
+      <a href="#how">이용 방법</a>
+      <a href="#safety">안심하고 놀기</a>
+      <a href="#faq">자주 묻는 질문</a>
+      <a href="#contact">문의</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="wrap">
+      <div class="hero-copy">
+        <span class="eyebrow">MOODNIGHT · 2026 WINTER</span>
+        <h1>링크 하나로<br>친구들과 함께 여는 <em>겨울밤</em></h1>
+        <p class="lead">무드나잇은 친구들이 함께 참여해야 완성되는 시즌 웹 놀이를 만듭니다. 앱 설치 없이 카카오톡이나 인스타그램으로 링크만 공유하면 바로 시작할 수 있어요.</p>
+        <div class="btns">
+          <a class="btn" href="#services">서비스 보기</a>
+          <a class="btn line" href="#how">어떻게 노나요?</a>
+        </div>
+      </div>
+      <div class="window" aria-hidden="true">
+        <canvas id="snow"></canvas>
+        <div class="hill"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="services">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">SERVICES</span>
+        <h2>이번 겨울, 무드나잇에서 열리는 놀이</h2>
+        <p class="lead">두 서비스 모두 무료이며, 2026년 12월 크리스마스 시즌에 맞춰 순서대로 열립니다.</p>
+      </div>
+      <div class="services">
+        <article class="svc santa">
+          <div class="svc-top"><h3>산타의 비밀 택배</h3><span class="badge">12월 오픈 예정</span></div>
+          <p>친구들이 내게 어울리는 선물 상자를 골라 익명으로 메시지를 남겨요. 크리스마스에 선물을 열고, 단서를 보며 누가 보냈는지 맞히는 추리 게임이에요.</p>
+          <ul>
+            <li>포장지와 상자 속 선물을 친구가 직접 골라요</li>
+            <li>크리스마스 전에는 상자를 흔들어 소리만 들을 수 있어요</li>
+            <li>적은 단서로 맞힐수록 높은 점수를 받아요</li>
+          </ul>
+          <span class="addr">santa.moodnight.co.kr</span>
+        </article>
+        <article class="svc snow">
+          <div class="svc-top"><h3>눈망진창</h3><span class="badge">오픈 준비 중</span></div>
+          <p>내 눈사람 링크를 공유하면 친구들이 얼굴, 모자, 옷, 소품을 하나씩 골라 붙여요. 친구가 많이 다녀갈수록 눈사람은 점점 엉망진창이 되어 갑니다.</p>
+          <ul>
+            <li>친구 한 명당 꾸미기 아이템 하나</li>
+            <li>누가 어떤 걸 붙였는지 확인할 수 있어요</li>
+            <li>완성된 눈사람은 이미지로 저장해 공유해요</li>
+          </ul>
+          <span class="addr">오픈 시 무드나잇 홈에서 안내</span>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="how">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">HOW IT WORKS</span>
+        <h2>산타의 비밀 택배는 이렇게 놀아요</h2>
+      </div>
+      <ol class="steps">
+        <li>
+          <h3>선물방 만들기</h3>
+          <p>카카오 로그인 한 번이면 나만의 선물방 링크가 생겨요. 선물을 받는 사람만 로그인하면 돼요.</p>
+        </li>
+        <li>
+          <h3>링크 공유하기</h3>
+          <p>링크를 받은 친구는 로그인 없이 포장지와 선물을 고르고, 메시지와 자기를 맞힐 단서 3개를 남겨요.</p>
+        </li>
+        <li>
+          <h3>크리스마스에 열고 맞히기</h3>
+          <p>12월 25일 0시(한국 시간)에 모든 선물이 열려요. 메시지를 읽고 단서를 보며 보낸 친구를 맞혀 보세요.</p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section id="safety">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">SAFETY</span>
+        <h2>익명이어도 안심하고 놀 수 있게</h2>
+        <p class="lead">익명 메시지는 설렘을 주지만, 누군가에게 상처가 되면 놀이가 아니에요. 무드나잇은 이렇게 운영합니다.</p>
+      </div>
+      <div class="promises">
+        <div>
+          <h3>숨기기와 신고</h3>
+          <p>받는 사람은 원하지 않는 선물을 바로 숨길 수 있어요. 욕설이나 괴롭힘은 신고 버튼으로 알려 주시면 운영자가 확인 후 삭제합니다.</p>
+        </div>
+        <div>
+          <h3>시즌이 끝나면 삭제</h3>
+          <p>선물방, 메시지, 눈사람 기록은 2027년 1월 31일에 모두 지워요. 필요한 정보만 받고, 오래 보관하지 않습니다.</p>
+        </div>
+        <div>
+          <h3>모든 기능 무료</h3>
+          <p>결제가 필요한 기능은 없어요. 서비스는 화면에 표시되는 광고 수익으로 운영됩니다.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="faq">
+    <div class="wrap narrow">
+      <div class="sec-head">
+        <span class="eyebrow">FAQ</span>
+        <h2>자주 묻는 질문</h2>
+      </div>
+      <div class="faq">
+        <details>
+          <summary>앱을 설치해야 하나요?</summary>
+          <p>아니요. 모든 서비스는 휴대폰과 컴퓨터의 웹 브라우저에서 바로 열려요. 카카오톡 안에서 링크를 눌러도 그대로 이용할 수 있어요.</p>
+        </details>
+        <details>
+          <summary>선물을 보낸 사람이 정말 안 보이나요?</summary>
+          <p>네. 산타의 비밀 택배에서는 받는 사람이 정답을 맞히거나 기회 3번을 다 쓰기 전까지 보낸 사람의 이름이 공개되지 않아요.</p>
+        </details>
+        <details>
+          <summary>크리스마스 전에 선물을 미리 열 수 있나요?</summary>
+          <p>아니요. 모든 선물은 12월 25일 0시(한국 시간)에 함께 열려요. 그전에는 상자를 흔들어 어떤 소리가 나는지만 들을 수 있어요.</p>
+        </details>
+        <details>
+          <summary>기분 나쁜 메시지를 받으면 어떻게 하나요?</summary>
+          <p>선물마다 있는 숨기기 버튼으로 바로 가릴 수 있어요. 신고 버튼을 누르거나 moodnight@kakao.com으로 알려 주시면 확인 후 삭제하고, 반복되는 경우 이용을 제한합니다.</p>
+        </details>
+        <details>
+          <summary>몇 살부터 이용할 수 있나요?</summary>
+          <p>선물방과 눈사람을 직접 만드는 것은 만 14세 이상부터 가능해요.</p>
+        </details>
+        <details>
+          <summary>내 기록은 언제 지워지나요?</summary>
+          <p>시즌이 끝난 뒤 2027년 1월 31일에 모든 기록을 일괄 삭제해요. 그전에 직접 삭제하고 싶다면 설정 화면에서 지우거나 문의 메일로 요청해 주세요.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact">
+    <div class="wrap narrow contact">
+      <div class="sec-head" style="margin-bottom:8px">
+        <span class="eyebrow">CONTACT</span>
+        <h2>문의</h2>
+        <p class="lead">서비스 이용 문의, 신고, 제휴 제안은 메일로 보내 주세요. 영업일 기준 3일 안에 답장드립니다.</p>
+      </div>
+      <dl>
+        <dt>상호</dt><dd>김이나</dd>
+        <dt>이메일</dt><dd><a href="mailto:moodnight@kakao.com">moodnight@kakao.com</a></dd>
+      </dl>
+    </div>
+  </section>
+</main>
+
+<footer class="site-foot">
+  <div class="wrap">
+    <div class="foot-links">
+      <a class="strong" href="privacy.html">개인정보처리방침</a>
+      <a href="terms.html">이용약관</a>
+      <a href="mailto:moodnight@kakao.com">문의하기</a>
+    </div>
+    <p>상호 김이나 · 이메일 moodnight@kakao.com</p>
+    <p>© 2026 무드나잇. All rights reserved.</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var c=document.getElementById("snow"); if(!c||!c.getContext) return;
+  var x=c.getContext("2d"), flakes=[], W, H, dpr=Math.min(window.devicePixelRatio||1,2);
+  var still=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function size(){ W=c.clientWidth; H=c.clientHeight; c.width=W*dpr; c.height=H*dpr; x.setTransform(dpr,0,0,dpr,0,0); }
+  size(); window.addEventListener("resize",size);
+  for(var i=0;i<70;i++) flakes.push({x:Math.random(),y:Math.random(),r:.8+Math.random()*2.2,s:.0006+Math.random()*.0014,d:Math.random()*6});
+  function draw(t){
+    x.clearRect(0,0,W,H);
+    x.fillStyle="rgba(242,196,107,.95)"; x.shadowColor="rgba(242,196,107,.6)"; x.shadowBlur=24;
+    x.beginPath(); x.arc(W*.72,H*.2,W*.06,0,7); x.fill(); x.shadowBlur=0;
+    x.fillStyle="#FFFFFF";
+    flakes.forEach(function(f){
+      if(!still){ f.y+=f.s; if(f.y>1) f.y=-.02; }
+      var fx=(f.x+Math.sin((t||0)/1600+f.d)*.01)*W;
+      x.globalAlpha=.55+f.r/6; x.beginPath(); x.arc(fx,f.y*H,f.r,0,7); x.fill();
+    });
+    x.globalAlpha=1;
+    if(!still) requestAnimationFrame(draw);
+  }
+  draw(0);
+})();
+</script>
+</body>
+</html>
