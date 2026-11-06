@@ -3,23 +3,22 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>산타의 비밀 택배 체험판 | 무드나잇</title>
-<meta name="description" content="친구가 몰래 두고 간 선물을 크리스마스에 열고, 단서로 보낸 사람을 맞히는 산타의 비밀 택배를 미리 체험해 보세요.">
+<title>산타의 비밀 택배 | 무드나잇</title>
+<meta name="description" content="친구들이 몰래 두고 간 선물과 메시지를 크리스마스에 열어 보고, 단서로 누가 보냈는지 맞히는 놀이. 링크 하나로 나만의 선물방을 만들어 보세요.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="무드나잇">
-<meta property="og:title" content="산타의 비밀 택배 체험판 | 무드나잇">
-<meta property="og:description" content="친구가 몰래 두고 간 선물을 크리스마스에 열고, 단서로 보낸 사람을 맞히는 산타의 비밀 택배를 미리 체험해 보세요.">
+<meta property="og:title" content="산타의 비밀 택배">
+<meta property="og:description" content="친구가 몰래 두고 간 선물, 누가 보냈는지 맞혀 보세요. 12월 25일에 열려요.">
 <meta property="og:image" content="https://www.moodnight.co.kr/santa/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="canonical" href="https://www.moodnight.co.kr/santa/">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23C23A2E'/%3E%3Crect x='7' y='13' width='18' height='12' rx='2' fill='%23FFF3DA'/%3E%3Crect x='14.5' y='13' width='3' height='12' fill='%23D9A934'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&family=Gowun+Dodum&display=swap">
-</head>
-<body>
 <style>
 /* Layout: 장난감 디오라마 방(왼쪽) + 손편지 같은 조작 패널(오른쪽), 모바일은 위아래로 쌓임 */
 :root{
@@ -181,26 +180,45 @@ textarea:focus,input[type="text"]:focus{outline:2px solid var(--gold);border-col
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style>
 <style>
-.demo-bar{max-width:1080px;margin:0 auto 14px;display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:space-between;font-size:.85rem;color:var(--ink-soft);background:#FFF6E3;border:1px solid var(--line);border-radius:12px;padding:8px 14px}
+.panel{display:block}
 .panel div{min-width:0}
 [hidden]{display:none!important}
-body{margin:0}
-.demo-bar a{color:var(--green-deep);font-weight:700;text-decoration:none}
+body{margin:0;word-break:keep-all;overflow-wrap:break-word}
+.room{isolation:isolate}
+.stack{display:grid;gap:14px}
+.login{display:block;width:100%;border:0;border-radius:12px;padding:13px 16px;font-family:var(--font-display);font-size:1.05rem;cursor:pointer}
+.login.kakao{background:#FEE500;color:#191600}
+.login.google{background:#FFFFFF;color:#1F1F1F;border:1px solid var(--line)}
+.fine{font-size:.8rem;color:var(--ink-soft);margin:0}
+.fine a{color:var(--green-deep)}
+.linkish{background:none;border:0;padding:0;color:var(--ink-soft);text-decoration:underline;font-size:.85rem;cursor:pointer}
+.decoys{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.guess-input{display:flex;gap:8px}
+.guess-input input{flex:1;min-width:0}
+.mod-row{display:flex;justify-content:space-between;gap:12px;border-top:1px dashed var(--line);padding-top:10px}
+.report{display:grid;gap:8px}
+.gift.is-hidden{opacity:.35}
+.sent-mark{display:grid;place-items:center;padding-top:6px}
+.sent-mark .gift{width:96px}
+.count-note{max-width:12em;text-align:right}
+.site-nav{max-width:1080px;margin:0 auto 14px;display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:.85rem}
+.site-nav a{color:var(--green-deep);font-weight:700;text-decoration:none}
+.ad-slot{min-height:100px}
+a.btn{display:block;text-align:center;text-decoration:none}
 </style>
-
-
-<div class="demo-bar"><a href="/">← 무드나잇 홈</a><span>체험판입니다. 예시 데이터로 움직이며, 새로고침하면 처음 상태로 돌아가요.</span></div>
+</head>
+<body>
+<nav class="site-nav"><a href="/">← 무드나잇</a><a href="/santa/demo/">체험판</a></nav>
 <div class="app">
   <header class="top">
     <div class="brand">
       <div class="brand-mark" aria-hidden="true">
         <svg width="22" height="22" viewBox="0 0 24 24"><rect x="3" y="9" width="18" height="12" rx="2" fill="#FFF3DA"/><rect x="2" y="6" width="20" height="5" rx="1.5" fill="#FFE9B8"/><rect x="10.5" y="6" width="3" height="15" fill="#D9A934"/><path d="M12 6c-2-4-6-3-5 0M12 6c2-4 6-3 5 0" stroke="#D9A934" stroke-width="2" fill="none"/></svg>
       </div>
-      <div><h1>산타의 비밀 택배</h1><p>익명의 친구에게 받는 크리스마스 선물</p></div>
+      <div><h1 id="title">산타의 비밀 택배</h1><p>익명의 친구에게 받는 크리스마스 선물</p></div>
     </div>
-    <div class="dday" id="dday">D-52</div>
+    <div class="dday" id="dday">개봉까지 D-49</div>
   </header>
-
   <div class="main">
     <section class="frame" aria-label="선물방">
       <div class="room" id="room">
@@ -280,251 +298,20 @@ body{margin:0}
         <div class="room-hint" id="roomHint">선물을 눌러서 흔들어 보세요</div>
       </div>
     </section>
-
-    <aside class="panel">
-      <div class="tabs" role="tablist">
-        <button role="tab" id="tabHost" aria-selected="true">받는 사람 화면</button>
-        <button role="tab" id="tabSend" aria-selected="false">보내는 친구 화면</button>
-      </div>
-      <div id="panelBody"></div>
-    </aside>
+    <aside class="panel"><div id="panelBody"><p class="sub">불러오는 중…</p></div></aside>
   </div>
 </div>
-
 <div class="overlay" id="overlay" hidden></div>
 <div class="toast" id="toast" role="status"></div>
-
 <script>
-const HOST = "하린";
-const WRAPS = [
-  {id:"red", name:"산타 레드"},{id:"green", name:"전나무 체크"},{id:"navy", name:"한밤 별빛"},
-  {id:"gold", name:"금빛 줄무늬"},{id:"snow", name:"눈송이"}
-];
-const ITEMS = [
-  {id:"cocoa", icon:"☕", name:"핫초코 한 잔", shake:"찰랑찰랑, 따뜻한 액체 소리가 나요"},
-  {id:"mitten", icon:"🧤", name:"털장갑", shake:"아무 소리도 안 나요. 폭신폭신해요"},
-  {id:"tangerine", icon:"🍊", name:"귤 한 박스", shake:"데굴데굴 굴러가는 소리가 나요"},
-  {id:"letter", icon:"💌", name:"행운 편지", shake:"종이가 사락사락 스쳐요"},
-  {id:"globe", icon:"🔮", name:"스노우볼", shake:"반짝이는 무언가가 출렁여요"},
-  {id:"ticket", icon:"🎟", name:"영화 데이트권", shake:"얇고 가벼워요. 거의 비어 있는 것 같아요"}
-];
-const POOL = ["민지","준호","소연","태훈","다은","현우","지아","서준"];
-const SLOTS = [{x:44,y:79},{x:60,y:80},{x:34,y:87},{x:52,y:90},{x:70,y:88},{x:24,y:95},{x:42,y:98},{x:62,y:98},{x:79,y:96},{x:28,y:79}];
-
-let gifts = [
-  {from:"민지", wrap:"red", item:"cocoa", msg:"올해 제일 많이 웃은 날은 다 너랑 있던 날이었어.\n내년에도 퇴근길 수다 같이 떨자!", hints:["우리는 같은 동아리였어요","고양이 두 마리랑 살아요","이름이 'ㅁ'으로 시작해요"]},
-  {from:"준호", wrap:"green", item:"mitten", msg:"손 차갑다고 맨날 투덜대길래.\n이번 겨울엔 주머니에서 손 좀 빼고 다녀.", hints:["지난주에 너랑 밥을 먹었어요","운동화를 정말 좋아해요","너보다 키가 커요"]},
-  {from:"소연", wrap:"navy", item:"letter", msg:"힘들었던 시기에 먼저 연락해줘서 고마웠어.\n그 메시지 아직도 캡처해 뒀어.", hints:["초등학교 때부터 알았어요","노래방 18번이 발라드예요","이름에 받침이 하나 있어요"]},
-  {from:"태훈", wrap:"gold", item:"tangerine", msg:"작년 크리스마스 파티 때 귤 까주던 거 기억나?\n올해는 내가 박스째로 까줄게.", hints:["같은 팀에서 일해요","커피는 무조건 아이스예요","올해 처음 같이 여행을 갔어요"]}
-].map(g=>({...g, opened:false, wrongs:[], result:null, cands:null}));
-
-let isXmas = false, view = "host", score = 0;
-let draft = {wrap:"red", item:null, msg:"", hints:["","",""], name:""}, draftErr = "";
-
-const $ = s => document.querySelector(s);
-const item = id => ITEMS.find(i=>i.id===id);
-const esc = s => s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-const giftHTML = (wrap, cls="") => `<span class="g-lid"></span><span class="g-body"></span><span class="g-bow"></span>`;
-
-function daysLeft(){
-  const now = new Date(); const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  return Math.max(0, Math.round((new Date(2026,11,25) - today)/86400000));
-}
-function toast(t){ const el=$("#toast"); el.textContent=t; el.classList.add("show"); clearTimeout(toast.t); toast.t=setTimeout(()=>el.classList.remove("show"),2600); }
-function shuffle(a){ a=[...a]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
-
-/* window snow + tree lights */
 (function(){
-  const f=$("#snowfield");
-  for(let i=0;i<16;i++){
-    const c=document.createElementNS("http://www.w3.org/2000/svg","circle");
-    c.setAttribute("cx",152+Math.random()*92); c.setAttribute("cy",50+Math.random()*30); c.setAttribute("r",(1+Math.random()*1.6).toFixed(1));
-    c.setAttribute("fill","#FFFFFF"); c.setAttribute("class","snow");
-    c.style.animationDuration=(4+Math.random()*4)+"s"; c.style.animationDelay=(-Math.random()*8)+"s";
-    f.appendChild(c);
-  }
-  const L=$("#lights"); [[290,100],[310,142],[276,158],[332,160],[256,204],[294,196],[340,206],[246,244],[284,240],[320,248],[360,238]].forEach(([x,y],i)=>{
-    const c=document.createElementNS("http://www.w3.org/2000/svg","circle");
-    c.setAttribute("cx",x);c.setAttribute("cy",y);c.setAttribute("r",2.2);c.setAttribute("class","twinkle");c.style.animationDelay=(i*.27)+"s";L.appendChild(c);
-  });
+  var NS="http://www.w3.org/2000/svg", f=document.getElementById("snowfield");
+  for(var i=0;i<16;i++){var c=document.createElementNS(NS,"circle");c.setAttribute("cx",152+Math.random()*92);c.setAttribute("cy",50+Math.random()*30);c.setAttribute("r",(1+Math.random()*1.6).toFixed(1));c.setAttribute("fill","#FFFFFF");c.setAttribute("class","snow");c.style.animationDuration=(4+Math.random()*4)+"s";c.style.animationDelay=(-Math.random()*8)+"s";f.appendChild(c);}
+  var L=document.getElementById("lights");[[290,100],[310,142],[276,158],[332,160],[256,204],[294,196],[340,206],[246,244],[284,240],[320,248],[360,238]].forEach(function(p,i){var c=document.createElementNS(NS,"circle");c.setAttribute("cx",p[0]);c.setAttribute("cy",p[1]);c.setAttribute("r",2.2);c.setAttribute("class","twinkle");c.style.animationDelay=(i*.27)+"s";L.appendChild(c);});
 })();
-
-function renderGifts(newIndex=-1){
-  const wrap=$("#gifts"); wrap.innerHTML="";
-  gifts.forEach((g,i)=>{
-    const s=SLOTS[i%SLOTS.length];
-    const b=document.createElement("button");
-    b.className=`gift w-${g.wrap}${g.opened?" opened":""}`;
-    b.innerHTML=giftHTML()+(g.opened?`<span class="tag">${g.result==="right"?"정답":"개봉"}</span>`:"");
-    b.setAttribute("aria-label",`선물 ${i+1}${g.opened?" (열어봄)":""}`);
-    b.style.zIndex=Math.round(s.y);
-    if(i===newIndex){ b.style.left="88%"; b.style.top="80%"; b.classList.add("new");
-      requestAnimationFrame(()=>requestAnimationFrame(()=>{b.style.left=s.x+"%"; b.style.top=s.y+"%";}));
-    } else { b.style.left=s.x+"%"; b.style.top=s.y+"%"; }
-    b.onclick=()=>onGift(i,b);
-    wrap.appendChild(b);
-  });
-  $("#roomHint").textContent = isXmas ? "선물을 눌러서 열어 보세요" : "선물을 눌러서 흔들어 보세요";
-}
-
-function onGift(i,el){
-  const g=gifts[i];
-  if(!isXmas){
-    el.classList.remove("shake"); void el.offsetWidth; el.classList.add("shake");
-    toast(`흔들어 보니 ${item(g.item).shake}. 12월 25일에 열 수 있어요`);
-    return;
-  }
-  openModal(i);
-}
-
-function renderTop(){
-  const d=daysLeft(); const el=$("#dday");
-  el.textContent = isXmas ? "Merry Christmas" : `개봉까지 D-${d}`;
-  el.classList.toggle("xmas",isXmas);
-}
-
-function renderPanel(){
-  $("#tabHost").setAttribute("aria-selected",view==="host");
-  $("#tabSend").setAttribute("aria-selected",view==="send");
-  view==="host" ? renderHost() : renderSend();
-}
-
-function renderHost(){
-  const opened=gifts.filter(g=>g.opened).length;
-  $("#panelBody").innerHTML=`
-  <div style="display:grid;gap:16px">
-    <div><h2>${HOST}의 선물방</h2><p class="sub">누가 보냈는지는 크리스마스에 직접 맞혀야 알 수 있어요.</p></div>
-    <div class="stats">
-      <div class="stat"><b>${gifts.length}</b><span>받은 선물</span></div>
-      <div class="stat"><b>${opened}</b><span>열어본 선물</span></div>
-      <div class="stat"><b>${score}</b><span>추리 점수</span></div>
-    </div>
-    <div class="count ${isXmas?"xmas":""}">
-      ${isXmas
-        ? `<div><p>오늘은 12월 25일</p><strong>선물 열기</strong></div><p style="max-width:12em;text-align:right">방 안의 선물을 눌러 리본을 풀어 보세요</p>`
-        : `<div><p>12월 25일 0시에 열려요</p><strong>D-${daysLeft()}</strong></div><p style="max-width:12em;text-align:right">그전엔 흔들어서 단서만 들을 수 있어요</p>`}
-    </div>
-    <div class="box">
-      <span class="label">내 선물방 링크</span>
-      <div class="link-row"><code id="linkTxt">santa.moodnight.co.kr/r/harin-7q2x</code><button class="btn" id="copyBtn">복사</button></div>
-      <span class="sub" style="margin:0">카톡·인스타 스토리에 올리면 친구들이 몰래 선물을 두고 가요.</span>
-    </div>
-    <label class="switch" for="xmasToggle">데모: 크리스마스 아침으로 이동<input type="checkbox" id="xmasToggle" ${isXmas?"checked":""}></label>
-  </div>`;
-  $("#copyBtn").onclick=async()=>{
-    try{ await navigator.clipboard.writeText("https://santa.moodnight.co.kr/r/harin-7q2x"); toast("링크를 복사했어요"); }
-    catch(e){ const r=document.createRange(); r.selectNodeContents($("#linkTxt")); const s=getSelection(); s.removeAllRanges(); s.addRange(r); toast("링크를 선택했어요. 길게 눌러 복사하세요"); }
-  };
-  $("#xmasToggle").onchange=e=>{ isXmas=e.target.checked; renderTop(); renderGifts(); renderHost();
-    toast(isXmas?"12월 25일 아침이에요. 선물을 열어 보세요":"다시 크리스마스 전으로 돌아왔어요"); };
-}
-
-function renderSend(){
-  const d=draft;
-  $("#panelBody").innerHTML=`
-  <div style="display:grid;gap:18px">
-    <div><h2>${HOST}에게 몰래 선물하기</h2><p class="sub">이름은 숨겨져요. ${HOST}가 단서를 보고 당신을 맞혀야 해요.</p></div>
-    <div class="step">
-      <div class="step-h"><i>1</i>포장지 고르기</div>
-      <div class="wraps">${WRAPS.map(w=>`<button class="wrap-opt" data-wrap="${w.id}" aria-pressed="${d.wrap===w.id}"><span class="gift static w-${w.id}">${giftHTML()}</span>${w.name}</button>`).join("")}</div>
-    </div>
-    <div class="step">
-      <div class="step-h"><i>2</i>상자 속 선물 <small>${HOST}에게 어울리는 걸로</small></div>
-      <div class="items">${ITEMS.map(it=>`<button class="item-opt" data-item="${it.id}" aria-pressed="${d.item===it.id}"><b>${it.icon}</b>${it.name}</button>`).join("")}</div>
-    </div>
-    <div class="step">
-      <div class="step-h"><i>3</i>메시지</div>
-      <textarea id="msg" maxlength="200" placeholder="크리스마스에 열어볼 메시지를 남겨 주세요">${esc(d.msg)}</textarea>
-      <div class="meta"><span>말투에서 들키지 않게 조심하세요</span><span id="msgCount">${d.msg.length}/200</span></div>
-    </div>
-    <div class="step">
-      <div class="step-h"><i>4</i>나를 맞힐 단서 3개 <small>쉬운 단서일수록 뒤에</small></div>
-      <div class="hint-in">
-        ${[0,1,2].map(n=>`<input type="text" id="hint${n}" maxlength="40" value="${esc(d.hints[n])}" placeholder="${["예: 우리는 같은 동아리였어요","예: 고양이랑 살아요","예: 이름이 'ㅁ'으로 시작해요"][n]}">`).join("")}
-      </div>
-    </div>
-    <div class="step">
-      <div class="step-h"><i>5</i>내 이름 <small>정답으로만 쓰여요</small></div>
-      <input type="text" id="name" maxlength="10" value="${esc(d.name)}" placeholder="${HOST}가 알고 있는 이름">
-    </div>
-    ${draftErr?`<p class="err">${draftErr}</p>`:""}
-    <button class="btn red wide" id="sendBtn">선물 몰래 두고 오기</button>
-  </div>`;
-  document.querySelectorAll("[data-wrap]").forEach(b=>b.onclick=()=>{draft.wrap=b.dataset.wrap; renderSend();});
-  document.querySelectorAll("[data-item]").forEach(b=>b.onclick=()=>{draft.item=b.dataset.item; renderSend();});
-  $("#msg").oninput=e=>{draft.msg=e.target.value; $("#msgCount").textContent=`${draft.msg.length}/200`;};
-  [0,1,2].forEach(n=>$("#hint"+n).oninput=e=>draft.hints[n]=e.target.value);
-  $("#name").oninput=e=>draft.name=e.target.value;
-  $("#sendBtn").onclick=sendGift;
-}
-
-function sendGift(){
-  const d=draft;
-  if(!d.item) draftErr="상자에 넣을 선물을 골라 주세요.";
-  else if(d.msg.trim().length<5) draftErr="메시지를 5자 이상 써 주세요.";
-  else if(d.hints.some(h=>!h.trim())) draftErr="단서 3개를 모두 채워 주세요. 추리할 거리가 있어야 재밌어요.";
-  else if(!d.name.trim()) draftErr="정답이 될 내 이름을 적어 주세요.";
-  else draftErr="";
-  if(draftErr){ renderSend(); return; }
-  gifts.push({from:d.name.trim(), wrap:d.wrap, item:d.item, msg:d.msg.trim(), hints:d.hints.map(h=>h.trim()), opened:false, wrongs:[], result:null, cands:null});
-  draft={wrap:"red", item:null, msg:"", hints:["","",""], name:""};
-  renderGifts(gifts.length-1); renderSend();
-  toast(`${HOST}의 방에 선물을 몰래 두고 나왔어요`);
-}
-
-/* ── Open & guess ── */
-let cur=-1, unwrapped=false;
-function openModal(i){
-  cur=i; const g=gifts[i]; unwrapped=g.opened;
-  if(!g.cands){ g.cands=shuffle([g.from,...shuffle(POOL.filter(n=>n!==g.from)).slice(0,3)]); }
-  $("#overlay").hidden=false; renderModal();
-}
-function closeModal(){ $("#overlay").hidden=true; cur=-1; renderGifts(); if(view==="host") renderHost(); }
-
-function renderModal(){
-  const g=gifts[cur], it=item(g.item);
-  const shown = g.result ? 3 : Math.min(3, 1+g.wrongs.length);
-  const lives = 3-g.wrongs.length;
-  let html=`<button class="close" id="closeBtn" aria-label="닫기">×</button>`;
-  if(!unwrapped){
-    html+=`<div><h2>누군가 두고 간 선물</h2><p class="sub">${it.shake}.</p></div>
-      <div class="stage-gift"><span class="gift static w-${g.wrap}" id="bigGift">${giftHTML()}</span></div>
-      <button class="btn red wide" id="unwrapBtn">리본 풀기</button>`;
-  } else {
-    html+=`<div class="letter">
-        <span class="item">${it.icon} ${it.name}</span>
-        <p>To. ${HOST}\n${esc(g.msg)}</p>
-        <div class="from">${g.result?`<span class="stamp ${g.result==="right"?"":"miss"}">${g.result==="right"?"정답":"공개"}</span>`:""}From. ${g.result?esc(g.from):`<span class="q">???</span>`}</div>
-      </div>
-      <div class="guess-h"><h2 style="font-size:1.15rem">보낸 친구는 누구일까요?</h2>${g.result?"":`<span class="lives" aria-label="남은 기회 ${lives}번">${"●".repeat(lives)}${"○".repeat(3-lives)}</span>`}</div>
-      <ul class="hints">${g.hints.map((h,n)=>n<shown?`<li><em>단서 ${n+1}</em>${esc(h)}</li>`:`<li class="locked"><em>단서 ${n+1}</em>틀리면 열려요</li>`).join("")}</ul>
-      <div class="cands">${g.cands.map(c=>{
-        const wrong=g.wrongs.includes(c), right=g.result&&c===g.from;
-        return `<button class="cand ${wrong?"wrong":""} ${right?"right":""}" data-c="${esc(c)}" ${(wrong||g.result)?"disabled":""}>${esc(c)}</button>`;}).join("")}</div>
-      ${g.result==="right"?`<div class="result"><b>+${[300,200,100][g.wrongs.length]}점</b> 단서 ${g.wrongs.length+1}개 만에 맞혔어요. ${esc(g.from)}에게 고맙다고 답장해 보세요.</div>`:""}
-      ${g.result==="miss"?`<div class="result"><b>아쉽게 놓쳤어요</b> 이 선물은 ${esc(g.from)}가 보냈어요.</div>`:""}`;
-  }
-  $("#overlay").innerHTML=`<div class="sheet" role="dialog" aria-modal="true" aria-label="선물 열기">${html}</div>`;
-  $("#closeBtn").onclick=closeModal;
-  const ub=$("#unwrapBtn");
-  if(ub) ub.onclick=()=>{ $("#bigGift").classList.add("unwrap"); ub.disabled=true;
-    setTimeout(()=>{ unwrapped=true; g.opened=true; renderModal(); }, 750); };
-  document.querySelectorAll(".cand:not(:disabled)").forEach(b=>b.onclick=()=>guess(b.dataset.c));
-}
-function guess(name){
-  const g=gifts[cur];
-  if(name===g.from){ g.result="right"; score+=[300,200,100][g.wrongs.length]; }
-  else { g.wrongs.push(name); if(g.wrongs.length>=3) g.result="miss"; else toast(`${name}는 아니에요. 단서 하나가 더 열렸어요`); }
-  renderModal();
-}
-$("#overlay").addEventListener("click",e=>{ if(e.target.id==="overlay") closeModal(); });
-document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&cur>-1) closeModal(); });
-
-$("#tabHost").onclick=()=>{view="host"; renderPanel();};
-$("#tabSend").onclick=()=>{view="send"; renderPanel();};
-
-renderTop(); renderGifts(); renderPanel();
 </script>
-
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js" crossorigin="anonymous"></script>
+<script src="/santa/app.js"></script>
 </body>
 </html>
