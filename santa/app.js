@@ -31,7 +31,8 @@ const pathSlug = (location.pathname.match(/\/santa\/r\/([a-z0-9]+)/i) || [])[1] 
 const MODE = pathSlug ? "guest" : "host";
 
 let session = null, room = null, sent = false;
-let draft = { wrap: "red", item: null, msg: "", hints: ["", "", ""], name: "", decoys: ["", "", ""] }, draftErr = "";
+const freshDraft = () => ({ wrap: "red", item: null, msg: "", hints: ["", "", ""], name: "", decoys: ["", "", ""], autoInitial: true });
+let draft = freshDraft(), draftErr = "";
 
 const unlockDate = () => new Date(room ? room.unlock_at : "2026-12-25T00:00:00+09:00");
 const isOpen = () => Date.now() >= unlockDate().getTime();
@@ -140,7 +141,7 @@ function renderHost() {
       <div class="link-row"><code id="linkTxt">${esc(roomUrl().replace(/^https?:\/\//, ""))}</code><button class="btn" id="copyBtn">복사</button></div>
       <button class="login kakao" id="kakaoShare">카카오톡으로 링크 보내기</button>
       ${navigator.share ? `<button class="btn ghost wide" id="moreShare">다른 앱으로 공유</button>` : ""}
-      <span class="sub" style="margin:0">인스타 스토리에는 링크를 복사해서 링크 스티커로 붙여 주세요.</span>
+      <span class="sub" style="margin:0">선물이 <b>3개만</b> 모여도 추리가 재밌어져요. 단톡방 하나에 올리는 걸로 충분해요. 인스타 스토리에는 링크를 복사해서 링크 스티커로 붙여 주세요.</span>
     </div>
     <p class="fine">다음에 들어올 때도 처음 로그인한 방법으로 로그인해야 이 선물방이 보여요. <button class="linkish" id="logout">로그아웃</button></p>
   </div>`);
@@ -204,6 +205,21 @@ function renderSide() {
 }
 
 /* ── 친구: 선물 보내기 ── */
+/* 단서 도우미 */
+const HINT_IDEAS = [
+  "우리는 ___에서 처음 만났어요", "나는 ___를 정말 좋아해요", "우리가 마지막으로 같이 간 곳은 ___",
+  "내 MBTI는 ___", "나는 요즘 ___에 빠져 있어요", "너랑 같이 ___ 해본 적 있어요",
+  "내 카톡 프로필 사진은 ___", "나는 ___ 살아요", "우리 둘 다 아는 친구는 ___"
+];
+const CHO = "ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ";
+function initialHint(name) {
+  const c = (name || "").trim().charCodeAt(0);
+  if (c >= 0xAC00 && c <= 0xD7A3) return `내 이름은 'ㅇ'으로 시작해요`.replace("ㅇ", CHO[Math.floor((c - 0xAC00) / 588)]);
+  const ch = (name || "").trim()[0];
+  return ch ? `내 이름은 '${ch.toUpperCase()}'(으)로 시작해요` : "";
+}
+const hintCount = () => draft.autoInitial ? 2 : 3;
+
 function renderSend() {
   if (sent) return renderSent();
   if (isOpen()) {
@@ -228,8 +244,10 @@ function renderSend() {
       <div class="meta"><span>말투에서 들키지 않게 조심하세요</span><span id="msgCount">${d.msg.length}/200</span></div>
     </div>
     <div class="step">
-      <div class="step-h"><i>4</i>나를 맞힐 단서 3개 <small>틀릴 때마다 하나씩 열려요. 쉬운 단서일수록 뒤에</small></div>
-      <div class="hint-in">${[0, 1, 2].map(n => `<input type="text" id="hint${n}" maxlength="40" value="${esc(d.hints[n])}" placeholder="${["예: 우리는 같은 동아리였어요", "예: 고양이랑 살아요", "예: 이름이 'ㅅ'으로 시작해요"][n]}">`).join("")}</div>
+      <div class="step-h"><i>4</i>나를 맞힐 단서 <small>틀릴 때마다 하나씩 열려요. 어려운 단서부터</small></div>
+      <div class="chips" aria-label="단서 아이디어">${HINT_IDEAS.map((h, i) => `<button type="button" class="chip" data-idea="${i}">${esc(h.replace("___", "○○"))}</button>`).join("")}</div>
+      <div class="hint-in">${[0, 1, 2].map(n => n < hintCount() ? `<input type="text" id="hint${n}" maxlength="40" value="${esc(d.hints[n])}" placeholder="${["단서 1 (제일 어려운 것)", "단서 2", "단서 3 (제일 쉬운 것)"][n]}">` : `<div class="auto-hint">단서 3 · ${d.name.trim() ? esc(initialHint(d.name)) : "내 이름을 적으면 이름 첫 글자 초성으로 자동으로 만들어져요"}</div>`).join("")}</div>
+      <label class="check" for="autoInitial"><input type="checkbox" id="autoInitial" ${d.autoInitial ? "checked" : ""}> 마지막 단서는 내 이름 첫 글자 초성으로 자동으로 만들기</label>
     </div>
     <div class="step">
       <div class="step-h"><i>5</i>내 이름 <small>정답으로만 쓰여요</small></div>
@@ -247,8 +265,16 @@ function renderSend() {
   document.querySelectorAll("[data-wrap]").forEach(b => b.onclick = () => { draft.wrap = b.dataset.wrap; renderSend(); renderSide(); });
   document.querySelectorAll("[data-item]").forEach(b => b.onclick = () => { draft.item = b.dataset.item; renderSend(); renderSide(); });
   $("#msg").oninput = e => { draft.msg = e.target.value; $("#msgCount").textContent = `${draft.msg.length}/200`; };
-  [0, 1, 2].forEach(n => { $("#hint" + n).oninput = e => draft.hints[n] = e.target.value; $("#decoy" + n).oninput = e => draft.decoys[n] = e.target.value; });
-  $("#name").oninput = e => draft.name = e.target.value;
+  [0, 1, 2].forEach(n => { if ($("#hint" + n)) $("#hint" + n).oninput = e => draft.hints[n] = e.target.value; $("#decoy" + n).oninput = e => draft.decoys[n] = e.target.value; });
+  $("#name").oninput = e => { draft.name = e.target.value; const a = document.querySelector(".auto-hint"); if (a) a.textContent = "단서 3 · " + (draft.name.trim() ? initialHint(draft.name) : "내 이름을 적으면 이름 첫 글자 초성으로 자동으로 만들어져요"); };
+  $("#autoInitial").onchange = e => { draft.autoInitial = e.target.checked; renderSend(); };
+  document.querySelectorAll("[data-idea]").forEach(b => b.onclick = () => {
+    const n = [0, 1, 2].slice(0, hintCount()).find(i => !draft.hints[i].trim());
+    if (n === undefined) { toast("단서 칸이 다 찼어요. 바꾸고 싶은 칸을 지우고 다시 눌러 주세요"); return; }
+    const text = HINT_IDEAS[+b.dataset.idea]; draft.hints[n] = text;
+    const el = $("#hint" + n); el.value = text; el.focus();
+    const at = text.indexOf("___"); if (at >= 0) el.setSelectionRange(at, at + 3);
+  });
   $("#sendBtn").onclick = sendGift;
 }
 
@@ -257,20 +283,21 @@ async function sendGift() {
   const norm = s => s.replace(/\s/g, "").toLowerCase();
   if (!d.item) draftErr = "상자에 넣을 선물을 골라 주세요.";
   else if (d.msg.trim().length < 5) draftErr = "메시지를 5자 이상 써 주세요.";
-  else if (d.hints.some(h => !h.trim())) draftErr = "단서 3개를 모두 채워 주세요. 추리할 거리가 있어야 재밌어요.";
   else if (!d.name.trim()) draftErr = "정답이 될 내 이름을 적어 주세요.";
+  else if (d.hints.slice(0, hintCount()).some(h => !h.trim())) draftErr = `단서 ${hintCount()}개를 모두 채워 주세요. 위의 아이디어 버튼을 눌러도 돼요.`;
+  else if (d.hints.slice(0, hintCount()).some(h => h.includes("___"))) draftErr = "단서의 ___ 부분을 채워 주세요.";
   else if (d.decoys.some(x => x.trim() && norm(x) === norm(d.name))) draftErr = "헷갈리게 할 이름에 내 이름이 들어가 있어요.";
   else draftErr = "";
   if (draftErr) { renderSend(); return; }
   $("#sendBtn").disabled = true; $("#sendBtn").textContent = "두고 오는 중…";
   const { data: id, error } = await sb.rpc("send_gift", {
     p_slug: room.slug, p_wrap: d.wrap, p_item: d.item, p_message: d.msg.trim(),
-    p_hints: d.hints.map(h => h.trim()), p_sender_name: d.name.trim(),
+    p_hints: d.autoInitial ? [d.hints[0].trim(), d.hints[1].trim(), initialHint(d.name)] : d.hints.map(h => h.trim()), p_sender_name: d.name.trim(),
     p_decoys: d.decoys.map(x => x.trim()).filter(Boolean)
   });
   if (error) { draftErr = errMsg(error); renderSend(); return; }
   sent = true;
-  draft = { wrap: "red", item: null, msg: "", hints: ["", "", ""], name: "", decoys: ["", "", ""] };
+  draft = freshDraft();
   await refreshRoom(id);
   renderSent(); renderSide();
 }
