@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>로그인 테스트 | 무드나잇</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&family=Gowun+Dodum&display=swap">
+<link rel="stylesheet" href="/style.css">
+<style>
+.box{background:var(--night-2);border:1px solid var(--night-3);border-radius:20px;padding:22px;display:grid;gap:14px;margin-top:20px}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+button{font:inherit;cursor:pointer;border:0;border-radius:12px;padding:12px 18px;font-family:var(--font-display);font-size:1rem}
+.kakao{background:#FEE500;color:#191600}
+.google{background:#FFFFFF;color:#1F1F1F}
+.plain{background:var(--night-3);color:var(--cream)}
+pre{white-space:pre-wrap;word-break:break-all;background:#0F1324;border-radius:12px;padding:14px;font-size:.85rem;color:#CFC8B8;margin:0;max-height:320px;overflow:auto}
+input{font:inherit;padding:10px 12px;border-radius:10px;border:1px solid var(--night-3);background:#0F1324;color:var(--cream)}
+.ok{color:var(--pine)}.bad{color:var(--berry)}
+</style>
+</head>
+<body>
+<main class="article">
+  <div class="wrap narrow">
+    <span class="eyebrow">개발용 · 검색에 노출되지 않는 페이지</span>
+    <h1>로그인 테스트</h1>
+    <p class="meta">카카오와 구글 로그인, 선물방 저장이 잘 되는지 확인하는 페이지예요.</p>
+
+    <div class="box">
+      <h2 style="margin:0;font-size:1.2rem">1. 로그인</h2>
+      <p id="status">상태 확인 중…</p>
+      <div class="row">
+        <button class="kakao" id="kakao">카카오로 로그인</button>
+        <button class="google" id="google">구글로 로그인</button>
+        <button class="plain" id="logout">로그아웃</button>
+      </div>
+    </div>
+
+    <div class="box">
+      <h2 style="margin:0;font-size:1.2rem">2. 선물방 저장 테스트</h2>
+      <p style="color:var(--cream-soft)">로그인한 뒤 눌러 보세요. 내 선물방을 만들고 다시 읽어 와요.</p>
+      <div class="row">
+        <input id="roomName" maxlength="20" value="테스트방" aria-label="선물방 이름">
+        <button class="plain" id="makeRoom">선물방 만들기</button>
+      </div>
+      <p id="roomStatus"></p>
+    </div>
+
+    <div class="box">
+      <h2 style="margin:0;font-size:1.2rem">기록</h2>
+      <pre id="log">-</pre>
+    </div>
+  </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script>
+const SUPABASE_URL = "https://gbmlkyfguktjtroczqfw.supabase.co";
+const SUPABASE_KEY = "sb_publishable_RO92ntdlSM5_Urctc5FD9w_4OHcZQzf";
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const $ = id => document.getElementById(id);
+const log = (label, v) => { $("log").textContent = label + "\n" + (typeof v === "string" ? v : JSON.stringify(v, null, 2)); };
+const back = location.origin + "/auth-test.html";
+
+$("kakao").onclick = () => sb.auth.signInWithOAuth({ provider: "kakao", options: { redirectTo: back, scopes: "profile_nickname profile_image" } });
+$("google").onclick = () => sb.auth.signInWithOAuth({ provider: "google", options: { redirectTo: back } });
+$("logout").onclick = async () => { await sb.auth.signOut(); render(null); };
+
+function render(session){
+  const u = session && session.user;
+  if(!u){ $("status").innerHTML = '<span class="bad">로그인 안 됨</span>'; return; }
+  const m = u.user_metadata || {};
+  const provider = (u.app_metadata && u.app_metadata.provider) || "?";
+  $("status").innerHTML = '<span class="ok">로그인 성공</span> · ' + provider + ' · ' + (m.name || m.full_name || m.nickname || m.user_name || "이름 없음");
+  log("로그인 정보", { provider, email: u.email || "(없음)", name: m.name || m.full_name || m.nickname, avatar: m.avatar_url || m.picture });
+}
+
+$("makeRoom").onclick = async () => {
+  const { data: { user } } = await sb.auth.getUser();
+  if(!user){ $("roomStatus").innerHTML = '<span class="bad">먼저 로그인하세요.</span>'; return; }
+  const name = $("roomName").value.trim() || "테스트방";
+  let { data: room, error } = await sb.from("rooms").select("*").eq("owner_id", user.id).maybeSingle();
+  if(!room && !error){
+    ({ data: room, error } = await sb.from("rooms").insert({ owner_id: user.id, display_name: name }).select().single());
+  }
+  if(error){ $("roomStatus").innerHTML = '<span class="bad">실패: ' + error.message + '</span>'; log("오류", error); return; }
+  const { data: view, error: e2 } = await sb.rpc("get_room", { p_slug: room.slug });
+  if(e2){ $("roomStatus").innerHTML = '<span class="bad">읽기 실패: ' + e2.message + '</span>'; log("오류", e2); return; }
+  $("roomStatus").innerHTML = '<span class="ok">저장 성공</span> · 내 방 링크 코드: ' + room.slug;
+  log("선물방 읽기 결과", view);
+};
+
+sb.auth.getSession().then(({ data }) => render(data.session));
+sb.auth.onAuthStateChange((_e, session) => render(session));
+const err = new URLSearchParams(location.hash.slice(1) || location.search).get("error_description");
+if(err) log("로그인 오류", err);
+</script>
+</body>
+</html>
