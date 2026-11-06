@@ -122,3 +122,27 @@ section + section{border-top:1px solid var(--night-3)}
 .legal th{background:var(--night-2);font-weight:700}
 
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+
+/* blog */
+.post-list{list-style:none;margin:0;padding:0;display:grid;gap:14px}
+.post-list a{display:grid;gap:6px;text-decoration:none;color:var(--cream);background:var(--night-2);border:1px solid var(--night-3);border-radius:18px;padding:20px 22px}
+.post-list a:hover{border-color:var(--lamp)}
+.post-list h2{font-size:1.3rem;margin:0;color:var(--cream)}
+.post-list p{color:var(--cream-soft);margin:0}
+.post-list .date{font-size:.82rem;color:var(--lamp);font-variant-numeric:tabular-nums}
+.article{padding-block:56px}
+.article h1{font-size:clamp(1.8rem,5vw,2.5rem);margin:8px 0 12px}
+.article .meta{color:var(--cream-soft);font-size:.9rem;margin-bottom:32px}
+.article h2{font-size:1.4rem;margin:44px 0 14px;color:var(--lamp)}
+.article h3{font-size:1.15rem;margin:26px 0 8px}
+.article p,.article li{color:#E4DCCB}
+.article p + p{margin-top:14px}
+.article ul,.article ol{padding-left:1.3em;margin:10px 0}
+.article li{margin:6px 0}
+.article .note{background:var(--night-2);border:1px solid var(--night-3);border-radius:16px;padding:16px 20px;margin:24px 0}
+.article .cta{background:linear-gradient(160deg,#2B2140,#1E2540);border:1px solid var(--night-3);border-radius:20px;padding:22px;margin-top:44px;display:grid;gap:12px}
+.article .cta h2{margin:0;color:var(--cream)}
+.article .table-wrap table{border-collapse:collapse;width:100%;min-width:440px;font-size:.93rem}
+.article th,.article td{border:1px solid var(--night-3);padding:10px 12px;text-align:left;vertical-align:top}
+.article th{background:var(--night-2);white-space:nowrap}
+.svc .btn{justify-self:start;font-size:.95rem;padding:9px 16px}
