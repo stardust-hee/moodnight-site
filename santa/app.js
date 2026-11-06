@@ -219,6 +219,7 @@ function initialHint(name) {
   return ch ? `내 이름은 '${ch.toUpperCase()}'(으)로 시작해요` : "";
 }
 const hintCount = () => draft.autoInitial ? 2 : 3;
+let ideaPage = 0;
 
 function renderSend() {
   if (sent) return renderSent();
@@ -244,10 +245,11 @@ function renderSend() {
       <div class="meta"><span>말투에서 들키지 않게 조심하세요</span><span id="msgCount">${d.msg.length}/200</span></div>
     </div>
     <div class="step">
-      <div class="step-h"><i>4</i>나를 맞힐 단서 <small>틀릴 때마다 하나씩 열려요. 어려운 단서부터</small></div>
-      <div class="chips" aria-label="단서 아이디어">${HINT_IDEAS.map((h, i) => `<button type="button" class="chip" data-idea="${i}">${esc(h.replace("___", "○○"))}</button>`).join("")}</div>
-      <div class="hint-in">${[0, 1, 2].map(n => n < hintCount() ? `<input type="text" id="hint${n}" maxlength="40" value="${esc(d.hints[n])}" placeholder="${["단서 1 (제일 어려운 것)", "단서 2", "단서 3 (제일 쉬운 것)"][n]}">` : `<div class="auto-hint">단서 3 · ${d.name.trim() ? esc(initialHint(d.name)) : "내 이름을 적으면 이름 첫 글자 초성으로 자동으로 만들어져요"}</div>`).join("")}</div>
-      <label class="check" for="autoInitial"><input type="checkbox" id="autoInitial" ${d.autoInitial ? "checked" : ""}> 마지막 단서는 내 이름 첫 글자 초성으로 자동으로 만들기</label>
+      <div class="step-h"><i>4</i>나를 맞힐 단서</div>
+      <p class="sub" style="margin:0">틀릴 때마다 하나씩 열려요. 어려운 단서부터 써 주세요.</p>
+      <div class="chips" aria-label="단서 아이디어">${[0, 1, 2].map(k => { const i = (ideaPage * 3 + k) % HINT_IDEAS.length; return `<button type="button" class="chip" data-idea="${i}">${esc(HINT_IDEAS[i].replace("___", "○○"))}</button>`; }).join("")}<button type="button" class="chip more" id="moreIdeas">다른 예시 ↻</button></div>
+      <div class="hint-in">${[0, 1, 2].map(n => n < hintCount() ? `<input type="text" id="hint${n}" maxlength="40" value="${esc(d.hints[n])}" placeholder="${["단서 1 (제일 어려운 것)", "단서 2", "단서 3 (제일 쉬운 것)"][n]}">` : `<div class="auto-hint">단서 3 · ${d.name.trim() ? esc(initialHint(d.name)) : "이름을 적으면 초성으로 자동 완성돼요"}</div>`).join("")}</div>
+      <label class="check" for="autoInitial"><input type="checkbox" id="autoInitial" ${d.autoInitial ? "checked" : ""}> 마지막 단서는 이름 초성으로 자동</label>
     </div>
     <div class="step">
       <div class="step-h"><i>5</i>내 이름 <small>정답으로만 쓰여요</small></div>
@@ -266,7 +268,8 @@ function renderSend() {
   document.querySelectorAll("[data-item]").forEach(b => b.onclick = () => { draft.item = b.dataset.item; renderSend(); renderSide(); });
   $("#msg").oninput = e => { draft.msg = e.target.value; $("#msgCount").textContent = `${draft.msg.length}/200`; };
   [0, 1, 2].forEach(n => { if ($("#hint" + n)) $("#hint" + n).oninput = e => draft.hints[n] = e.target.value; $("#decoy" + n).oninput = e => draft.decoys[n] = e.target.value; });
-  $("#name").oninput = e => { draft.name = e.target.value; const a = document.querySelector(".auto-hint"); if (a) a.textContent = "단서 3 · " + (draft.name.trim() ? initialHint(draft.name) : "내 이름을 적으면 이름 첫 글자 초성으로 자동으로 만들어져요"); };
+  $("#name").oninput = e => { draft.name = e.target.value; const a = document.querySelector(".auto-hint"); if (a) a.textContent = "단서 3 · " + (draft.name.trim() ? initialHint(draft.name) : "이름을 적으면 초성으로 자동 완성돼요"); };
+  $("#moreIdeas").onclick = () => { ideaPage++; renderSend(); };
   $("#autoInitial").onchange = e => { draft.autoInitial = e.target.checked; renderSend(); };
   document.querySelectorAll("[data-idea]").forEach(b => b.onclick = () => {
     const n = [0, 1, 2].slice(0, hintCount()).find(i => !draft.hints[i].trim());
