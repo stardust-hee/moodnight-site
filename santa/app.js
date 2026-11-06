@@ -164,6 +164,8 @@ function kakaoShare() {
         title: `${room.display_name}의 선물방에 몰래 선물을 두고 가 주세요`,
         description: "크리스마스에 열어보고, 누가 보냈는지 맞혀 볼게요",
         imageUrl: "https://www.moodnight.co.kr/santa/og.png",
+        imageWidth: 1200,
+        imageHeight: 630,
         link: { mobileWebUrl: url, webUrl: url }
       },
       buttons: [{ title: "선물 두고 오기", link: { mobileWebUrl: url, webUrl: url } }]
