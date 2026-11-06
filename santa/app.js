@@ -41,6 +41,7 @@ const roomUrl = () => `${location.origin}/santa/r/${room.slug}`;
 
 /* ── 화면 그리기 ── */
 function renderTop() {
+  setTimeout(renderSide, 0);
   const el = $("#dday");
   el.textContent = isOpen() ? "Merry Christmas" : `개봉까지 D-${daysLeft()}`;
   el.classList.toggle("xmas", isOpen());
@@ -175,6 +176,34 @@ function kakaoShare() {
 
 async function logout() { await sb.auth.signOut(); session = null; room = null; renderTop(); renderGifts(); renderLogin(); }
 
+
+/* ── 방 아래 안내 카드 ── */
+function renderSide() {
+  const el = $("#sideCard"); if (!el) return;
+  const n = room ? room.boxes.filter(b => !b.hidden).length : 0;
+  const meta = room ? `<div class="side-meta"><span>이 방의 선물 ${n}개</span><span>${isOpen() ? "개봉 중" : `12월 25일 0시 개봉 · D-${daysLeft()}`}</span></div>` : "";
+  const flow = `<ol class="flow">
+      <li><b>링크 공유</b>내 선물방 링크를 카톡이나 인스타에 올려요</li>
+      <li><b>몰래 선물</b>친구들이 선물과 메시지, 단서를 두고 가요</li>
+      <li><b>열고 맞히기</b>12월 25일에 열고 누가 보냈는지 맞혀요</li>
+    </ol>`;
+  el.classList.remove("desk-only");
+  if (MODE === "guest" && !sent && !isOpen() && room) {
+    const it = draft.item ? item(draft.item) : null;
+    const wrapName = (WRAPS.find(w => w.id === draft.wrap) || WRAPS[0]).name;
+    el.innerHTML = `<h3>지금 포장 중인 선물</h3>
+      <div class="preview"><span class="gift static w-${draft.wrap}">${giftHTML()}</span>
+        <div><b>${esc(wrapName)} 포장${it ? ` · ${it.icon} ${it.name}` : ""}</b><p>${it ? `흔들면 ${it.shake}.` : "상자 속에 넣을 선물을 골라 주세요."}</p><p>보내면 ${esc(room.display_name)}님 방 트리 아래에 놓여요.</p></div></div>${meta}`;
+    el.classList.add("desk-only");
+  } else if (MODE === "guest" && room) {
+    el.innerHTML = `<h3>산타의 비밀 택배는 이렇게 놀아요</h3>${flow}${meta}`;
+  } else {
+    el.innerHTML = `<h3>이렇게 진행돼요</h3>${flow}${meta}`;
+    if (room) el.classList.add("desk-only");
+  }
+  el.hidden = false;
+}
+
 /* ── 친구: 선물 보내기 ── */
 function renderSend() {
   if (sent) return renderSent();
@@ -216,8 +245,8 @@ function renderSend() {
     <button class="btn red wide" id="sendBtn">선물 몰래 두고 오기</button>
     <p class="fine">욕설이나 상처 주는 메시지는 신고되면 삭제돼요. <a href="/terms.html">이용약관</a></p>
   </div>`);
-  document.querySelectorAll("[data-wrap]").forEach(b => b.onclick = () => { draft.wrap = b.dataset.wrap; renderSend(); });
-  document.querySelectorAll("[data-item]").forEach(b => b.onclick = () => { draft.item = b.dataset.item; renderSend(); });
+  document.querySelectorAll("[data-wrap]").forEach(b => b.onclick = () => { draft.wrap = b.dataset.wrap; renderSend(); renderSide(); });
+  document.querySelectorAll("[data-item]").forEach(b => b.onclick = () => { draft.item = b.dataset.item; renderSend(); renderSide(); });
   $("#msg").oninput = e => { draft.msg = e.target.value; $("#msgCount").textContent = `${draft.msg.length}/200`; };
   [0, 1, 2].forEach(n => { $("#hint" + n).oninput = e => draft.hints[n] = e.target.value; $("#decoy" + n).oninput = e => draft.decoys[n] = e.target.value; });
   $("#name").oninput = e => draft.name = e.target.value;
@@ -244,7 +273,7 @@ async function sendGift() {
   sent = true;
   draft = { wrap: "red", item: null, msg: "", hints: ["", "", ""], name: "", decoys: ["", "", ""] };
   await refreshRoom(id);
-  renderSent();
+  renderSent(); renderSide();
 }
 
 function renderSent() {
@@ -258,7 +287,7 @@ function renderSent() {
     <!-- 광고 자리: 애드핏/애드센스 승인 후 이 아래에 광고 코드를 넣어요 -->
     <div class="ad-slot" id="adSent" hidden></div>
   </div>`);
-  $("#again").onclick = () => { sent = false; renderSend(); };
+  $("#again").onclick = () => { sent = false; renderSend(); renderSide(); };
 }
 
 /* ── 방 주인: 개봉과 추리 ── */

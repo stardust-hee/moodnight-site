@@ -204,6 +204,22 @@ body{margin:0;word-break:keep-all;overflow-wrap:break-word}
 .site-nav{max-width:1080px;margin:0 auto 14px;display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:.85rem}
 .site-nav a{color:var(--green-deep);font-weight:700;text-decoration:none}
 .ad-slot{min-height:100px}
+.left-col{display:grid;gap:16px;position:sticky;top:16px;min-width:0}
+@media (max-width:860px){.left-col{position:static}}
+.side-card{background:var(--cream);border-radius:24px;padding:18px 20px;box-shadow:0 10px 30px -18px rgba(80,50,20,.35);display:grid;gap:12px}
+.side-card h3{font-family:var(--font-display);font-weight:400;font-size:1.15rem;margin:0}
+.preview{display:flex;align-items:center;gap:18px}
+.preview .gift{width:96px;flex:none}
+.preview p{margin:0;color:var(--ink-soft);font-size:.9rem}
+.preview b{display:block;font-family:var(--font-display);font-weight:400;font-size:1.1rem;color:var(--ink)}
+.flow{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;counter-reset:f}
+.flow li{counter-increment:f;background:#FFFFFF;border:1px solid var(--line);border-radius:14px;padding:10px 12px;font-size:.85rem;color:var(--ink-soft);line-height:1.45}
+.flow li::before{content:counter(f);display:block;font-family:var(--font-display);font-size:1.3rem;color:var(--red);line-height:1.2}
+.flow li b{display:block;color:var(--ink);font-weight:700}
+.side-meta{display:flex;gap:8px;flex-wrap:wrap}
+.side-meta span{font-size:.8rem;background:#EFE5D3;border-radius:999px;padding:3px 10px;color:var(--ink-soft)}
+@media (max-width:860px){.side-card.desk-only{display:none}}
+
 a.btn{display:block;text-align:center;text-decoration:none}
 </style>
 </head>
@@ -220,6 +236,7 @@ a.btn{display:block;text-align:center;text-decoration:none}
     <div class="dday" id="dday">개봉까지 D-49</div>
   </header>
   <div class="main">
+    <div class="left-col">
     <section class="frame" aria-label="선물방">
       <div class="room" id="room">
         <svg class="scene" viewBox="0 0 500 400" preserveAspectRatio="none" aria-hidden="true">
@@ -298,6 +315,8 @@ a.btn{display:block;text-align:center;text-decoration:none}
         <div class="room-hint" id="roomHint">선물을 눌러서 흔들어 보세요</div>
       </div>
     </section>
+    <div class="side-card" id="sideCard" hidden></div>
+    </div>
     <aside class="panel"><div id="panelBody"><p class="sub">불러오는 중…</p></div></aside>
   </div>
 </div>
