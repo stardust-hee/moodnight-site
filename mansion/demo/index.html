@@ -235,7 +235,7 @@ button{cursor:pointer}
 <script>
 (()=>{
 const $=s=>document.querySelector(s);
-const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches,REDUCE=reduce;
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const OWNER='이나';
 const hex=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16));
@@ -361,11 +361,8 @@ const FL=Array.from({length:90},()=>({x:Math.random()*240,y:Math.random()*264,v:
 const BOK=Array.from({length:22},(_,i)=>({x:(i*47+13)%240,y:(i*31)%150+6,r:2+(i%4),c:['#FFC86A','#FFB25C','#FFE3A0'][i%3],p:i*.7}));
 let base=document.createElement('canvas');base.width=240;base.height=264;
 function rebuild(){C=base.getContext('2d');drawStatic(S)}
-const cv=$('#cv'),cx=cv.getContext('2d');let t0=0;
-function frame(t){
-  if(!reduce&&t-t0<50){requestAnimationFrame(frame);return}t0=t;
-  cx.drawImage(base,0,0);C=cx;
-  BOK.forEach(b=>{const a=.1+.12*(1+Math.sin(t/900+b.p));glow(b.x,b.y,b.r*2,b.c,a)});
+function drawOverlay(cx,t,still){
+  const reduce=still||REDUCE;
   /* 루돌프네 양말공장: 뿔로 양말 뜨는 그림자 (2배 도트) */
   {const fx=188,fy=193,ph=reduce?0:Math.floor(t/320),bob=ph%2,nose=reduce?1:Math.floor(t/420)%2,grow=reduce?4:Math.floor(t/600)%7;
    const K='#3A1E14',Q=(x,y,w,h,c)=>{cx.fillStyle=c;cx.fillRect(x,y,w,h)};
@@ -381,6 +378,13 @@ function frame(t){
   const k=reduce?0:Math.floor(t/220);
   for(let x=2;x<=52;x+=3){[[x,181],[x,198]].forEach(([bx,by],j)=>{const on=((x/3|0)+j+k)%2===0;cx.fillStyle=on?'#FFE7A0':'#7A4A2A';cx.fillRect(bx,by,2,2);if(on){cx.fillStyle='rgba(255,220,140,.35)';cx.fillRect(bx-1,by-1,4,4)}})}
   [[6,176,0],[50,178,1.3],[30,173,2.6],[56,196,3.9]].forEach(([sx,sy,ph])=>{const a=reduce?.8:Math.max(0,Math.sin(t/380+ph));if(a<.2)return;const c=`rgba(255,240,200,${a})`;cx.fillStyle=c;cx.fillRect(sx,sy-2,1,5);cx.fillRect(sx-2,sy,5,1);cx.fillStyle=`rgba(255,255,255,${a})`;cx.fillRect(sx,sy,1,1)});
+}
+const cv=$('#cv'),cx=cv.getContext('2d');let t0=0;
+function frame(t){
+  if(!reduce&&t-t0<50){requestAnimationFrame(frame);return}t0=t;
+  cx.drawImage(base,0,0);C=cx;
+  BOK.forEach(b=>{const a=.1+.12*(1+Math.sin(t/900+b.p));glow(b.x,b.y,b.r*2,b.c,a)});
+  drawOverlay(cx,t,false);
   FL.forEach(f=>{const a=f.y>226?.0:.9;cx.fillStyle=`rgba(255,255,255,${a})`;cx.fillRect(Math.round(f.x+Math.sin(f.y/14+f.p)*2),Math.round(f.y),f.s,f.s);if(!reduce){f.y+=f.v;if(f.y>264){f.y=-2;f.x=Math.random()*240}}});
   if(!reduce)requestAnimationFrame(frame);
 }
@@ -525,8 +529,15 @@ async function saveImage(){
   const c=document.createElement('canvas');c.width=1080;c.height=1350;const g=c.getContext('2d');g.imageSmoothingEnabled=false;
   g.fillStyle='#0F1B28';g.fillRect(0,0,1080,1350);
   const snap=document.createElement('canvas');snap.width=240;snap.height=264;const sg=snap.getContext('2d');sg.drawImage(base,0,0);C=sg;
-  BOK.forEach(b=>glow(b.x,b.y,b.r*2,b.c,.2));FL.forEach(f=>{if(f.y<226){sg.fillStyle='#fff';sg.fillRect(Math.round(f.x),Math.round(f.y),f.s,f.s)}});
+  BOK.forEach(b=>glow(b.x,b.y,b.r*2,b.c,.2));drawOverlay(sg,0,true);FL.forEach(f=>{if(f.y<226){sg.fillStyle='#fff';sg.fillRect(Math.round(f.x),Math.round(f.y),f.s,f.s)}});
   g.drawImage(snap,60,150,960,1056);
+  const FX=60,FY=150,FW=960,FH=1056;
+  const tag=(text,x,y,w,bg,fg,line,size)=>{g.font=`700 ${size}px Galmuri11`;const tw=w||g.measureText(text).width+24,h=size+12,lx=Math.round(x-tw/2),ly=Math.round(y);
+    if(line){g.fillStyle=line;g.fillRect(lx-4,ly-4,tw+8,h+8)}g.fillStyle=bg;g.fillRect(lx,ly,tw,h);g.fillStyle=fg;g.textAlign='center';g.textBaseline='middle';g.fillText(text,lx+tw/2,ly+h/2+1)};
+  tag('산타의 선물가게',FX+FW*.116,FY+FH*.692,FW*.2,'#C8553D','#FFF4DE','#FFD27A',22);
+  tag('루돌프네 양말공장',FX+FW*.881,FY+FH*.692,FW*.21,'#5A3A2A','#FFF4DE','#C8423A',22);
+  tag('성탄맨션',FX+FW*.5,FY+FH*.79,0,'#F3D9A4','#3A2418','#7A4A2A',20);
+  tag('벽보',FX+FW*.64,FY+FH*.862,0,'#F3D9A4','#3A2418',null,16);
   g.textAlign='center';g.textBaseline='middle';g.fillStyle='#FFD27A';g.font='30px Galmuri14';g.fillText(`성탄맨션`,540,70);
   const n=Object.keys(S.res).length;g.fillStyle='#A9BACB';g.font='24px Galmuri11';g.fillText(`12집 중 ${n}집에 불이 켜졌어요`,540,120);
   g.fillStyle='#FFD27A';g.font='24px Galmuri11';g.fillText('moodnight.co.kr',540,1270);
