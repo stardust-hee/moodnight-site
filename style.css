@@ -146,3 +146,16 @@ section + section{border-top:1px solid var(--night-3)}
 .article th,.article td{border:1px solid var(--night-3);padding:10px 12px;text-align:left;vertical-align:top}
 .article th{background:var(--night-2);white-space:nowrap}
 .svc .btn{justify-self:start;font-size:.95rem;padding:9px 16px}
+
+/* 상품 표: 좁은 화면에서는 카드처럼 쌓기 */
+@media (max-width:600px){
+  .picks table,.picks tbody,.picks td{display:block;width:100%;min-width:0;border:0}
+  .picks td{white-space:normal}
+  .article .picks table{min-width:0}
+  .picks thead{display:none}
+  .picks tr{display:grid;grid-template-columns:minmax(0,1fr);width:100%;gap:4px;padding:14px 0;border-bottom:1px solid var(--night-3)}
+  .picks td{border:0;padding:0}
+  .picks td:first-child{font-size:1.05rem}
+  .picks td:nth-child(2)::before{content:"이런 사람에게 · ";color:var(--lamp)}
+  .picks td:nth-child(3){color:var(--cream-soft)}
+}
