@@ -1,4 +1,4 @@
-/* 산타의 비밀 택배 — 실제 서비스 */
+/* 산타의 선물가게 — 실제 서비스 */
 const SUPABASE_URL = "https://gbmlkyfguktjtroczqfw.supabase.co";
 const SUPABASE_KEY = "sb_publishable_RO92ntdlSM5_Urctc5FD9w_4OHcZQzf";
 const KAKAO_JS_KEY = "929f085734659fd851830cba5592775d";
@@ -17,13 +17,15 @@ const ITEMS = [
   { id: "globe", icon: "🔮", name: "스노우볼", shake: "반짝이는 무언가가 출렁여요" },
   { id: "ticket", icon: "🎟", name: "영화 데이트권", shake: "얇고 가벼워요. 거의 비어 있는 것 같아요" }
 ];
-const SLOTS = [{x:44,y:79},{x:60,y:80},{x:34,y:87},{x:52,y:90},{x:70,y:88},{x:24,y:95},{x:42,y:98},{x:62,y:98},{x:79,y:96},{x:28,y:79}];
-const slot = i => i < SLOTS.length ? SLOTS[i] : { x: 20 + ((i * 37) % 62), y: 79 + ((i * 13) % 19) };
+/* 선물 놓을 자리: 트리 아래 초록 카페트 → 모자라면 오른쪽 바닥 (방 그림 192×144 기준 좌표) */
+const SLOT_PX = [[24,111],[46,113],[68,111],[13,118],[35,121],[57,121],[78,117],[24,128],[46,129],[67,127],[10,108],[84,110],
+  [94,108],[108,108],[122,108],[136,108],[150,108],[164,108],[92,116],[150,117],[164,117],[178,117],[142,134],[176,134]];
+const slot = i => { const [x, y] = SLOT_PX[i % SLOT_PX.length]; const k = Math.floor(i / SLOT_PX.length); return { x: (x + k * 3) / 192 * 100, y: (y - k * 2) / 144 * 100 }; };
 
 const $ = s => document.querySelector(s);
 const item = id => ITEMS.find(i => i.id === id) || ITEMS[0];
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-const giftHTML = () => `<span class="g-lid"></span><span class="g-body"></span><span class="g-bow"></span>`;
+const giftHTML = () => `<span class="spr"></span>`;
 const errMsg = e => { const m = (e && e.message) || "잠시 후 다시 시도해 주세요."; return m.includes(": ") ? m.split(": ").slice(1).join(": ") : m; };
 function toast(t) { const el = $("#toast"); el.textContent = t; el.classList.add("show"); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove("show"), 2800); }
 
@@ -45,7 +47,7 @@ function renderTop() {
   const el = $("#dday");
   el.textContent = isOpen() ? "Merry Christmas" : `개봉까지 D-${daysLeft()}`;
   el.classList.toggle("xmas", isOpen());
-  $("#title").textContent = room ? `${room.display_name}의 선물방` : "산타의 비밀 택배";
+  $("#title").textContent = room ? `${room.display_name}의 선물방` : "산타의 선물가게";
 }
 
 function renderGifts(newId) {
@@ -60,7 +62,7 @@ function renderGifts(newId) {
     b.setAttribute("aria-label", `선물 ${i + 1}${g.opened ? " (열어봄)" : ""}`);
     b.style.zIndex = Math.round(s.y);
     if (g.id === newId) {
-      b.style.left = "88%"; b.style.top = "80%"; b.classList.add("new");
+      b.style.left = "60%"; b.style.top = "30%"; b.classList.add("new");
       requestAnimationFrame(() => requestAnimationFrame(() => { b.style.left = s.x + "%"; b.style.top = s.y + "%"; }));
     } else { b.style.left = s.x + "%"; b.style.top = s.y + "%"; }
     b.onclick = () => onGift(g, b);
@@ -162,14 +164,14 @@ function kakaoShare() {
     Kakao.Share.sendDefault({
       objectType: "feed",
       content: {
-        title: `${room.display_name}의 선물방에 몰래 선물을 두고 가 주세요`,
+        title: `${room.display_name}의 선물방에 몰래 선물을 맡겨 주세요`,
         description: "크리스마스에 열어보고, 누가 보냈는지 맞혀 볼게요",
         imageUrl: "https://www.moodnight.co.kr/santa/og.png",
         imageWidth: 1200,
         imageHeight: 630,
         link: { mobileWebUrl: url, webUrl: url }
       },
-      buttons: [{ title: "선물 두고 오기", link: { mobileWebUrl: url, webUrl: url } }]
+      buttons: [{ title: "선물 맡기러 가기", link: { mobileWebUrl: url, webUrl: url } }]
     });
   } catch (e) { copyLink(); }
 }
@@ -216,12 +218,13 @@ function renderSide() {
         <div><b>${esc(wrapName)} 포장${it ? ` · ${it.icon} ${it.name}` : ""}</b><p>${it ? `흔들면 ${it.shake}.` : "상자 속에 넣을 선물을 골라 주세요."}</p><p>보내면 ${esc(room.display_name)}님 방 트리 아래에 놓여요.</p>${draft.real && realById(draft.real) ? `<p>${draft.forReal ? "진짜로 준비한 선물" : "몰래 하나 더"}: ${realById(draft.real).icon} ${esc(realById(draft.real).name)}</p>` : ""}</div></div>${meta}`;
     el.classList.add("desk-only");
   } else if (MODE === "guest" && room) {
-    el.innerHTML = `<h3>산타의 비밀 택배는 이렇게 놀아요</h3>${flow}${meta}`;
+    el.innerHTML = `<h3>산타의 선물가게는 이렇게 놀아요</h3>${flow}${meta}`;
   } else {
     el.innerHTML = `<h3>이렇게 진행돼요</h3>${flow}${meta}`;
     if (room) el.classList.add("desk-only");
   }
   el.hidden = false;
+  const wrap = $("#sideWrap"); if (wrap) { wrap.hidden = false; wrap.classList.toggle("desk-only", el.classList.contains("desk-only")); }
 }
 
 /* ── 친구: 선물 보내기 ── */
@@ -431,7 +434,7 @@ async function guess(name) {
   renderModal();
 }
 function sheet(inner) {
-  $("#overlay").innerHTML = `<div class="sheet" role="dialog" aria-modal="true" aria-label="선물 열기"><button class="close" id="closeBtn" aria-label="닫기">×</button>${inner}</div>`;
+  $("#overlay").innerHTML = `<div class="sheet-wrap frame"><div class="sheet paper" role="dialog" aria-modal="true" aria-label="선물 열기"><button class="close" id="closeBtn" aria-label="닫기">×</button>${inner}</div></div>`;
   $("#closeBtn").onclick = closeModal;
 }
 async function closeModal() { $("#overlay").hidden = true; cur = null; await refreshRoom(); }
@@ -462,7 +465,7 @@ async function loadGuest() {
     return;
   }
   if (data.is_owner) { location.replace("/santa/"); return; }
-  room = data; document.title = `${room.display_name}의 선물방 | 산타의 비밀 택배`;
+  room = data; document.title = `${room.display_name}의 선물방 | 산타의 선물가게`;
   renderTop(); renderGifts(); renderSend();
 }
 
