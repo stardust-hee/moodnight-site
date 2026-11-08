@@ -237,7 +237,7 @@ function frame(t) {
   // 트리 별
   const sx = 46, sy = 50, shape = ["...o...", "..oyo..", "ooyyyoo", "oyyWyyo", ".oyyyo.", ".oyoyo.", "oyo.oyo", "oo...oo"];
   shape.forEach((row, j) => [...row].forEach((c, i) => { if (c === ".") return; ctx.fillStyle = c === "o" ? "#7a4a08" : c === "W" ? "#ffffff" : (Math.floor(t / 500) % 2 ? "#ffe066" : "#ffd04a"); ctx.fillRect(sx - 3 + i, sy - 6 + j, 1, 1); }));
-  bunny(84, 96, t);
+  bunny(84, 74, t);
   // 빛
   g.clearRect(0, 0, 768, 576);
   const k = 4, spot = (cx, cy, r, col, a) => { const gr = g.createRadialGradient(cx * k, cy * k, 0, cx * k, cy * k, r * k); gr.addColorStop(0, `rgba(${col},${a})`); gr.addColorStop(1, `rgba(${col},0)`); g.fillStyle = gr; g.fillRect(0, 0, 768, 576); };

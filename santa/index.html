@@ -59,7 +59,7 @@ a{color:inherit}
 #glow{mix-blend-mode:screen;pointer-events:none;z-index:150}
 #gifts{position:absolute;inset:0}
 .room-hint{position:absolute;left:50%;bottom:8px;transform:translateX(-50%);background:rgba(58,26,8,.88);color:#fff4d6;padding:3px 10px;font-size:12px;white-space:nowrap;pointer-events:none;z-index:200}
-.bubble{position:absolute;left:47%;top:64%;z-index:190;background:var(--paper);color:var(--ink);font-size:12px;padding:3px 8px;box-shadow:0 0 0 2px var(--wood-dk),3px 3px 0 2px rgba(0,0,0,.3);white-space:nowrap;transform:translate(-50%,-100%);pointer-events:none}
+.bubble{position:absolute;left:47%;top:49%;z-index:190;background:var(--paper);color:var(--ink);font-size:12px;padding:3px 8px;box-shadow:0 0 0 2px var(--wood-dk),3px 3px 0 2px rgba(0,0,0,.3);white-space:nowrap;transform:translate(-50%,-100%);pointer-events:none}
 
 /* 선물 상자 (도트 스프라이트) */
 .spr{display:block;width:100%;height:100%;background-size:100% 100%;image-rendering:pixelated}
@@ -69,9 +69,10 @@ a{color:inherit}
 @keyframes shake{0%,100%{rotate:0}25%{rotate:-9deg}50%{rotate:8deg}75%{rotate:-5deg}}
 .gift.new{animation:pop .4s .9s steps(3) both}
 @keyframes pop{0%{scale:1}50%{scale:1.25}100%{scale:1}}
-.gift.opened .spr{filter:saturate(.55) brightness(.9)}
+#gifts .gift .spr{filter:drop-shadow(2px 0 0 #fff3d0) drop-shadow(-2px 0 0 #fff3d0) drop-shadow(0 -2px 0 #fff3d0) drop-shadow(0 3px 0 rgba(30,10,0,.55))}
+#gifts .gift:hover .spr{filter:drop-shadow(2px 0 0 #ffd04a) drop-shadow(-2px 0 0 #ffd04a) drop-shadow(0 -2px 0 #ffd04a) drop-shadow(0 3px 0 rgba(30,10,0,.55))}
 .gift.is-hidden{opacity:.35}
-.gift .tag{position:absolute;left:50%;top:-6px;transform:translateX(-50%);background:var(--paper);color:var(--ink);font-size:10px;padding:0 4px;box-shadow:0 0 0 1px var(--wood-dk);white-space:nowrap}
+.gift .tag{position:absolute;left:50%;top:-14px;transform:translateX(-50%);background:var(--red);color:#fff4d6;font-size:10px;line-height:1.5;padding:0 4px;box-shadow:0 0 0 1px var(--edge);white-space:nowrap;z-index:1}
 .gift.static{position:relative;transform:none;display:inline-block;width:40px}
 .gift.static:hover{transform:none}
 
