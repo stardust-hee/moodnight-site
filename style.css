@@ -70,6 +70,12 @@ section + section{border-top:1px solid var(--night-3)}
 .svc.snow .badge,.svc.snow h3{color:var(--pine)}
 .svc p{color:var(--cream-soft)}
 .svc ul{margin:0;padding-left:1.1em;color:var(--cream-soft)}
+.svc-shot{position:relative;display:block;border-radius:14px;overflow:hidden;border:1px solid var(--night-3);aspect-ratio:4/3;background:var(--night)}
+.svc-shot img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .4s ease}
+.svc-shot.px img{image-rendering:pixelated}
+.svc-shot:hover img{transform:scale(1.03)}
+.svc-shot span{position:absolute;left:10px;top:10px;font-size:.78rem;background:rgba(21,26,46,.82);color:var(--cream);padding:3px 10px;border-radius:999px}
+.svc .btns .btn{justify-self:auto}
 .svc .addr{font-size:.85rem;color:var(--cream-soft);font-variant-numeric:tabular-nums}
 
 /* steps */
@@ -160,6 +166,3 @@ section + section{border-top:1px solid var(--night-3)}
   .picks td:nth-child(3){color:var(--cream-soft)}
 }
 
-/* 서비스 카드 그림 */
-.svc-img-link{display:block;margin:-6px -6px 4px}
-.svc-img{display:block;width:100%;height:auto;aspect-ratio:5/4;object-fit:cover;border-radius:14px;box-shadow:0 0 0 1px var(--night-3)}
