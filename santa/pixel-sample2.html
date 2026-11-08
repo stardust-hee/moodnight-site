@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>산타의 비밀 택배 도트 샘플 2 | 무드나잇</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/galmuri@2.40.3/dist/galmuri.css">
+<style>
+/* 샘플 2: 굵은 도트(160×110), 진한 외곽선, 3단 명암, 은은한 빛과 반짝이, 눈토끼 택배원 캐릭터 */
+:root{
+  color-scheme: dark;
+  --night:#1b2333; --night-2:#151d2b; --night-3:#24304a; --edge:#0c111b;
+  --cream:#f3e6c8; --muted:#97a3ba; --lamp:#ffb23f; --lamp-2:#ffe08a; --brick:#d9533b;
+  --font-pixel:"Galmuri11","Galmuri9",monospace; --font-title:"Galmuri14","Galmuri11",monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--night);color:var(--cream)}
+body{font-family:var(--font-pixel);font-size:14px;line-height:1.6;word-break:keep-all;
+  background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:8px 8px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:14px 40px}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--lamp-2);outline-offset:2px}
+.px{box-shadow:0 0 0 3px var(--edge),inset -4px -4px 0 rgba(0,0,0,.3),inset 4px 4px 0 rgba(255,255,255,.08)}
+.topbar{max-width:1180px;margin:0 auto 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;background:var(--night-2);padding:10px 14px}
+.topbar a{color:var(--lamp-2);text-decoration:none}
+.topbar .note{color:var(--muted);font-size:12px}
+.head{max-width:1180px;margin:0 auto 18px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.title{margin:0;font-family:var(--font-title);font-weight:400;font-size:clamp(30px,6vw,46px);line-height:1.1;letter-spacing:1px;
+  color:var(--lamp-2);
+  text-shadow:3px 0 0 #5a1d12,-3px 0 0 #5a1d12,0 3px 0 #5a1d12,0 -3px 0 #5a1d12,3px 3px 0 #5a1d12,-3px 3px 0 #5a1d12,3px -3px 0 #5a1d12,-3px -3px 0 #5a1d12,6px 7px 0 var(--edge)}
+.title span{color:#ff6b55}
+.sub{margin:6px 0 0;color:var(--muted);font-size:13px}
+.dday{background:var(--brick);color:#fff3dc;padding:8px 14px;font-size:16px}
+.main{max-width:1180px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:26px;align-items:start}
+@media (max-width:900px){.main{grid-template-columns:minmax(0,1fr)}}
+.stage{background:var(--edge);padding:6px;min-width:0}
+.scene-wrap{position:relative;aspect-ratio:160/110;max-width:100%;overflow:hidden}
+.scene-wrap canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+#scene{image-rendering:pixelated}
+#glow{mix-blend-mode:screen;pointer-events:none}
+.hint{position:absolute;left:50%;top:8px;transform:translateX(-50%);background:rgba(12,17,27,.85);color:var(--cream);padding:3px 10px;font-size:12px;white-space:nowrap;pointer-events:none;z-index:5}
+.gift{position:absolute;transform:translate(-50%,-100%);background:none;border:0;padding:0;width:10.5%;aspect-ratio:22/20;z-index:3}
+.gift canvas{width:100%;height:100%;image-rendering:pixelated;display:block}
+.gift:hover{transform:translate(-50%,-106%)}
+.gift.shake{animation:shake .5s steps(4)}
+@keyframes shake{0%,100%{rotate:0}25%{rotate:-9deg}50%{rotate:8deg}75%{rotate:-5deg}}
+.bubble{position:absolute;z-index:6;background:#fff6e3;color:#2a1a14;font-size:12px;padding:4px 8px;box-shadow:0 0 0 2px #2a1a14,3px 3px 0 2px rgba(0,0,0,.35);white-space:nowrap;transform:translate(-50%,-100%);pointer-events:none}
+.panel{background:var(--night-2);min-width:0}
+.bar{background:repeating-linear-gradient(90deg,var(--brick) 0 10px,#bf4630 10px 12px);color:#fff3dc;padding:6px 12px;font-size:13px}
+.pbody{padding:16px;display:grid;grid-template-columns:minmax(0,1fr);gap:14px}
+.tabs{display:grid;grid-template-columns:1fr 1fr;background:var(--edge);padding:3px;gap:3px}
+.tabs button{background:var(--night-3);border:0;padding:9px 6px;color:var(--muted)}
+.tabs button[aria-selected="true"]{background:#2e3c5c;color:var(--lamp-2);box-shadow:inset 0 -4px 0 var(--lamp)}
+.desc{color:var(--muted);font-size:13px;margin:0}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.stat{background:var(--night-3);text-align:center;padding:10px 4px}
+.stat b{display:block;font-family:var(--font-title);font-weight:400;font-size:28px;color:var(--lamp-2);line-height:1.1;text-shadow:2px 2px 0 var(--edge)}
+.stat span{font-size:12px;color:var(--muted)}
+.label{color:var(--lamp);font-size:13px}
+.label::before{content:"▸ "}
+.link-row{display:flex;gap:8px}
+.link-row code{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;background:var(--edge);padding:9px 10px;font-family:var(--font-pixel);color:var(--cream)}
+.btn{border:0;padding:11px 14px;background:var(--lamp);color:#2a1606;font-size:15px}
+.btn.kakao{background:#fee500;color:#191600;width:100%}
+.btn:hover{filter:brightness(1.08)}
+.btn:active{transform:translateY(2px)}
+.wraps{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.wrap-opt{background:var(--night-3);border:0;padding:8px 2px 4px;display:grid;justify-items:center;gap:2px;font-size:11px;color:var(--muted)}
+.wrap-opt canvas{width:44px;height:40px;image-rendering:pixelated}
+.wrap-opt[aria-pressed="true"]{background:#2e3c5c;color:var(--lamp-2);box-shadow:0 0 0 3px var(--lamp)}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--edge);color:var(--cream);border:3px solid var(--lamp);padding:8px 14px;font-size:13px;opacity:0;transition:opacity .2s;max-width:calc(100% - 32px);text-align:center;pointer-events:none;z-index:20}
+.toast.show{opacity:1}
+@media (prefers-reduced-motion:reduce){.gift.shake{animation:none}}
+</style>
+</head>
+<body>
+<div class="topbar px"><a href="/">← 성탄맨션</a><span class="note">도트 샘플 2예요. <a href="/santa/pixel-sample.html">샘플 1과 비교</a></span></div>
+
+<header class="head">
+  <div>
+    <h1 class="title">산타의 <span>비밀</span> 택배</h1>
+    <p class="sub">성탄맨션 1층, 산타의 선물가게</p>
+  </div>
+  <div class="dday px">개봉까지 D-47</div>
+</header>
+
+<div class="main">
+  <section class="stage px" aria-label="선물가게 안">
+    <div class="scene-wrap" id="sceneWrap">
+      <canvas id="scene" width="160" height="110"></canvas>
+      <canvas id="glow" width="640" height="440"></canvas>
+      <div class="hint">상자를 누르면 흔들어 볼 수 있어요</div>
+    </div>
+  </section>
+
+  <aside class="panel px">
+    <div class="bar">택배함.exe</div>
+    <div class="pbody">
+      <div class="tabs"><button aria-selected="true">받는 사람</button><button aria-selected="false">보내는 친구</button></div>
+      <p class="desc">친구들이 몰래 두고 간 선물은 12월 25일 0시에 열려요. 열고 나서 누가 보냈는지 맞혀 보세요.</p>
+      <div class="stats">
+        <div class="stat px"><b>4</b><span>받은 선물</span></div>
+        <div class="stat px"><b>0</b><span>열어본 선물</span></div>
+        <div class="stat px"><b>0</b><span>맞힌 친구</span></div>
+      </div>
+      <span class="label">내 선물방 링크</span>
+      <div class="link-row"><code>moodnight.co.kr/santa/r/251d5a02d3</code><button class="btn px">복사</button></div>
+      <button class="btn kakao px">카카오톡으로 링크 보내기</button>
+      <span class="label">포장지 미리보기</span>
+      <div class="wraps" id="wraps"></div>
+    </div>
+  </aside>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+const O = "#2a1a14"; // 외곽선 (따뜻한 진갈색)
+const C = {
+  wall:"#d9824f", wallHi:"#e9975f", wallLo:"#b9653d", wallDk:"#8f4a2c",
+  wood:"#9a5530", woodHi:"#b86a3c", woodLo:"#7a3f22",
+  floor:"#e8a463", floorHi:"#f6bd7c", floorLo:"#c8834a",
+  sky:"#2b3f7a", sky2:"#3b56a0", moon:"#fff1b8", snow:"#ffffff", snowLo:"#cfe0ff", house:"#1c2650", win:"#ffd36b",
+  cur:"#e8473f", curLo:"#b5302c", curHi:"#ff7a62",
+  brick:"#c4543d", brickLo:"#9b3c2b", brickHi:"#e0714f", soot:"#2a1a1e",
+  f1:"#fff4a3", f2:"#ffc23d", f3:"#ff6a2a",
+  tree:"#3fae4a", treeLo:"#23803a", treeHi:"#86e06a", trunk:"#7a4526",
+  gold:"#ffcf3f", goldLo:"#d99a1e", red:"#ff4d4d", redLo:"#c22d34", blue:"#4fa7ff", blueLo:"#2b6fd1", white:"#fffaf0",
+  rug:"#c8323a", rugLo:"#9b2430", rugHi:"#e8545a", trim:"#ffd56a",
+  garl:"#2f8a45", garlHi:"#58b85a"
+};
+const cv = document.getElementById("scene"), x = cv.getContext("2d");
+const gl = document.getElementById("glow"), y = gl.getContext("2d");
+const R = (c, a, b, w, h) => { x.fillStyle = c; x.fillRect(a, b, w, h); };
+// 외곽선 있는 사각형: 테두리 + 밝은 면 + 그림자
+function box(a, b, w, h, base, hi, lo) {
+  R(O, a, b, w, h); R(base, a + 1, b + 1, w - 2, h - 2);
+  if (hi) { R(hi, a + 1, b + 1, w - 2, 1); R(hi, a + 1, b + 1, 1, h - 2); }
+  if (lo) { R(lo, a + 1, b + h - 2, w - 2, 1); R(lo, a + w - 2, b + 1, 1, h - 2); }
+}
+function ellipse(cx, cy, rx, ry, col) {
+  for (let j = -ry; j <= ry; j++) { const w = Math.round(rx * Math.sqrt(1 - (j * j) / (ry * ry))); R(col, cx - w, cy + j, w * 2, 1); }
+}
+
+function scene(t) {
+  // 벽
+  R(C.wall, 0, 0, 160, 66);
+  for (let j = 4; j < 66; j += 8) for (let i = (j / 8 % 2) * 6; i < 160; i += 12) { R(C.wallHi, i, j, 2, 2); R(C.wallLo, i + 2, j + 2, 1, 1); }
+  R(C.wallDk, 0, 0, 160, 3); R(O, 0, 3, 160, 1);
+  // 가랜드
+  for (let i = 0; i < 160; i++) { const yy = 6 + Math.round(Math.sin(i / 8) * 1.5); R(O, i, yy - 1, 1, 5); }
+  for (let i = 0; i < 160; i++) { const yy = 6 + Math.round(Math.sin(i / 8) * 1.5); R(C.garl, i, yy, 1, 3); if (i % 3 === 0) R(C.garlHi, i, yy, 1, 1); if (i % 12 === 6) { R(O, i - 1, yy + 3, 3, 3); R(i % 24 === 6 ? C.red : C.gold, i, yy + 4, 1, 1); } }
+  // 창문
+  const wx = 12, wy = 14, ww = 40, wh = 34;
+  box(wx - 3, wy - 3, ww + 6, wh + 6, C.wood, C.woodHi, C.woodLo);
+  R(O, wx - 1, wy - 1, ww + 2, wh + 2);
+  for (let j = 0; j < wh; j++) R(j < 14 ? C.sky : C.sky2, wx, wy + j, ww, 1);
+  R(C.moon, wx + 28, wy + 4, 5, 5); R(C.sky, wx + 30, wy + 4, 3, 3);
+  // 바깥 집
+  R(C.house, wx, wy + 22, 16, 12); R(C.house, wx + 22, wy + 18, 18, 16);
+  R(C.snow, wx, wy + 21, 16, 2); R(C.snow, wx + 22, wy + 17, 18, 2);
+  R(C.win, wx + 4, wy + 26, 3, 3); R(C.win, wx + 27, wy + 23, 3, 3); R(C.win, wx + 33, wy + 23, 3, 3); R(C.win, wx + 33, wy + 28, 3, 3);
+  R(C.snow, wx, wy + wh - 3, ww, 3); R(C.snowLo, wx, wy + wh - 1, ww, 1);
+  for (let k = 0; k < 12; k++) {
+    const sx = wx + ((k * 13 + Math.floor(t / 110) * (k % 3 + 1)) % ww);
+    const sy = wy + ((k * 7 + Math.floor(t / 80)) % (wh - 4));
+    R(C.snow, sx, sy, 1, 1);
+  }
+  R(O, wx + ww / 2 - 1, wy, 2, wh); R(C.wood, wx + ww / 2 - 1, wy + 1, 1, wh - 2);
+  R(O, wx, wy + wh / 2 - 1, ww, 2); R(C.wood, wx + 1, wy + wh / 2 - 1, ww - 2, 1);
+  box(wx - 5, wy + wh + 2, ww + 10, 4, C.snow, null, C.snowLo);
+  // 커튼
+  for (const cx of [wx - 10, wx + ww + 3]) {
+    box(cx, wy - 6, 9, wh + 12, C.cur, C.curHi, C.curLo);
+    R(C.curLo, cx + 4, wy - 5, 1, wh + 10);
+  }
+  box(wx - 13, wy - 8, ww + 26, 3, C.gold, C.white, C.goldLo);
+  // 아래 벽 판자
+  R(O, 0, 52, 160, 1);
+  for (let i = 0; i < 160; i += 10) box(i, 53, 10, 13, C.wood, C.woodHi, C.woodLo);
+  // 바닥
+  R(C.floor, 0, 66, 160, 44); R(O, 0, 66, 160, 1);
+  for (let r = 0; r < 6; r++) {
+    const yy = 67 + r * 8; R(C.floorLo, 0, yy + 7, 160, 1); R(C.floorHi, 0, yy, 160, 1);
+    for (let i = (r % 2) * 16; i < 160; i += 32) R(C.floorLo, i, yy, 1, 8);
+  }
+  // 벽난로
+  const fx = 114, fy = 30;
+  R(O, fx - 1, fy - 1, 38, 37);
+  for (let r = 0; r < 35; r += 5) for (let c = (r / 5 % 2) * 4 - 4; c < 36; c += 8) {
+    const cx0 = Math.max(fx, fx + c), w = Math.min(8, fx + 36 - cx0 - 0) - (c < 0 ? -c : 0);
+    if (w > 0) { R(C.brickLo, cx0, fy + r, w, 5); R(C.brick, cx0, fy + r, w - 1, 4); R(C.brickHi, cx0, fy + r, w - 1, 1); }
+  }
+  box(fx - 4, fy - 5, 44, 5, C.wood, C.woodHi, C.woodLo);
+  R(O, fx + 8, fy + 12, 20, 23); R(C.soot, fx + 9, fy + 13, 18, 22);
+  const fl = Math.floor(t / 130) % 3;
+  R(C.f3, fx + 11, fy + 26 - fl, 14, 8 + fl); R(C.f2, fx + 13, fy + 24 + (fl === 1 ? 1 : 0), 10, 10); R(C.f1, fx + 15, fy + 27 - (fl === 2 ? 1 : 0), 6, 6);
+  box(fx + 9, fy + 32, 18, 3, C.wood, C.woodHi, C.woodLo);
+  // 양말
+  [[fx + 3, C.red, C.redLo], [fx + 15, C.tree, C.treeLo], [fx + 27, C.red, C.redLo]].forEach(([sx, c, lo]) => {
+    box(sx, fy - 1, 7, 3, C.white); box(sx + 1, fy + 1, 5, 9, c, null, lo); box(sx + 1, fy + 7, 9, 5, c, null, lo);
+  });
+  // 러그
+  ellipse(70, 92, 44, 11, O); ellipse(70, 92, 43, 10, C.trim); ellipse(70, 92, 41, 9, C.rug); ellipse(70, 93, 30, 5, C.rugLo); ellipse(70, 92, 28, 4, C.rugHi); ellipse(70, 92, 26, 3, C.rug);
+  // 트리
+  const tx = 68, base = 80;
+  box(tx - 4, base - 4, 8, 9, C.trunk, null, "#5a3018");
+  const tiers = [[base - 2, 26, 18], [base - 16, 21, 16], [base - 29, 16, 14], [base - 40, 10, 12]];
+  tiers.forEach(([by, hw, h]) => {
+    for (let j = 0; j < h; j++) {
+      const w = Math.max(1, Math.round(hw * (j + 2) / (h + 1)));
+      const yy = by - h + j;
+      R(O, tx - w - 1, yy, w * 2 + 2, 1);
+      R(C.tree, tx - w, yy, w * 2, 1);
+      R(C.treeLo, tx + Math.floor(w * .35), yy, Math.ceil(w * .65), 1);
+      R(C.treeHi, tx - w + 1, yy, Math.max(1, Math.floor(w * .3)), 1);
+    }
+    R(O, tx - hw - 1, by, hw * 2 + 2, 1);
+  });
+  // 오너먼트
+  [[-12, -8, C.red, C.redLo], [8, -12, C.gold, C.goldLo], [-4, -22, C.blue, C.blueLo], [11, -26, C.red, C.redLo], [-10, -32, C.gold, C.goldLo], [4, -38, C.red, C.redLo], [-3, -46, C.blue, C.blueLo], [16, -4, C.blue, C.blueLo], [-20, -3, C.gold, C.goldLo]]
+    .forEach(([ox, oy, c, lo]) => { R(O, tx + ox - 1, base + oy - 1, 5, 5); R(c, tx + ox, base + oy, 3, 3); R(lo, tx + ox + 1, base + oy + 2, 2, 1); R(C.white, tx + ox, base + oy, 1, 1); });
+  // 별
+  const sy = base - 56;
+  R(O, tx - 2, sy - 4, 5, 11); R(O, tx - 5, sy - 1, 11, 5);
+  R(C.gold, tx - 1, sy - 3, 3, 9); R(C.gold, tx - 4, sy, 9, 3); R(C.white, tx, sy - 1, 1, 2);
+  // 눈토끼 택배원 (무드나잇 캐릭터)
+  bunny(30, 96, t);
+}
+
+function bunny(bx, by, t) {
+  const bob = Math.floor(t / 450) % 2;
+  const yy = by - 22 + bob;
+  const W = C.white, Lo = "#d9dff0", pink = "#ff9db0";
+  // 귀
+  box(bx + 3, yy, 4, 9, W, null, Lo); box(bx + 9, yy - 1, 4, 10, W, null, Lo); R(pink, bx + 4, yy + 2, 2, 5); R(pink, bx + 10, yy + 1, 2, 6);
+  // 산타 모자
+  box(bx + 1, yy + 6, 14, 4, C.red, C.white, C.redLo); box(bx + 0, yy + 9, 16, 3, C.white);
+  box(bx + 13, yy + 4, 4, 4, C.white);
+  // 얼굴 몸통
+  box(bx + 1, yy + 11, 14, 11, W, null, Lo);
+  R(O, bx + 4, yy + 14, 2, 2); R(O, bx + 10, yy + 14, 2, 2); R(C.white, bx + 4, yy + 14, 1, 1); R(C.white, bx + 10, yy + 14, 1, 1);
+  R(pink, bx + 3, yy + 17, 2, 1); R(pink, bx + 11, yy + 17, 2, 1); R(O, bx + 7, yy + 17, 2, 1);
+  // 들고 있는 상자
+  box(bx + 9, yy + 16, 10, 8, C.gold, "#ffe58a", C.goldLo); R(C.red, bx + 13, yy + 17, 2, 6); R(C.red, bx + 10, yy + 19, 8, 2);
+}
+
+function glow(t) {
+  y.clearRect(0, 0, 640, 440);
+  const k = 4, flick = 0.9 + Math.sin(t / 160) * 0.08;
+  const spot = (cx, cy, r, col, a) => { const g = y.createRadialGradient(cx * k, cy * k, 0, cx * k, cy * k, r * k); g.addColorStop(0, col.replace("A", a)); g.addColorStop(1, col.replace("A", 0)); y.fillStyle = g; y.fillRect(0, 0, 640, 440); };
+  spot(132, 58, 48 * flick, "rgba(255,150,60,A)", 0.45);
+  spot(68, 24, 16, "rgba(255,220,90,A)", 0.55 + Math.sin(t / 300) * 0.15);
+  spot(32, 31, 26, "rgba(120,160,255,A)", 0.18);
+  // 반짝이
+  for (let i = 0; i < 10; i++) {
+    const ph = (t / 900 + i * 0.37) % 1;
+    const px = (40 + ((i * 53) % 70)) * k, py = (20 + ((i * 29) % 55)) * k;
+    const a = Math.sin(ph * Math.PI);
+    y.fillStyle = `rgba(255,240,170,${a * 0.9})`;
+    const s = 4 + Math.round(a * 4);
+    y.fillRect(px - 2, py - s, 4, s * 2); y.fillRect(px - s, py - 2, s * 2, 4);
+  }
+}
+
+/* 도트 선물 상자 22×20, 외곽선 + 3단 명암 */
+const WRAPS = [
+  { id: "red", name: "산타 레드", b: "#ff4d4d", lo: "#c22d34", hi: "#ff8a7a", rib: "#ffcf3f", dot: "#ffe2c4" },
+  { id: "green", name: "전나무", b: "#3fae4a", lo: "#23803a", hi: "#86e06a", rib: "#ff4d4d", dot: "#d6ffb8" },
+  { id: "navy", name: "한밤 별빛", b: "#3b5bb8", lo: "#26398a", hi: "#6f8ee8", rib: "#ff4d4d", dot: "#ffcf3f" },
+  { id: "gold", name: "금빛", b: "#ffcf3f", lo: "#d99a1e", hi: "#fff09a", rib: "#ff4d4d", dot: "#fff6d0" },
+  { id: "snow", name: "눈송이", b: "#fffaf0", lo: "#d6dcef", hi: "#ffffff", rib: "#3fae4a", dot: "#ff4d4d" }
+];
+function giftSprite(w) {
+  const c = document.createElement("canvas"); c.width = 22; c.height = 20;
+  const g = c.getContext("2d"); const r = (col, a, b, ww, hh) => { g.fillStyle = col; g.fillRect(a, b, ww, hh); };
+  // 몸통
+  r(O, 2, 7, 18, 13); r(w.b, 3, 8, 16, 11); r(w.lo, 3, 17, 16, 2); r(w.lo, 16, 8, 3, 11); r(w.hi, 3, 8, 1, 9);
+  for (let i = 5; i < 15; i += 4) for (let j = 10; j < 16; j += 3) r(w.dot, i + (j % 2), j, 1, 1);
+  // 뚜껑
+  r(O, 1, 4, 20, 5); r(w.b, 2, 5, 18, 3); r(w.hi, 2, 5, 18, 1); r(w.lo, 2, 7, 18, 1);
+  // 리본
+  r(O, 9, 4, 4, 16); r(w.rib, 10, 5, 2, 14); r("#ffffff", 10, 5, 1, 2);
+  // 나비 매듭
+  r(O, 4, 0, 6, 5); r(O, 12, 0, 6, 5); r(w.rib, 5, 1, 4, 3); r(w.rib, 13, 1, 4, 3); r(O, 9, 2, 4, 3); r(w.rib, 10, 2, 2, 2);
+  return c;
+}
+
+const boxes = [
+  { wrap: "red", x: 47, y: 93 }, { wrap: "gold", x: 58, y: 97 }, { wrap: "navy", x: 70, y: 92 }, { wrap: "green", x: 81, y: 97 }
+];
+const shakes = ["찰랑찰랑, 따뜻한 액체 소리가 나요", "데굴데굴 굴러가는 소리가 나요", "아무 소리도 안 나요. 폭신폭신해요", "종이가 사락사락 스쳐요"];
+const wrapEl = document.getElementById("sceneWrap");
+boxes.forEach((b, i) => {
+  const btn = document.createElement("button"); btn.className = "gift"; btn.style.left = b.x + "%"; btn.style.top = b.y + "%";
+  btn.setAttribute("aria-label", "선물 상자");
+  btn.appendChild(giftSprite(WRAPS.find(w => w.id === b.wrap)));
+  btn.onclick = () => { btn.classList.remove("shake"); void btn.offsetWidth; btn.classList.add("shake"); toast(`흔들어 보니 ${shakes[i]}`); };
+  wrapEl.appendChild(btn);
+});
+const bub = document.createElement("div"); bub.className = "bubble"; bub.textContent = "택배 왔어요!"; bub.style.left = "24%"; bub.style.top = "62%"; wrapEl.appendChild(bub);
+
+const wraps = document.getElementById("wraps");
+WRAPS.forEach((w, i) => {
+  const b = document.createElement("button"); b.className = "wrap-opt px"; b.setAttribute("aria-pressed", i === 0);
+  b.appendChild(giftSprite(w)); b.append(w.name);
+  b.onclick = () => wraps.querySelectorAll("button").forEach(z => z.setAttribute("aria-pressed", z === b));
+  wraps.appendChild(b);
+});
+function toast(t) { const el = document.getElementById("toast"); el.textContent = t; el.classList.add("show"); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove("show"), 2400); }
+const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+function loop(t) { t = t || 0; scene(t); glow(t); if (!still) requestAnimationFrame(loop); }
+loop(0);
+</script>
+</body>
+</html>
