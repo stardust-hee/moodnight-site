@@ -159,3 +159,7 @@ section + section{border-top:1px solid var(--night-3)}
   .picks td:nth-child(2)::before{content:"이런 사람에게 · ";color:var(--lamp)}
   .picks td:nth-child(3){color:var(--cream-soft)}
 }
+
+/* 서비스 카드 그림 */
+.svc-img-link{display:block;margin:-6px -6px 4px}
+.svc-img{display:block;width:100%;height:auto;aspect-ratio:5/4;object-fit:cover;border-radius:14px;box-shadow:0 0 0 1px var(--night-3)}
