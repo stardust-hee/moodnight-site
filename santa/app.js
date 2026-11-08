@@ -17,15 +17,10 @@ const ITEMS = [
   { id: "globe", icon: "🔮", name: "스노우볼", shake: "반짝이는 무언가가 출렁여요" },
   { id: "ticket", icon: "🎟", name: "영화 데이트권", shake: "얇고 가벼워요. 거의 비어 있는 것 같아요" }
 ];
-/* 선물 놓을 자리: 트리 아래 초록 카페트 → 모자라면 오른쪽 바닥 (방 그림 192×144 기준 좌표) */
-const SLOT_PX = [
-  [20,115],[38,116],[56,116],[74,115],          // 트리 앞 첫 줄
-  [29,129],[47,130],[65,129],                    // 카페트 앞줄
-  [9,106],[86,107],[83,125],                     // 카페트 양옆
-  [101,112],[119,112],[137,112],[155,112],       // 오른쪽 바닥
-  [106,98],[124,98],[142,98],[160,98],           // 러그 앞
-  [186,112],[170,135],[186,135],[150,136],[12,135],[100,136]];
-const slot = i => { const [x, y] = SLOT_PX[i % SLOT_PX.length]; const k = Math.floor(i / SLOT_PX.length); return { x: (x + k * 5) / 192 * 100, y: (y - k * 3) / 144 * 100 }; };
+/* 선물 놓을 자리: 트리 아래 러그 위, 앞으로 갈수록 넓게 (방 그림 기준 %, 상자 아래 가운데) */
+const SLOTS = [[66,79],[54,78],[78,78],[60,85],[72,85],[48,84],[84,84],[64,92],[52,92],[76,92],[40,90],[88,91],
+  [34,97],[46,98],[58,99],[70,99],[82,98]];
+const slot = i => { const [x, y] = SLOTS[i % SLOTS.length]; const k = Math.floor(i / SLOTS.length); return { x: x + (k % 2 ? 3 : -3) * k, y: y - k * 1.5 }; };
 
 const $ = s => document.querySelector(s);
 const item = id => ITEMS.find(i => i.id === id) || ITEMS[0];
@@ -67,7 +62,7 @@ function renderGifts(newId) {
     b.setAttribute("aria-label", `선물 ${i + 1}${g.opened ? " (열어봄)" : ""}`);
     b.style.zIndex = Math.round(s.y);
     if (g.id === newId) {
-      b.style.left = "60%"; b.style.top = "30%"; b.classList.add("new");
+      b.style.left = "93%"; b.style.top = "82%"; b.classList.add("new");
       requestAnimationFrame(() => requestAnimationFrame(() => { b.style.left = s.x + "%"; b.style.top = s.y + "%"; }));
     } else { b.style.left = s.x + "%"; b.style.top = s.y + "%"; }
     b.onclick = () => onGift(g, b);
@@ -439,7 +434,7 @@ async function guess(name) {
   renderModal();
 }
 function sheet(inner) {
-  $("#overlay").innerHTML = `<div class="sheet-wrap frame"><div class="sheet paper" role="dialog" aria-modal="true" aria-label="선물 열기"><button class="close" id="closeBtn" aria-label="닫기">×</button>${inner}</div></div>`;
+  $("#overlay").innerHTML = `<div class="sheet" role="dialog" aria-modal="true" aria-label="선물 열기"><button class="close" id="closeBtn" aria-label="닫기">×</button>${inner}</div>`;
   $("#closeBtn").onclick = closeModal;
 }
 async function closeModal() { $("#overlay").hidden = true; cur = null; await refreshRoom(); }
