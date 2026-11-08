@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
-<title>산타의 비밀 택배 도트 샘플 4 | 무드나잇</title>
+<title>산타의 선물가게 도트 샘플 | 무드나잇</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/galmuri@2.40.3/dist/galmuri.css">
 <style>
 /* 샘플 4: 위에서 내려다본 아늑한 방 안(192×144 도트), 트리 아래 초록 카페트, 나무 테두리 + 양피지 창 */
@@ -83,8 +83,8 @@ button{font:inherit;cursor:pointer}
 
 <header class="head">
   <div>
-    <h1 class="title">산타의 <span>비밀</span> 택배</h1>
-    <p class="sub">성탄맨션 1층, 벽난로 옆 트리 아래</p>
+    <h1 class="title">산타의 <span>선물</span>가게</h1>
+    <p class="sub">성탄맨션 1층, 친구들이 몰래 선물을 맡기고 가는 곳</p>
   </div>
   <div class="frame"><div class="paper dday">개봉까지 D-47</div></div>
 </header>
@@ -101,7 +101,7 @@ button{font:inherit;cursor:pointer}
   <aside class="panel frame">
     <div class="paper">
       <div class="pbody">
-        <div class="ptitle"><span>택배함</span></div>
+        <div class="ptitle"><span>선물 장부</span></div>
         <div class="tabs"><button aria-selected="true">받는 사람</button><button aria-selected="false">보내는 친구</button></div>
         <p class="desc">친구들이 트리 아래 몰래 두고 간 선물은 12월 25일 0시에 열려요. 열고 나서 누가 보냈는지 맞혀 보세요.</p>
         <div class="stats">
@@ -394,7 +394,9 @@ boxes.forEach((bx, i) => {
   btn.onclick = () => { btn.classList.remove("shake"); void btn.offsetWidth; btn.classList.add("shake"); toast(`흔들어 보니 ${shakes[i]}`); };
   wrapEl.appendChild(btn);
 });
-const bub = document.createElement("div"); bub.className = "bubble"; bub.textContent = "택배 왔어요!"; bub.style.left = "47%"; bub.style.top = "64%"; wrapEl.appendChild(bub);
+const LINES = ["어서 오세요!", "선물 맡기고 가세요", "누가 보냈는지는 비밀!", "25일에 열어 드릴게요"];
+const bub = document.createElement("div"); bub.className = "bubble"; bub.textContent = LINES[0];
+let li = 0; setInterval(() => { li = (li + 1) % LINES.length; bub.textContent = LINES[li]; }, 2600); bub.style.left = "47%"; bub.style.top = "64%"; wrapEl.appendChild(bub);
 const wraps = document.getElementById("wraps");
 WRAPS.forEach((w, i) => {
   const btn = document.createElement("button"); btn.className = "wrap-opt"; btn.setAttribute("aria-pressed", i === 0);
