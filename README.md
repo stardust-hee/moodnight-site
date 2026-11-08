@@ -20,7 +20,7 @@
 - 호스팅: Vercel 프로젝트 `moodnight-site` (GitHub `stardust-hee/moodnight-site` main 브랜치 push 시 자동 배포)
 - 도메인: 가비아 `moodnight.co.kr` (만료 2027-12-19). 기본 주소는 `www.moodnight.co.kr`, 루트는 www로 308 리다이렉트
 - DNS(가비아): A `@` 216.198.79.1, CNAME `www` → Vercel 값. 네임서버 가비아
-- 서치 콘솔(구글, URL 접두어 www), 네이버 서치어드바이저: 확인 태그는 `index.html` head에 있음. sitemap 제출 완료
+- 서치 콘솔(구글, URL 접두어 www), 네이버 서치어드바이저: 소유 확인·sitemap 제출 완료 (11/8 확인). 확인 태그는 `index.html` head
 
 ## 디자인
 
@@ -78,10 +78,10 @@
 ## 남은 할 일
 
 - [ ] 출시 전: 테스트방(`251d5a02d3`) `unlock_override`를 null로 되돌리기, 테스트 계정·선물 삭제
-- [ ] 카카오 애드핏: 2026-11-06 제휴 문의 접수 완료, 인증코드 대기 → 가입 → 매체(Web, www.moodnight.co.kr)·광고단위 생성 → 승인 후 `santa/app.js` renderSent의 `ad-slot` 자리에 광고 코드
+- [ ] 카카오 애드핏: 제휴 문의 접수 완료(11/6), 인증코드 대기 → 가입 → 매체(Web, www.moodnight.co.kr)·광고단위 생성 → 승인 후 `santa/app.js` renderSent의 `ad-slot` 자리에 광고 코드
 - [ ] 애드센스: 읽을거리 6개 이상 올린 뒤 신청 (11/16 이후 예정)
 - [ ] 읽을거리: 2~3일 간격 게시. 일정과 경험 질문은 `무드나잇_읽을거리_글계획.xlsx`. 이나님 경험 답변을 받아 글에 녹여 쓰기 (AI 티 나는 일반론 금지)
-- [ ] 진짜 선물(쿠팡 파트너스): 기능은 완성. `santa/gifts.js`의 url 칸에 이나님이 만든 파트너스 링크를 넣으면 켜짐 (목록 엑셀: 무드나잇_진짜선물_목록.xlsx)
+- [x] 진짜 선물(쿠팡 파트너스): 2026-11-08 링크 25개 연결, 켜짐. 상품 바꾸려면 `santa/gifts.js` 수정
 - [ ] 결과 공유 카드 (맞힌 결과를 이미지로 저장/공유 + "나도 만들기")
 - [ ] santa.moodnight.co.kr 서브도메인을 쓸지 결정 (현재는 /santa/ 경로 사용)
 - [ ] 눈망진창 개발: `/snow/`, 같은 Supabase 프로젝트와 로그인 재사용, 눈사람 테이블 추가
