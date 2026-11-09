@@ -203,6 +203,10 @@ async function logout() { await sb.auth.signOut(); session = null; room = null; 
 const realList = () => (window.REAL_GIFTS || []).filter(g => /^https:\/\/(link\.coupang\.com|www\.coupang\.com|coupa\.ng)\//.test(g.url || ""));
 const realById = id => realList().find(g => g.id === id);
 const realTiers = () => (window.REAL_GIFT_TIERS || []).filter(t => realList().some(g => g.tier === t));
+/* 보내는 사람이 고르는 선물 6개 (santa/gifts.js의 id). 바꾸려면 여기만 수정 */
+const PICKS = ["socks", "mug", "moodlight", "speaker", "instax", "ps5"];
+const picks = () => PICKS.map(id => realById(id)).filter(Boolean);
+let lastItem = null;
 const DISCLOSURE = "이 링크는 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.";
 function buyCard(id) {
   const g = realById(id); if (!g) return "";
@@ -280,7 +284,6 @@ function renderSend() {
   }
   const d = draft, host = esc(room.display_name);
   let stepNo = 0; const st = () => ++stepNo;
-  const tiers = realTiers(); const tier = d.realTier && tiers.includes(d.realTier) ? d.realTier : tiers[0];
   panel(`
   <div class="stack" style="gap:28px">
     <div><h2>${host}에게 몰래 선물하기</h2><p class="sub">이름은 숨겨져요. ${host}님이 크리스마스에 단서를 보고 당신을 맞혀야 해요. 로그인은 필요 없어요.</p></div>
@@ -290,9 +293,7 @@ function renderSend() {
     </div>
     <div class="step">
       <div class="step-h"><i>${st()}</i>상자 속 선물 <small>${host}에게 어울리는 걸로</small></div>
-      <div class="chips">${tiers.map(t => `<button type="button" class="chip ${t === tier ? "on" : ""}" data-tier="${esc(t)}">${esc(t)}</button>`).join("")}</div>
-      <div class="items">${realList().filter(g => g.tier === tier).map(g => `<div class="prod"><button class="item-opt" data-item="${g.id}" aria-pressed="${d.item === g.id}"><b>${g.icon}</b>${esc(g.name)}</button><a class="prod-link" href="${esc(g.url)}" target="_blank" rel="sponsored noopener">쿠팡에서 보기 ›</a></div>`).join("")}</div>
-      <p class="fine" style="margin:0">${DISCLOSURE}</p>
+      <div class="items">${picks().map(g => `<button class="item-opt" data-item="${g.id}" aria-pressed="${d.item === g.id}"><b>${g.icon}</b>${esc(g.name)}</button>`).join("")}</div>
     </div>
     <div class="step">
       <div class="step-h"><i>${st()}</i>메시지</div>
@@ -357,7 +358,7 @@ async function sendGift() {
     p_real_for_real: false
   });
   if (error) { draftErr = errMsg(error); renderSend(); return; }
-  sent = true;
+  sent = true; lastItem = d.item;
   draft = freshDraft();
   await refreshRoom(id);
   renderSent(); renderSide();
@@ -369,6 +370,7 @@ function renderSent() {
   <div class="stack">
     <div class="sent-mark" aria-hidden="true"><span class="gift static w-gold">${giftHTML()}</span></div>
     <div><h2>선물을 몰래 두고 왔어요</h2><p class="sub">12월 25일에 ${host}님이 선물을 열고 누가 보냈는지 맞혀 볼 거예요. 그때까지 들키지 않게 조심하세요.</p></div>
+    ${realById(lastItem) ? `<div class="real-card"><span class="label">상자에 담은 선물</span>${buyCard(lastItem).replace(/^<div class="real-card">|<\/div>$/g, "")}</div>` : ""}
     <a class="btn red wide" href="/santa/">나도 선물가게 만들기</a>
     <button class="btn ghost wide" id="again">선물 하나 더 보내기</button>
     <!-- 광고 자리: 애드핏/애드센스 승인 후 이 아래에 광고 코드를 넣어요 -->
