@@ -127,7 +127,13 @@ function renderHost() {
   const solved = visible.filter(b => b.result === "right").length;
   panel(`
   <div class="stack">
-    <div><h2>${esc(room.display_name)}의 선물방</h2><p class="sub">누가 보냈는지는 크리스마스에 직접 맞혀야 알 수 있어요.</p></div>
+    <div id="nameView"><h2>${esc(room.display_name)}의 선물방</h2><p class="sub">누가 보냈는지는 크리스마스에 직접 맞혀야 알 수 있어요. <button class="linkish" id="renameBtn">이름 바꾸기</button></p></div>
+    <div id="nameEdit" class="stack" style="gap:10px" hidden>
+      <span class="label">친구들이 부르는 이름이나 별명</span>
+      <input type="text" id="renameIn" maxlength="20" value="${esc(room.display_name)}">
+      <p class="err" id="renameErr" hidden></p>
+      <div class="link-row"><button class="btn red" id="renameSave">저장</button><button class="btn ghost" id="renameCancel">취소</button></div>
+    </div>
     <div class="stats">
       <div class="stat"><b>${visible.length}</b><span>받은 선물</span></div>
       <div class="stat"><b>${opened}</b><span>열어본 선물</span></div>
@@ -147,6 +153,17 @@ function renderHost() {
     </div>
     <p class="fine">다음에 들어올 때도 처음 로그인한 방법으로 로그인해야 이 선물방이 보여요. <button class="linkish" id="logout">로그아웃</button></p>
   </div>`);
+  $("#renameBtn").onclick = () => { $("#nameView").hidden = true; $("#nameEdit").hidden = false; $("#renameIn").focus(); };
+  $("#renameCancel").onclick = () => { $("#nameEdit").hidden = true; $("#nameView").hidden = false; };
+  $("#renameSave").onclick = async () => {
+    const name = $("#renameIn").value.trim(), e = $("#renameErr");
+    if (!name) { e.textContent = "이름을 적어 주세요."; e.hidden = false; return; }
+    $("#renameSave").disabled = true;
+    const { error } = await sb.from("rooms").update({ display_name: name }).eq("owner_id", session.user.id);
+    if (error) { e.textContent = "바꾸지 못했어요. 잠시 후 다시 시도해 주세요."; e.hidden = false; $("#renameSave").disabled = false; return; }
+    await loadHost();
+    toast("이름을 바꿨어요");
+  };
   $("#copyBtn").onclick = () => copyLink();
   $("#kakaoShare").onclick = kakaoShare;
   if ($("#moreShare")) $("#moreShare").onclick = () => navigator.share({ title: `${room.display_name}의 선물방`, text: "몰래 선물을 두고 가 주세요. 크리스마스에 열어볼게요!", url: roomUrl() }).catch(() => {});
