@@ -299,6 +299,10 @@ textarea{min-height:110px}
 .buy-link:active{transform:translateY(2px);box-shadow:0 1px 0 rgba(120,80,20,.35)}
 .real-card.for-real .buy-link{background:var(--red);color:#fff;box-shadow:0 3px 0 rgba(110,20,20,.4)}
 
+.room img,.room .r3d{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+.room .r3d img{pointer-events:none}
+.room-card-btn{position:absolute;left:10px;bottom:10px;z-index:3000;border:0;border-radius:999px;padding:7px 12px;background:rgba(40,25,15,.72);color:#FFF6E6;font-family:var(--font-display);font-size:.85rem;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+.room-card-btn:active{transform:translateY(1px)}
 .card-shot{display:block;width:100%;height:auto;border-radius:16px;box-shadow:0 8px 24px -10px rgba(80,50,20,.45)}
 a.btn{display:block;text-align:center;text-decoration:none;box-sizing:border-box}
 .prod{display:grid;gap:4px;min-width:0}
@@ -340,7 +344,7 @@ a.btn{display:block;text-align:center;text-decoration:none;box-sizing:border-box
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js" crossorigin="anonymous"></script>
 <script src="/santa/gifts.js"></script>
-<script src="/santa/app.js"></script>
+<script src="/santa/app.js?v=2"></script>
 <script src="/door.js"></script>
 <script src="/music/player.js?v=5" defer></script>
 <script src="/track.js" defer></script>

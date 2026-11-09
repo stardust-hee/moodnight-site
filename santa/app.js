@@ -62,6 +62,7 @@ function renderTop() {
 
 function renderGifts(newId) {
   const wrap = $("#gifts"); wrap.innerHTML = "";
+  if (MODE !== "host" && $("#roomCardBtn")) $("#roomCardBtn").remove();
   const boxes = room ? room.boxes : [];
   boxes.forEach((g, i) => {
     const s = slot(i);
@@ -259,6 +260,12 @@ function renderHost() {
   if ($("#moreShare")) $("#moreShare").onclick = () => { window.mnTrack && mnTrack("share", "more"); navigator.share({ title: `${room.display_name}의 선물가게`, text: "몰래 선물을 두고 가 주세요. 크리스마스에 열어볼게요!", url: roomUrl() }).catch(() => {}); };
   $("#logout").onclick = logout;
   if ($("#cardBtn")) $("#cardBtn").onclick = openCard;
+  // 방 그림 오른쪽 위에도 카드 버튼 (방 그림을 꾹 눌러 저장하면 선물 없는 배경만 저장돼서)
+  let rb = $("#roomCardBtn");
+  if (visible.length) {
+    if (!rb) { rb = document.createElement("button"); rb.id = "roomCardBtn"; rb.className = "room-card-btn"; $("#room").appendChild(rb); }
+    rb.textContent = isOpen() ? "📸 결과 카드" : "📸 이미지 저장"; rb.onclick = openCard;
+  } else if (rb) rb.remove();
 }
 
 async function copyLink() {
@@ -286,7 +293,7 @@ function kakaoShare() {
   } catch (e) { copyLink(); }
 }
 
-async function logout() { await sb.auth.signOut(); session = null; room = null; renderTop(); renderGifts(); renderLogin(); }
+async function logout() { await sb.auth.signOut(); session = null; room = null; $("#roomCardBtn") && $("#roomCardBtn").remove(); renderTop(); renderGifts(); renderLogin(); }
 
 
 
