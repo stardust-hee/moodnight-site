@@ -213,7 +213,8 @@ function realCard(id, forReal, sender) {
     ${head}
     <div class="real-row"><span class="real-icon">${g.icon}</span><div><b>${esc(g.name)}</b>${forReal ? "" : `<p>“${esc(g.line)}”</p>`}</div></div>
     <p class="sub" style="margin:0">${note}</p>
-    <p class="fine"><a href="${esc(g.url)}" target="_blank" rel="sponsored noopener">이거 어디서 팔아?</a> · ${DISCLOSURE}</p>
+    <a class="buy-link" href="${esc(g.url)}" target="_blank" rel="sponsored noopener"><span>🛒 이거 어디서 팔아?</span><small>쿠팡에서 보기 →</small></a>
+    <p class="fine" style="margin:0">${DISCLOSURE}</p>
   </div>`;
 }
 
