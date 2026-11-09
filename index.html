@@ -280,6 +280,7 @@
       const sb = supabase.createClient("https://gbmlkyfguktjtroczqfw.supabase.co", "sb_publishable_RO92ntdlSM5_Urctc5FD9w_4OHcZQzf");
       const { data: { session } } = await sb.auth.getSession(); if (!session) return;
       const { data } = await sb.rpc("is_admin"); if (data !== true) return;
+      try { const d = localStorage.getItem("mn_device"); if (d) sb.rpc("mark_admin_device", { p_device: d }).then(() => {}, () => {}); } catch (e) {}
       const nav = document.querySelector(".site-head .nav"); if (!nav || nav.querySelector("[data-admin]")) return;
       const a = document.createElement("a"); a.href = "/admin/"; a.textContent = "관리실"; a.dataset.admin = "1"; a.style.color = "var(--lamp)";
       nav.appendChild(a);

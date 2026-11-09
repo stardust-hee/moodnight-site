@@ -651,6 +651,7 @@ async function refreshRoom(newId) {
 }
 
 async function loadHost() {
+  try { const d = localStorage.getItem("mn_device"); if (d && !window.DEMO) sb.rpc("mark_admin_device", { p_device: d }).then(() => {}, () => {}); } catch (e) {}  // 관리자 기기면 방문 숫자에서 빼요
   const { data: mine } = await sb.from("rooms").select("slug").eq("owner_id", session.user.id).maybeSingle();
   if (!mine) { room = null; renderTop(); renderGifts(); renderCreate(); return; }
   const { data } = await sb.rpc("get_room", { p_slug: mine.slug });

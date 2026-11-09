@@ -132,6 +132,9 @@ function render() {
   document.querySelectorAll("[data-p]").forEach(b => b.onclick = () => { period = b.dataset.p; render(); });
 }
 async function load() {
+  // 이 기기는 관리자 기기로 표시해서 방문 숫자에서 빼요 (지난 기록도 지워요)
+  const dev = (() => { try { let d = localStorage.getItem("mn_device"); if (!d || !/^[a-z0-9]{16,40}$/.test(d)) { d = Array.from(crypto.getRandomValues(new Uint8Array(12)), b => (b % 36).toString(36)).join("") + Date.now().toString(36); localStorage.setItem("mn_device", d); } return d; } catch (e) { return null; } })();
+  if (dev) { try { await sb.rpc("mark_admin_device", { p_device: dev }); } catch (e) {} }
   const { data, error } = await sb.rpc("admin_stats");
   if (error) { $("#dash").hidden = true; $("#loginBox").hidden = false; $("#loginErr").textContent = (error.message || "").includes("forbidden") ? "이 계정은 관리자가 아니에요. 다른 계정으로 로그인해 주세요." : "불러오지 못했어요. 잠시 후 다시 시도해 주세요."; $("#logout").hidden = false; return; }
   S = data; $("#loginBox").hidden = true; $("#dash").hidden = false; $("#reload").hidden = false; $("#logout").hidden = false;

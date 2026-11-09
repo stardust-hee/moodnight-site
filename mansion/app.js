@@ -540,6 +540,7 @@ function renderCreate() {
 async function logout() { await sb.auth.signOut(); session = null; S = { name: '', slug: null, res: {}, notes: [], owner: false }; render(); renderLogin(); }
 
 async function loadHost() {
+  try { if (DEVICE) sb.rpc('mark_admin_device', { p_device: DEVICE }).then(() => {}, () => {}); } catch (e) {}  // 관리자 기기면 방문 숫자에서 빼요
   const { data: mine } = await sb.from('mansions').select('slug').eq('owner_id', session.user.id).maybeSingle();
   if (!mine) { render(); renderCreate(); return; }
   S.slug = mine.slug; await reload();
