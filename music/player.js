@@ -19,7 +19,7 @@
   document.head.appendChild(css);
 
   const btn = document.createElement("button");
-  btn.type = "button"; btn.className = "mn-music" + (/^\/(mansion|santa)/.test(location.pathname) ? " px" : "");
+  btn.type = "button"; btn.className = "mn-music" + (/^\/mansion/.test(location.pathname) ? " px" : "");
   const paint = () => { btn.classList.toggle("on", on); btn.innerHTML = on ? "<b>♪</b>캐롤 끄기" : "<b>♪</b>캐롤 켜기"; btn.setAttribute("aria-pressed", on); };
   const play = () => { if (idx >= order.length) shuffle(); audio.src = order[idx]; audio.play().catch(() => { on = false; paint(); }); };
   audio.addEventListener("ended", () => { idx++; if (on) play(); });

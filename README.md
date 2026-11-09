@@ -28,7 +28,7 @@
 ## 디자인
 
 - 무드나잇 홈/블로그: 겨울밤 다크 단일 테마 (`style.css` 토큰: night #151A2E, cream #F6EEDD, lamp #F2C46B, berry #E0574A, pine #5FB487)
-- 산타 (11/9 최종): 성탄맨션과 같은 32bit 도트. 방 그림 `santa/pixelroom.js` = 이나님이 고른 도트 샘플 4(`santa/pixel-sample4.html`)의 방(붉은 무늬 벽지, 벽난로·굴뚝, 화분 둘, 책장, 밤눈 창문, 전구 가랜드, 세로 나무 판자 바닥, 초록 카펫)과 동글동글 덩어리 트리를 180×144 캔버스로. 소파·의자·토끼 등 가구는 뺌. 트리는 가운데 오른쪽, 밑동 보이게. 선물 자리는 `app.js` SLOTS, 화면 스타일 `santa/pixel.css`(갈무리 글꼴, 어두운 겨울밤, 각진 테두리). 예전 디오라마 `santa/diorama.js`는 안 쓰지만 남겨 둠
+- 산타 (11/9 3D로 교체): 동물의숲 같은 3D 로우폴리 방. Three.js 장면(`tools/room3d/scene.html`)을 미리 구운 배경 `santa/3d/room-*.webp` 위에 `santa/room3d.js`가 불꽃(프레임 3장), 전구·랜턴·별 반짝임, 창밖 눈을 CSS로 얹음. 선물 상자는 `santa/3d/gift-색.webp`를 따로 두고 `app.js` SLOTS 자리에 데이터 수만큼 배치(앞줄일수록 크게, 처음 들어올 때 하나씩 떨어지는 등장 효과). 휴대폰은 양옆 11%씩 잘라 트리를 크게. 화면 UI는 도트 대신 원래 크림색(Jua 글꼴). 예전 도트 방 `santa/pixelroom.js`, `santa/pixel.css`, `santa/diorama.js`는 안 쓰지만 남겨 둠
 - 맨션↔산타 이동: `door.js` 도트 문 전환 (링크에 `data-door="간판 글자"`)
 - 성탄맨션: 32bit 도트 겨울밤 (화면·버튼·창·글꼴까지 전부 도트). 색감 레퍼런스는 눈 내리는 유럽 밤거리 사진: 짙은 청록 밤 + 호박빛 창문 + 흐릿한 불빛 망울. 키워드 "고즈넉함". 글꼴 갈무리(Galmuri11/14, OFL) `mansion/fonts/`
 

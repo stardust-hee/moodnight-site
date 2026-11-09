@@ -10,7 +10,7 @@
 <meta property="og:site_name" content="무드나잇">
 <meta property="og:title" content="산타의 선물가게 체험판">
 <meta property="og:description" content="친구가 몰래 맡긴 선물, 누가 보냈는지 맞혀 보세요. 12월 25일에 열려요.">
-<meta property="og:image" content="https://www.moodnight.co.kr/santa/og.png?v=4">
+<meta property="og:image" content="https://www.moodnight.co.kr/santa/og.png?v=5">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
@@ -57,9 +57,9 @@ button{font:inherit;color:inherit;cursor:pointer}
 
 /* ── Diorama ── */
 .frame{background:#FFFFFF;border-radius:44px;padding:clamp(10px,2.2vw,18px);box-shadow:0 18px 40px -18px rgba(80,50,20,.35)}
-.room{position:relative;aspect-ratio:5/4;border-radius:30px;overflow:hidden;background:#EFE6D2;max-width:100%}
+.room{position:relative;aspect-ratio:5/4;border-radius:30px;overflow:hidden;background:#5a1e16;max-width:100%}
 .room svg.scene{position:absolute;inset:0;width:100%;height:100%;display:block}
-.room-hint{position:absolute;left:50%;top:10px;z-index:200;transform:translateX(-50%);background:rgba(40,25,15,.62);color:#FFF6E6;font-size:.78rem;padding:4px 12px;border-radius:999px;white-space:nowrap;pointer-events:none}
+.room-hint{position:absolute;left:50%;top:10px;z-index:3000;transform:translateX(-50%);background:rgba(40,25,15,.62);color:#FFF6E6;font-size:.78rem;padding:4px 12px;border-radius:999px;white-space:nowrap;pointer-events:none}
 .snow{animation:fall linear infinite}
 @keyframes fall{from{transform:translateY(-20px)}to{transform:translateY(130px)}}
 .twinkle{animation:tw 1.6s ease-in-out infinite alternate}
@@ -75,8 +75,13 @@ button{font:inherit;color:inherit;cursor:pointer}
 @keyframes flick{from{transform:scale(1,1)}to{transform:scale(1.06,.9)}}
 .fireglow{animation:tw 1.2s ease-in-out infinite alternate}
 .spr{display:block;width:100%;height:100%;background-size:100% 100%;background-repeat:no-repeat}
-.gift{position:absolute;width:11%;aspect-ratio:1;transform:translate(-50%,-92%);background:none;border:0;padding:0;transition:left .9s cubic-bezier(.3,.7,.3,1),top .9s cubic-bezier(.3,.7,.3,1),transform .2s}
-.gift:hover{transform:translate(-50%,-97%)}
+.gift{position:absolute;width:11%;aspect-ratio:1;isolation:isolate;cursor:pointer;transform:translate(-50%,-97%);background:none;border:0;padding:0;transition:left .9s cubic-bezier(.3,.7,.3,1),top .9s cubic-bezier(.3,.7,.3,1),transform .2s}
+.gift:hover{transform:translate(-50%,-102%)}
+.gift::after{content:"";position:absolute;left:10%;right:10%;bottom:1%;height:12%;border-radius:50%;background:rgba(45,18,6,.42);filter:blur(3px);z-index:-1}
+.gift.static::after,.wrap-opt .gift::after{display:none}
+.gift.enter{animation:giftIn .7s cubic-bezier(.34,1.56,.64,1) calc(var(--i,0) * 80ms + .25s) both}
+@keyframes giftIn{0%{translate:0 -70%;scale:.55;opacity:0}60%{opacity:1}100%{translate:0 0;scale:1;opacity:1}}
+@media (prefers-reduced-motion: reduce){.gift.enter{animation:none}}
 .gift .tag{position:absolute;left:50%;top:6%;transform:translateX(-50%);z-index:4;background:#FFF8EA;color:var(--green-deep);font-size:.62rem;font-family:var(--font-display);padding:1px 6px;border-radius:4px;box-shadow:0 1px 3px rgba(0,0,0,.3);white-space:nowrap}
 .gift.shake{animation:shake .55s}
 @keyframes shake{0%,100%{rotate:0}20%{rotate:-9deg}40%{rotate:8deg}60%{rotate:-6deg}80%{rotate:4deg}}
@@ -281,11 +286,11 @@ textarea{min-height:110px}
   .brand h1{font-size:1.6rem}
 }
 
-/* 휴대폰: 왼쪽(창문·눈사람)을 덜고 트리와 선물을 크게 */
+/* 휴대폰: 양옆을 조금씩 덜고 트리와 선물을 크게 */
 .stage{position:absolute;inset:0}
 @media (max-width:600px){
   .room{aspect-ratio:39/40}
-  .stage{left:-28.2%;right:auto;width:128.2%}
+  .stage{left:-14.1%;right:auto;width:128.2%}
 }
 
 .buy-link{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--gold);color:#3A2414;text-decoration:none;font-family:"Jua",sans-serif;font-size:1.05rem;padding:13px 16px;border-radius:14px;box-shadow:0 3px 0 rgba(120,80,20,.35);transition:transform .15s}
@@ -310,8 +315,8 @@ textarea{min-height:110px}
 .demo-xmas[aria-pressed="true"]{background:var(--red)}
 body.is-demo #kakaoShare,body.is-demo #moreShare,body.is-demo #logout,body.is-demo .fine:has(#logout){display:none!important}
 </style>
-<link rel="preload" href="/mansion/fonts/Galmuri11.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/santa/pixel.css">
+<link rel="preload" href="/santa/3d/room-1000.webp?v=1" as="image" media="(max-width:600px)">
+<link rel="preload" href="/santa/3d/room-1600.webp?v=1" as="image" media="(min-width:601px)">
 </head>
 <body class="is-demo">
 <nav class="site-nav"><a href="/">← 무드나잇</a><a href="/santa/">진짜 선물가게 만들기</a></nav>
@@ -350,7 +355,7 @@ body.is-demo #kakaoShare,body.is-demo #moreShare,body.is-demo #logout,body.is-de
 <div class="overlay" id="overlay" hidden></div>
 <div class="toast" id="toast" role="status"></div>
 
-<script src="/santa/pixelroom.js"></script>
+<script src="/santa/room3d.js"></script>
 <script src="/santa/demo/demo-backend.js"></script>
 <script src="/santa/gifts.js"></script>
 <script src="/santa/app.js"></script>
@@ -369,6 +374,6 @@ body.is-demo #kakaoShare,body.is-demo #moreShare,body.is-demo #logout,body.is-de
   paint();
 })();
 </script>
-<script src="/music/player.js?v=4" defer></script>
+<script src="/music/player.js?v=5" defer></script>
 </body>
 </html>

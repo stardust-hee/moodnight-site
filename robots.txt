@@ -2,5 +2,6 @@ User-agent: *
 Allow: /
 Disallow: /auth-test.html
 Disallow: /admin/
+Disallow: /tools/
 
 Sitemap: https://www.moodnight.co.kr/sitemap.xml

@@ -18,10 +18,12 @@ const ITEMS = [
   { id: "globe", icon: "🔮", name: "스노우볼", shake: "반짝이는 무언가가 출렁여요" },
   { id: "ticket", icon: "🎟", name: "영화 데이트권", shake: "얇고 가벼워요. 거의 비어 있는 것 같아요" }
 ];
-/* 선물 놓을 자리: 트리 아래 러그 위, 앞으로 갈수록 넓게 (방 그림 기준 %, 상자 아래 가운데) */
-const SLOTS = [[42,86],[75,86],[58,95],[30,90],[87,90],[46,97],[70,97],[34,99],[82,99],[58,100],[52,87],[64,87],[38,92],[78,92],
-  [95,95],[20,95],[26,99]];
-const slot = i => { const [x, y] = SLOTS[i % SLOTS.length]; const k = Math.floor(i / SLOTS.length); return { x: x + (k % 2 ? 3 : -3) * k, y: y - k * 1.5 }; };
+/* 선물 놓을 자리: 3D 방의 트리 아래 러그 위 (배경 그림 기준 %, 상자 아래 가운데). 앞줄일수록 조금 크게 */
+const SLOTS = [[50,93],[64,93],[57,97.5],[43,96.5],[71,97],[46,89.5],[68,89.5],[36,92.5],[78,92.5],[57,90],
+  [30,97],[84,97],[50,99.5],[64,99.5],[27,92],[85,92],[38,99.5],[76,99.5],[22,99],[85,100]];
+const slot = i => { const [x, y] = SLOTS[i % SLOTS.length]; const k = Math.floor(i / SLOTS.length); return { x: x + (k % 2 ? 2.5 : -2.5) * k, y: y - k * 2.2 }; };
+const giftW = y => (9.6 + (y - 89) * 0.22).toFixed(2) + "%";
+let firstPaint = true;
 
 const $ = s => document.querySelector(s);
 const item = id => (window.REAL_GIFTS || []).find(g => g.id === id) || ITEMS.find(i => i.id === id) || { icon: "🎁", name: "선물", shake: "뭔가 들어 있어요" };
@@ -68,7 +70,12 @@ function renderGifts(newId) {
     const tag = g.hidden ? "숨김" : g.result === "right" ? "정답" : g.opened ? "개봉" : "";
     b.innerHTML = giftHTML() + (tag ? `<span class="tag">${tag}</span>` : "");
     b.setAttribute("aria-label", `선물 ${i + 1}${g.opened ? " (열어봄)" : ""}`);
-    b.style.zIndex = Math.round(s.y);
+    b.style.zIndex = Math.round(s.y * 10);
+    b.style.width = giftW(s.y);
+    if (firstPaint && g.id !== newId) {
+      b.classList.add("enter"); b.style.setProperty("--i", i);
+      b.addEventListener("animationend", () => b.classList.remove("enter"), { once: true });
+    }
     if (g.id === newId) {
       b.style.left = "93%"; b.style.top = "82%"; b.classList.add("new");
       requestAnimationFrame(() => requestAnimationFrame(() => { b.style.left = s.x + "%"; b.style.top = s.y + "%"; }));
@@ -76,6 +83,7 @@ function renderGifts(newId) {
     b.onclick = () => onGift(g, b);
     wrap.appendChild(b);
   });
+  if (boxes.length) firstPaint = false;
   let hint = "선물을 눌러서 흔들어 보세요";
   if (!room) hint = "로그인하면 나만의 선물가게가 생겨요";
   else if (!boxes.length) hint = MODE === "host" ? "아직 선물이 없어요. 링크를 공유해 보세요" : "첫 번째 선물을 두고 가 주세요";
@@ -193,7 +201,7 @@ function kakaoShare() {
       content: {
         title: `${room.display_name}의 선물가게에 몰래 선물을 맡겨 주세요`,
         description: "크리스마스에 열어보고, 누가 보냈는지 맞혀 볼게요",
-        imageUrl: "https://www.moodnight.co.kr/santa/og.png?v=4",
+        imageUrl: "https://www.moodnight.co.kr/santa/og.png?v=5",
         imageWidth: 1200,
         imageHeight: 630,
         link: { mobileWebUrl: url, webUrl: url }
