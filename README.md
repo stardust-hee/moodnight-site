@@ -11,7 +11,9 @@
 | `/santa/` `santa/index.html` + `santa/app.js` | 산타의 선물가게 실제 서비스 (방 주인 화면) |
 | `/santa/r/<방코드>` | 친구가 받는 선물방 링크. `vercel.json` rewrite로 `santa/index.html`을 그대로 씀 |
 | `/santa/demo/` | 산타 체험판 (예시 데이터, 저장 안 됨) |
-| `/mansion/demo/` `mansion/demo/index.html` | 성탄맨션 체험판 (도트, 예시 데이터, 저장 안 됨). 글꼴은 `mansion/fonts/` |
+| `/mansion/` `mansion/index.html` + `mansion/app.js` | 성탄맨션 실제 서비스 (맨션 주인 화면: 로그인, 만들기, 공유, 퇴거, 벽보 떼기) |
+| `/mansion/r/<코드>` | 친구가 받는 맨션 링크 (로그인 없이 입주, 벽보). `vercel.json` rewrite |
+| `/mansion/demo/` `mansion/demo/index.html` | 성탄맨션 체험판 (도트, 예시 데이터, 저장 안 됨, 공개 링크 없음). 글꼴은 `mansion/fonts/` |
 | `/blog/` | 읽을거리 (애드센스 심사용 글). 현재 2개: manitto, christmas-card |
 | `/privacy.html` `/terms.html` | 개인정보처리방침, 이용약관 (산타 + 성탄맨션 공통) |
 | `/auth-test.html` | 로그인 테스트용 (검색 차단) |
@@ -106,9 +108,9 @@
 - [ ] 결과 공유 카드 (맞힌 결과를 이미지로 저장/공유 + "나도 만들기")
 - [ ] santa.moodnight.co.kr 서브도메인을 쓸지 결정 (현재는 /santa/ 경로 사용)
 - [x] 성탄맨션 체험판 `/mansion/demo/`
-- [ ] 성탄맨션 개발: `/mansion/`, 같은 Supabase 프로젝트와 로그인 재사용. 테이블 mansions(주인당 1개), residents(호수, 꾸미기, 편지, 공개 범위), notes(벽보), bans(퇴거). 입주·벽보·퇴거·신고 함수
+- [x] 성탄맨션 개발 (11/9)
 - [ ] 산타의 선물가게 → '산타의 선물가게' 이름 변경 (페이지 제목, OG 이미지, 홈 카드, 약관)
-- [ ] 성탄맨션 공유 미리보기 이미지 `mansion/og.png`
+- [x] 성탄맨션 공유 미리보기 이미지 `mansion/og.png`
 - [ ] 공개 후: 증축 이벤트(꽉 찬 뒤 벽보가 쌓이면 5층 증축), 루돌프네 양말공장 기능
 
 ## 캐롤 (11/9)
@@ -121,3 +123,12 @@
 - 계획: 한국어 12/1 공개 후 12/5쯤 `/en/santa/`. 구글 로그인만, 카톡 대신 링크 복사·기본 공유, 쿠팡 대신 아마존 제휴(가입 필요) 또는 링크 없이, 약관·개인정보처리방침 영어판
 - 11/9: 체험판(`/santa/demo/`, `/mansion/demo/`)은 이나님 확인용으로만. 홈·산타 화면의 체험판 버튼 제거, 검색 차단(noindex), sitemap에서 뺌. 주소를 아는 사람만 들어갈 수 있음 (비밀번호는 없음)
 - 11/9: 홈 산타 카드에 실제 숫자 표시 ("지금까지 선물가게 N개, 맡겨진 선물 N개"). Supabase 함수 `public_stats()`(누구나 호출, 숨김 선물 제외)에서 진짜 개수를 가져옴. 선물이 30개(`index.html`의 MIN_GIFTS) 넘으면 자동으로 보임. 숫자를 지어내서 넣지 않기
+
+## 성탄맨션 실제 서비스 (11/9 공개)
+- 이 대화에서 만들고 바로 공개. 다른 대화의 맨션 작업은 멈춤
+- 테이블: `mansions`(주인당 1개, slug, display_name 2~3자), `residents`(호수 12개, 닉네임 1~8자, 꾸미기, 편지 60자, vis all/owner, device), `notes`(벽보 40자, hidden), `mansion_bans`(닉네임·기기), `mansion_reports`. 모두 RLS, 화면은 함수로만 읽고 씀
+- 함수: `get_mansion(slug, device)` (주인만보기 편지는 주인과 쓴 사람에게만), `move_in(...)` (한 기기 한 집, 닉네임 중복·주인 이름·퇴거자 막기), `post_note` (기기당 5장), `evict_resident(id, reason)`, `remove_note(id, reason)` (주인만)
+- 기기 구분: 브라우저 localStorage `mn_device` 무작위 값. 개인정보처리방침에 기재
+- 공유 이미지 `mansion/og.png`, 카톡 공유 제목 "○○의 성탄맨션에 빈 집이 N개 남았어요"
+- 그림 코드는 체험판에서 그대로 가져옴. 그림을 고치면 `mansion/app.js`와 체험판 둘 다 고쳐야 함
+- 12/8은 공개일이 아니라 맨션 홍보를 크게 하는 날로

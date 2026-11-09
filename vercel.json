@@ -3,6 +3,10 @@
     {
       "source": "/santa/r/:slug",
       "destination": "/santa/index.html"
+    },
+    {
+      "source": "/mansion/r/:slug",
+      "destination": "/mansion/index.html"
     }
   ]
 }
