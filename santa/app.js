@@ -9,6 +9,7 @@ const WRAPS = [
   { id: "red", name: "산타 레드" }, { id: "green", name: "전나무 체크" }, { id: "navy", name: "한밤 별빛" },
   { id: "gold", name: "금빛 줄무늬" }, { id: "snow", name: "눈송이" }
 ];
+/* 예전 선물 (11/9 이전에 보낸 상자 표시용) */
 const ITEMS = [
   { id: "cocoa", icon: "☕", name: "핫초코 한 잔", shake: "찰랑찰랑, 따뜻한 액체 소리가 나요" },
   { id: "mitten", icon: "🧤", name: "털장갑", shake: "아무 소리도 안 나요. 폭신폭신해요" },
@@ -23,7 +24,7 @@ const SLOTS = [[66,79],[54,78],[78,78],[60,85],[72,85],[48,84],[84,84],[64,92],[
 const slot = i => { const [x, y] = SLOTS[i % SLOTS.length]; const k = Math.floor(i / SLOTS.length); return { x: x + (k % 2 ? 3 : -3) * k, y: y - k * 1.5 }; };
 
 const $ = s => document.querySelector(s);
-const item = id => ITEMS.find(i => i.id === id) || ITEMS[0];
+const item = id => (window.REAL_GIFTS || []).find(g => g.id === id) || ITEMS.find(i => i.id === id) || { icon: "🎁", name: "선물", shake: "뭔가 들어 있어요" };
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const giftHTML = () => `<span class="spr"></span>`;
 const errMsg = e => { const m = (e && e.message) || "잠시 후 다시 시도해 주세요."; return m.includes(": ") ? m.split(": ").slice(1).join(": ") : m; };
@@ -33,7 +34,7 @@ const pathSlug = (location.pathname.match(/\/santa\/r\/([a-z0-9]+)/i) || [])[1] 
 const MODE = pathSlug ? "guest" : "host";
 
 let session = null, room = null, sent = false;
-const freshDraft = () => ({ wrap: "red", item: null, msg: "", hints: ["", "", ""], name: "", decoys: ["", "", ""], autoInitial: true, real: null, realTier: null, forReal: false });
+const freshDraft = () => ({ wrap: "red", item: null, msg: "", hints: ["", "", ""], name: "", decoys: ["", "", ""], autoInitial: true, realTier: null });
 let draft = freshDraft(), draftErr = "";
 
 const unlockDate = () => new Date(room ? room.unlock_at : "2026-12-25T00:00:00+09:00");
@@ -203,6 +204,14 @@ const realList = () => (window.REAL_GIFTS || []).filter(g => /^https:\/\/(link\.
 const realById = id => realList().find(g => g.id === id);
 const realTiers = () => (window.REAL_GIFT_TIERS || []).filter(t => realList().some(g => g.tier === t));
 const DISCLOSURE = "이 링크는 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.";
+function buyCard(id) {
+  const g = realById(id); if (!g) return "";
+  return `<div class="real-card">
+    <div class="real-row"><span class="real-icon">${g.icon}</span><div><b>${esc(g.name)}</b><p>“${esc(g.line)}”</p></div></div>
+    <a class="buy-link" href="${esc(g.url)}" target="_blank" rel="sponsored noopener"><span>🛒 이거 어디서 팔아?</span><small>쿠팡에서 보기 →</small></a>
+    <p class="fine" style="margin:0">${DISCLOSURE}</p>
+  </div>`;
+}
 function realCard(id, forReal, sender) {
   const g = realById(id); if (!g) return "";
   const head = forReal ? `<span class="real-badge">🎁 진짜로 준비했대요!</span>` : `<span class="label">산타가 몰래 넣은 선물</span>`;
@@ -234,7 +243,7 @@ function renderSide() {
     const wrapName = (WRAPS.find(w => w.id === draft.wrap) || WRAPS[0]).name;
     el.innerHTML = `<h3>지금 포장 중인 선물</h3>
       <div class="preview"><span class="gift static w-${draft.wrap}">${giftHTML()}</span>
-        <div><b>${esc(wrapName)} 포장${it ? ` · ${it.icon} ${it.name}` : ""}</b><p>${it ? `흔들면 ${it.shake}.` : "상자 속에 넣을 선물을 골라 주세요."}</p><p>보내면 ${esc(room.display_name)}님 방 트리 아래에 놓여요.</p>${draft.real && realById(draft.real) ? `<p>${draft.forReal ? "진짜로 준비한 선물" : "몰래 하나 더"}: ${realById(draft.real).icon} ${esc(realById(draft.real).name)}</p>` : ""}</div></div>${meta}`;
+        <div><b>${esc(wrapName)} 포장${it ? ` · ${it.icon} ${it.name}` : ""}</b><p>${it ? `흔들면 ${it.shake}.` : "상자 속에 넣을 선물을 골라 주세요."}</p><p>보내면 ${esc(room.display_name)}님 방 트리 아래에 놓여요.</p></div></div>${meta}`;
     el.classList.add("desk-only");
   } else if (MODE === "guest" && room) {
     el.innerHTML = `<h3>산타의 선물가게는 이렇게 놀아요</h3>${flow}${meta}`;
@@ -281,20 +290,10 @@ function renderSend() {
     </div>
     <div class="step">
       <div class="step-h"><i>${st()}</i>상자 속 선물 <small>${host}에게 어울리는 걸로</small></div>
-      <div class="items">${ITEMS.map(it => `<button class="item-opt" data-item="${it.id}" aria-pressed="${d.item === it.id}"><b>${it.icon}</b>${it.name}</button>`).join("")}</div>
-    </div>
-    ${tiers.length ? `<div class="step">
-      <div class="step-h"><i>${st()}</i>상자에 몰래 하나 더 넣기 <small>선택</small></div>
-      <p class="sub" style="margin:0">크리스마스에 열면 메시지 아래에서 짠 하고 나와요. 사이트가 배송해 주지는 않아요.</p>
       <div class="chips">${tiers.map(t => `<button type="button" class="chip ${t === tier ? "on" : ""}" data-tier="${esc(t)}">${esc(t)}</button>`).join("")}</div>
-      <div class="items">${realList().filter(g => g.tier === tier).map(g => `<button class="item-opt" data-real="${g.id}" aria-pressed="${d.real === g.id}"><b>${g.icon}</b>${esc(g.name)}</button>`).join("")}</div>
-      ${d.real ? `<div class="for-real" role="radiogroup" aria-label="이 선물은">
-        <label class="radio"><input type="radio" name="forReal" value="0" ${!d.forReal ? "checked" : ""}> <span><b>마음만 담았어요</b>장난이나 "이런 거 주고 싶다"는 마음</span></label>
-        <label class="radio"><input type="radio" name="forReal" value="1" ${d.forReal ? "checked" : ""}> <span><b>진짜로 준비했어요</b>크리스마스에 직접 줄게</span></label>
-        ${d.forReal ? `<p class="note">정체가 밝혀지면 꼭 직접 전해 주세요. 친구가 정말 기대할 거예요!</p>` : ""}
-      </div>
-      <button type="button" class="linkish" id="realNone">빼기</button>` : ""}
-    </div>` : ""}
+      <div class="items">${realList().filter(g => g.tier === tier).map(g => `<div class="prod"><button class="item-opt" data-item="${g.id}" aria-pressed="${d.item === g.id}"><b>${g.icon}</b>${esc(g.name)}</button><a class="prod-link" href="${esc(g.url)}" target="_blank" rel="sponsored noopener">쿠팡에서 보기 ›</a></div>`).join("")}</div>
+      <p class="fine" style="margin:0">${DISCLOSURE}</p>
+    </div>
     <div class="step">
       <div class="step-h"><i>${st()}</i>메시지</div>
       <textarea id="msg" maxlength="200" placeholder="크리스마스에 열어볼 메시지를 남겨 주세요">${esc(d.msg)}</textarea>
@@ -326,9 +325,6 @@ function renderSend() {
   [0, 1, 2].forEach(n => { if ($("#hint" + n)) $("#hint" + n).oninput = e => draft.hints[n] = e.target.value; $("#decoy" + n).oninput = e => draft.decoys[n] = e.target.value; });
   $("#name").oninput = e => { draft.name = e.target.value; const a = document.querySelector(".auto-hint"); if (a) a.textContent = "단서 3 · " + (draft.name.trim() ? initialHint(draft.name) : "이름을 적으면 초성으로 자동 완성돼요"); };
   document.querySelectorAll("[data-tier]").forEach(b => b.onclick = () => { draft.realTier = b.dataset.tier; renderSend(); });
-  document.querySelectorAll("[data-real]").forEach(b => b.onclick = () => { draft.real = draft.real === b.dataset.real ? null : b.dataset.real; renderSend(); renderSide(); });
-  if ($("#realNone")) $("#realNone").onclick = () => { draft.real = null; draft.forReal = false; renderSend(); renderSide(); };
-  document.querySelectorAll("input[name=forReal]").forEach(r => r.onchange = () => { draft.forReal = r.value === "1"; renderSend(); renderSide(); });
   $("#moreIdeas").onclick = () => { ideaPage++; renderSend(); };
   $("#autoInitial").onchange = e => { draft.autoInitial = e.target.checked; renderSend(); };
   document.querySelectorAll("[data-idea]").forEach(b => b.onclick = () => {
@@ -357,8 +353,8 @@ async function sendGift() {
     p_slug: room.slug, p_wrap: d.wrap, p_item: d.item, p_message: d.msg.trim(),
     p_hints: d.autoInitial ? [d.hints[0].trim(), d.hints[1].trim(), initialHint(d.name)] : d.hints.map(h => h.trim()), p_sender_name: d.name.trim(),
     p_decoys: d.decoys.map(x => x.trim()).filter(Boolean),
-    p_real_gift: d.real && realById(d.real) ? d.real : null,
-    p_real_for_real: !!(d.real && d.forReal)
+    p_real_gift: null,
+    p_real_for_real: false
   });
   if (error) { draftErr = errMsg(error); renderSend(); return; }
   sent = true;
@@ -421,6 +417,7 @@ function renderModal(reportOpen) {
       <p>To. ${esc(room.display_name)}\n${esc(v.message)}</p>
       <div class="from">${v.result ? `<span class="stamp ${v.result === "right" ? "" : "miss"}">${v.result === "right" ? "정답" : "공개"}</span>` : ""}From. ${v.result ? esc(v.sender_name) : `<span class="q">???</span>`}</div>
     </div>
+    ${realById(v.item) ? buyCard(v.item) : ""}
     ${v.real_gift ? realCard(v.real_gift, v.real_for_real, v.result ? v.sender_name : null) : ""}
     <div class="guess-h"><h2 style="font-size:1.15rem">보낸 친구는 누구일까요?</h2>${v.result ? "" : `<span class="lives" aria-label="남은 기회 ${lives}번">${"●".repeat(lives)}${"○".repeat(3 - lives)}</span>`}</div>
     <ul class="hints">${hintsHTML}</ul>
