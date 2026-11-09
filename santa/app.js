@@ -264,7 +264,7 @@ function renderHost() {
   };
   $("#copyBtn").onclick = () => copyLink();
   $("#kakaoShare").onclick = kakaoShare;
-  if ($("#moreShare")) $("#moreShare").onclick = () => { window.mnTrack && mnTrack("share", "more"); navigator.share({ title: `${room.display_name}의 선물가게`, text: "몰래 선물을 두고 가 주세요. 크리스마스에 열어볼게요!", url: roomUrl() }).catch(() => {}); };
+  if ($("#moreShare")) $("#moreShare").onclick = () => { window.mnTrack && mnTrack("share", "more"); navigator.share({ title: `${room.display_name}의 선물가게`, text: "누가 보냈게? 이름 숨기고 몰래 선물이랑 단서 남겨 줘. 크리스마스에 누가 보냈는지 맞혀 볼게!", url: roomUrl() }).catch(() => {}); };
   $("#logout").onclick = logout;
   if ($("#cardBtn")) $("#cardBtn").onclick = openCard;
   $("#delRoom").onclick = askDelete;
@@ -321,14 +321,14 @@ function kakaoShare() {
     Kakao.Share.sendDefault({
       objectType: "feed",
       content: {
-        title: `${room.display_name}의 선물가게에 몰래 선물을 맡겨 주세요`,
-        description: "이름 숨기고 메시지랑 단서 남겨 줘. 크리스마스에 누가 보냈는지 맞혀 볼게! (로그인 없이 1분)",
-        imageUrl: "https://www.moodnight.co.kr/santa/og.png?v=5",
+        title: `누가 보냈게? ${room.display_name}에게 몰래 선물하기 🎁`,
+        description: "이름 숨기고 가상 선물에 메시지와 단서를 남겨 줘. 크리스마스에 누가 보냈는지 맞혀 볼게! 로그인 없이 1분",
+        imageUrl: "https://www.moodnight.co.kr/santa/og.png?v=6",
         imageWidth: 1200,
         imageHeight: 630,
         link: { mobileWebUrl: url, webUrl: url }
       },
-      buttons: [{ title: "선물 맡기러 가기", link: { mobileWebUrl: url, webUrl: url } }]
+      buttons: [{ title: "몰래 선물하러 가기", link: { mobileWebUrl: url, webUrl: url } }]
     });
   } catch (e) { copyLink(); }
 }
