@@ -98,7 +98,6 @@ function renderLogin() {
     <button class="login kakao" id="loginKakao">카카오로 시작하기</button>
     <button class="login google" id="loginGoogle">구글로 시작하기</button>
     <p class="fine">선물가게를 만드는 사람만 로그인해요. 로그인하면 <a href="/terms.html">이용약관</a>과 <a href="/privacy.html">개인정보처리방침</a>에 동의하는 것으로 봐요.</p>
-    <a class="btn ghost wide" href="/santa/demo/">먼저 체험판 해보기</a>
   </div>`);
   const back = location.origin + "/santa/";
   $("#loginKakao").onclick = () => sb.auth.signInWithOAuth({ provider: "kakao", options: { redirectTo: back, scopes: "profile_nickname profile_image" } });
