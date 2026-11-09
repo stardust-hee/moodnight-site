@@ -56,6 +56,10 @@ td.z{color:#4A5E74}
 .rep small{color:var(--soft)}
 .msg{color:var(--soft)}
 .err{color:#FF9C8A}
+.mem{display:grid;gap:8px}.mem .m{display:flex;gap:10px;align-items:flex-start;padding:9px;border:1px solid #ffffff1f;border-radius:6px}
+.mem .m.me{opacity:.6}.mem img,.mem i{width:38px;height:38px;border-radius:50%;object-fit:cover;flex:none;background:#ffffff1a}
+.mem b{display:block;font-size:14px}.mem small{display:block;opacity:.75;font-size:12px;margin-top:2px;word-break:break-all}
+.mem em{font-style:normal;font-size:11px;padding:1px 5px;border-radius:4px;background:#ffffff24;margin-left:4px}.mem em.new{background:#e8613c;color:#fff}
 </style>
 </head>
 <body>
@@ -94,6 +98,24 @@ function group(daily, mode) {
   return out;
 }
 const COLOR_KO = { red: "빨강", yellow: "노랑", green: "초록", blue: "파랑", purple: "보라", white: "하양" };
+function membersHTML() {
+  const list = S.members; if (!list) return "";
+  const kst = t => t ? new Date(t).toLocaleString("ko-KR", { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" }) : "-";
+  const today = new Date().toLocaleDateString("ko-KR", { timeZone: "Asia/Seoul" });
+  const isToday = t => t && new Date(t).toLocaleDateString("ko-KR", { timeZone: "Asia/Seoul" }) === today;
+  const PV = { kakao: "카카오", google: "구글" };
+  const made = m => [m.rooms ? `선물가게 ${m.rooms}` : "", m.mansions ? `맨션 ${m.mansions}` : ""].filter(Boolean).join(" · ") || "아직 없음";
+  const users = list.filter(m => !m.admin);
+  return `<section class="win"><h2>회원.exe</h2><div class="body">
+    <p class="msg" style="margin:0 0 8px">관리자 계정 빼고 ${n(users.length)}명 · 오늘 가입 ${n(users.filter(m => isToday(m.joined)).length)}명</p>
+    <div class="mem">${list.map(m => `<div class="m${m.admin ? " me" : ""}">
+      ${m.avatar ? `<img src="${esc(m.avatar)}" alt="" referrerpolicy="no-referrer" loading="lazy">` : `<i></i>`}
+      <div><b>${esc(m.name)}${m.admin ? " <em>관리자</em>" : ""}${isToday(m.joined) ? " <em class=new>오늘</em>" : ""}</b>
+      <small>${esc((m.provider || "").split(",").map(x => PV[x] || x).join("·"))} · ${esc(m.email || "")}</small>
+      <small>가입 ${kst(m.joined)} · 최근 로그인 ${kst(m.last)}</small>
+      <small>만든 것: ${made(m)}</small></div></div>`).join("")}</div>
+  </div></section>`;
+}
 function mindHTML() {
   const m = S.mind; if (!m) return `<section class="win"><h2>마음 챙기기.exe</h2><div class="body"><p class="msg">마음 챙기기 기록을 불러오지 못했어요.</p></div></section>`;
   const v = k => (m.visits || {})[k] || { all: 0, today: 0, week: 0, people: 0 };
@@ -137,6 +159,7 @@ function render() {
       ${card("공유 버튼", n(s.shares), `링크로 들어온 방문 ${n(s.link_visits)}번`)}
     </div>
   </div></section>
+  ${membersHTML()}
   <section class="win"><h2>산타의 선물가게.exe</h2><div class="body"><div class="grid">
     ${card("선물가게", n(s.rooms))}
     ${card("맡겨진 선물", n(s.gifts), `가게당 ${s.rooms ? (s.gifts / s.rooms).toFixed(1) : 0}개 · 숨김 ${n(s.gifts_hidden)}`)}
@@ -175,6 +198,7 @@ async function load() {
   const { data, error } = await sb.rpc("admin_stats");
   if (error) { $("#dash").hidden = true; $("#loginBox").hidden = false; $("#loginErr").textContent = (error.message || "").includes("forbidden") ? "이 계정은 관리자가 아니에요. 다른 계정으로 로그인해 주세요." : "불러오지 못했어요. 잠시 후 다시 시도해 주세요."; $("#logout").hidden = false; return; }
   try { const r = await sb.rpc("admin_ads"); data.ads = r.data || []; } catch (e) { data.ads = []; }
+  try { const r = await sb.rpc("admin_members"); data.members = r.error ? null : r.data; } catch (e) { data.members = null; }
   try { const r = await sb.rpc("admin_mind_stats"); data.mind = r.error ? null : r.data; } catch (e) { data.mind = null; }
   if (data.mind && data.mind.reports) data.reports = (data.reports || []).concat(data.mind.reports).sort((x, y) => String(y.at).localeCompare(String(x.at)));
   S = data; $("#loginBox").hidden = true; $("#dash").hidden = false; $("#reload").hidden = false; $("#logout").hidden = false;
