@@ -8,7 +8,7 @@
     .map(n => `/music/${n}.mp3`);
   let order = [], idx = 0, on = false;
   const shuffle = () => { const last = order[order.length - 1]; order = TRACKS.slice().sort(() => Math.random() - 0.5); if (order.length > 1 && order[0] === last) order.push(order.shift()); idx = 0; };
-  const audio = new Audio(); audio.preload = "none"; audio.volume = 0.45;
+  const audio = new Audio(); audio.preload = "none"; audio.volume = 0.6; audio.setAttribute("playsinline", "");
 
   const css = document.createElement("style");
   css.textContent = `.mn-music{position:fixed;right:calc(14px + env(safe-area-inset-right,0px));bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:55;display:flex;align-items:center;gap:6px;border:0;border-radius:999px;padding:9px 14px;background:rgba(40,25,15,.72);color:#FFF6E6;font:600 14px/1 system-ui,sans-serif;box-shadow:0 4px 14px rgba(0,0,0,.18);cursor:pointer;-webkit-tap-highlight-color:transparent}
@@ -23,6 +23,9 @@
   const paint = () => { btn.classList.toggle("on", on); btn.innerHTML = on ? "<b>♪</b>캐롤 끄기" : "<b>♪</b>캐롤 켜기"; btn.setAttribute("aria-pressed", on); };
   const play = () => { if (idx >= order.length) shuffle(); audio.src = order[idx]; audio.play().catch(() => { on = false; paint(); }); };
   audio.addEventListener("ended", () => { idx++; if (on) play(); });
+  let fails = 0;
+  audio.addEventListener("playing", () => { fails = 0; });
+  audio.addEventListener("error", () => { if (!on) return; if (++fails >= TRACKS.length) { on = false; paint(); return; } idx++; play(); });
   btn.onclick = () => {
     on = !on; paint();
     if (on) { if (!order.length) shuffle(); if (audio.src && !audio.ended) audio.play().catch(() => { on = false; paint(); }); else play(); }
