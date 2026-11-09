@@ -1,16 +1,15 @@
 (()=>{
 'use strict';
 const A='assets/';
-// 고화질로 바꾼 소품 (1110×1200 투명 WebP). 나머지는 아직 예전 PNG
-const HQ=new Set(['perfume','soap','glasses','earbuds','film','candle','foil','watch','rings','letter']);
+// 소품은 모두 고화질 1110×1200 투명 WebP
 const props=[
  ['perfume','향수','뷰티'],['soap','빈티지 비누','라이프'],['glasses','블랙 안경','소품'],
  ['earbuds','유선 이어폰','소품'],['film','필름 포토','사진'],['polaroid','폴라로이드','사진'],
- ['candle','유리 캔들','라이프'],['cream','핸드크림','뷰티'],['foil','실버 튜브','뷰티'],
+ ['candle','유리 캔들','라이프'],['cream','세럼 보틀','뷰티'],['lipstick','립스틱','뷰티'],['compact','실버 콤팩트','뷰티'],['foil','실버 튜브','뷰티'],
  ['watch','가죽 시계','소품'],['rings','실버 반지','소품'],['heart','실버 하트','소품'],
  ['keyring','빈티지 키링','소품'],['letter','봉인 편지','사진'],['flowers','안개꽃','라이프'],
  ['pearls','진주 팔찌','소품'],['bow','새틴 리본','라이프'],['note','손글씨 메모','사진']
-].map(([id,label,cat])=>({id,label,cat,src:A+id+(HQ.has(id)?'.webp':'.png')}));
+].map(([id,label,cat])=>({id,label,cat,src:A+id+'.webp'}));
 const trays=[{id:1,name:'사각 트레이',desc:'simple & classic',src:A+'tray1.png'},
 {id:2,name:'로코코 트레이',desc:'ornate & romantic',src:A+'tray2.png'},
 {id:3,name:'빈티지 트레이',desc:'soft & antique',src:A+'tray3.png'}];

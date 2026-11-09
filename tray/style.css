@@ -20,3 +20,5 @@
 /* 폰 트레이 고르기 줄: 세 칸을 같은 폭으로 꽉 채우기 */
 @media(max-width:860px){.mobile-tray-pick .tray-meta{min-width:0}.mobile-tray-pick .tray-meta b{overflow:hidden;text-overflow:ellipsis}}
 @media(max-width:400px){.mobile-tray-pick .tray-option{padding:4px 5px}.mobile-tray-pick .tray-thumb{width:34px;height:42px}}
+/* 소품 20종: PC 오른쪽 목록이 넘치면 칸이 눌리지 않고 스크롤되게 */
+@media(min-width:861px){.props-list{grid-auto-rows:max-content}.props-list .prop-item{aspect-ratio:1;height:auto}}
