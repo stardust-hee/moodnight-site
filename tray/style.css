@@ -28,3 +28,14 @@
 /* 폰: 작업판을 화면 폭에 꽉 차게 (아이폰에서 너무 작게 보이던 문제) */
 @media(max-width:860px){.workspace-wrap{justify-content:center}.art-frame,.art-frame{width:min(100%,600px)}}
 @media(max-width:400px){.art-frame{width:100%}}
+
+/* 완성 이미지 저장 창 (폰) */
+.save-sheet{position:fixed;inset:0;z-index:600;display:none;align-items:center;justify-content:center;padding:18px;background:#37332f8c;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.save-sheet.show{display:flex}
+.save-card{width:min(100%,460px);background:#faf8f5;border-radius:18px;padding:14px 14px 12px;box-shadow:0 18px 50px #0003;display:flex;flex-direction:column;gap:11px}
+.save-card img{width:100%;height:auto;border-radius:8px;display:block;-webkit-touch-callout:default;user-select:auto;-webkit-user-select:auto}
+.save-tip{margin:0;text-align:center;font-size:12px;color:#7e6e64;line-height:1.6}
+.save-tip b{color:#5f514b}
+.save-actions{display:flex;gap:8px}
+.save-actions .pill-btn{flex:1;justify-content:center;height:44px}
+.save-actions .pill-btn[hidden]{display:none}

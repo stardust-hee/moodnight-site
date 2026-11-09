@@ -89,7 +89,23 @@ async function saveImage(){const D=1600;const c=document.createElement('canvas')
  const trayIm=getImage(trays.find(t=>t.id===state.tray).src);await preload(trayIm);ctx.save();ctx.shadowColor='#483a3290';ctx.shadowBlur=47;ctx.shadowOffsetY=28;drawImg(ctx,trayIm,D/2,D/2,D*.88,D*.88);ctx.restore();
  for(const item of state.items){const img=getImage(item.customSrc||source(item.id));await preload(img);ctx.save();ctx.translate(D*item.x/100,D*item.y/100);ctx.rotate(item.rotation*Math.PI/180);ctx.scale(item.flip,1);ctx.shadowColor='#2b241d55';ctx.shadowBlur=14;ctx.shadowOffsetY=12;ctx.shadowOffsetX=4;if(img.naturalWidth){if(item.customSrc){drawImg(ctx,img,0,0,D*item.size/100,D*item.size*1.08/100)}else{ctx.drawImage(img,-D*item.size/200,-D*item.size*1.08/200,D*item.size/100,D*item.size*1.08/100)}}ctx.restore()}
  ctx.fillStyle='rgba(84,70,64,.65)';ctx.font='italic 33px Georgia';ctx.fillText('a little still life',45,65);ctx.textAlign='right';ctx.font='21px Georgia';ctx.fillText('silver tray studio ✳︎',D-48,D-47);
- try{window.mnTrack&&window.mnTrack('act','tray_save')}catch(e){}const a=document.createElement('a');a.download='my-little-tray.png';a.href=c.toDataURL('image/png');a.click();notify('이미지가 저장되었어요 ♡')}
+ try{window.mnTrack&&window.mnTrack('act','tray_save')}catch(e){}const blob=await new Promise(res=>{try{c.toBlob(res,'image/png')}catch(e){res(null)}});
+ // 폰(아이폰 사파리·카톡/인스타 브라우저)은 바로 내려받기가 막혀서, 완성 이미지를 띄우고 공유·길게 눌러 저장하게 함
+ if(window.matchMedia('(pointer:coarse)').matches||!blob){showSaveSheet(blob,c);return}
+ const url=URL.createObjectURL(blob);const a=document.createElement('a');a.download='my-little-tray.png';a.href=url;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),5000);notify('이미지가 저장되었어요 ♡')}
+function showSaveSheet(blob,canvas){
+ let sheet=document.getElementById('saveSheet');
+ if(!sheet){sheet=document.createElement('div');sheet.id='saveSheet';sheet.className='save-sheet';sheet.innerHTML='<div class="save-card" role="dialog" aria-modal="true" aria-label="완성 이미지 저장"><img id="saveImg" alt="완성한 트레이 이미지"><p class="save-tip">이미지를 <b>길게 눌러</b> ‘사진 앱에 저장’을 골라 주세요.</p><div class="save-actions"><button type="button" class="pill-btn outline" id="saveClose">닫기</button><button type="button" class="pill-btn" id="saveShare">↓ 사진에 저장 / 공유</button></div></div>';document.body.appendChild(sheet);
+  sheet.addEventListener('click',ev=>{if(ev.target===sheet)sheet.classList.remove('show')});document.getElementById('saveClose').onclick=()=>sheet.classList.remove('show')}
+ const img=document.getElementById('saveImg'),btn=document.getElementById('saveShare');
+ if(img.dataset.url)URL.revokeObjectURL(img.dataset.url);
+ if(blob){const u=URL.createObjectURL(blob);img.dataset.url=u;img.src=u}else{img.dataset.url='';img.src=canvas.toDataURL('image/png')}
+ const file=blob?new File([blob],'my-little-tray.png',{type:'image/png'}):null;
+ const canShare=!!(file&&navigator.canShare&&navigator.canShare({files:[file]}));
+ btn.hidden=!canShare;
+ btn.onclick=async()=>{try{await navigator.share({files:[file],title:'my little tray'});}catch(e){}};
+ sheet.classList.add('show');
+}
 const adjustMQ=window.matchMedia('(max-width:860px)');
 // 폰: 고른 소품 바로 아래(공간이 없으면 위)에 크기·회전 패널을 띄움
 function positionAdjust(){const panel=$('adjustPanel'),frame=document.querySelector('.art-frame');if(!adjustMQ.matches||panel.parentNode!==frame||!panel.classList.contains('show'))return;const el=layer.querySelector('.stage-sticker.selected');if(!el)return;const fr=frame.getBoundingClientRect(),r=el.getBoundingClientRect(),bx=fr.left+frame.clientLeft,by=fr.top+frame.clientTop,W=frame.clientWidth,H=frame.clientHeight,pw=panel.offsetWidth,ph=panel.offsetHeight,gap=14;let x=r.left+r.width/2-bx-pw/2;x=Math.max(6,Math.min(W-pw-6,x));let y=r.bottom-by+gap;if(y+ph>H-6)y=r.top-by-ph-gap;if(y<6)y=Math.max(6,Math.min(H-ph-6,r.bottom-by+gap));panel.style.left=x+'px';panel.style.top=y+'px'}
