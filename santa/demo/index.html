@@ -326,6 +326,11 @@ textarea{min-height:110px}
 .how li::before{content:attr(data-i);position:absolute;left:13px;top:10px;font-size:1.25rem;line-height:1.3}
 .how li b{display:block;color:var(--ink);font-family:var(--font-display);font-weight:400;font-size:1rem}
 .how-note{margin-top:8px!important;font-size:.82rem}
+.site-nav{flex-wrap:wrap}
+.lang-btn{border:1px solid var(--line);background:var(--cream);color:var(--ink);border-radius:999px;padding:5px 12px;font:inherit;font-size:.82rem;cursor:pointer;order:2;margin-left:auto}
+.site-nav a:last-of-type{order:3}
+.step-h{flex-wrap:wrap}
+html[lang=en] .step-h small{flex-basis:100%;padding-left:32px}
 .card-shot{display:block;width:100%;height:auto;border-radius:16px;box-shadow:0 8px 24px -10px rgba(80,50,20,.45)}
 a.btn{display:block;text-align:center;text-decoration:none;box-sizing:border-box}
 .prod{display:grid;gap:4px;min-width:0}
@@ -346,7 +351,7 @@ body.is-demo #kakaoShare,body.is-demo #moreShare,body.is-demo #logout,body.is-de
 <link rel="preload" as="image" href="/santa/3d/room-1600.webp?v=1" imagesrcset="/santa/3d/room-1000.webp?v=1 1000w, /santa/3d/room-1600.webp?v=1 1600w" imagesizes="(max-width:600px) 130vw, 720px">
 </head>
 <body class="is-demo">
-<nav class="site-nav"><a href="/">← 무드나잇</a><a href="/santa/">진짜 선물가게 만들기</a></nav>
+<nav class="site-nav"><a href="/" data-en="← Moodnight">← 무드나잇</a><a href="/santa/">진짜 선물가게 만들기</a></nav>
 <div class="demo-bar">
   <p><b>체험판이에요.</b> 하린이의 선물가게에 친구 7명이 선물을 맡겨 둔 상태예요. 저장은 안 되고, 새로고침하면 처음으로 돌아가요.</p>
   <div class="demo-tabs" role="tablist">
@@ -361,7 +366,7 @@ body.is-demo #kakaoShare,body.is-demo #moreShare,body.is-demo #logout,body.is-de
       <div class="brand-mark" aria-hidden="true">
         <svg width="22" height="22" viewBox="0 0 24 24"><rect x="3" y="9" width="18" height="12" rx="2" fill="#FFF3DA"/><rect x="2" y="6" width="20" height="5" rx="1.5" fill="#FFE9B8"/><rect x="10.5" y="6" width="3" height="15" fill="#D9A934"/><path d="M12 6c-2-4-6-3-5 0M12 6c2-4 6-3 5 0" stroke="#D9A934" stroke-width="2" fill="none"/></svg>
       </div>
-      <div><h1 id="title">산타의 선물가게</h1><p>몰래 두고 간 선물, 크리스마스에 누가 보냈는지 맞히는 놀이</p></div>
+      <div><h1 id="title" data-en="Santa's Gift Shop">산타의 선물가게</h1><p data-en="Secret gifts from friends. Guess who sent them on Christmas">몰래 두고 간 선물, 크리스마스에 누가 보냈는지 맞히는 놀이</p></div>
     </div>
     <div class="dday" id="dday">개봉까지 D-49</div>
   </header>
@@ -371,12 +376,12 @@ body.is-demo #kakaoShare,body.is-demo #moreShare,body.is-demo #logout,body.is-de
       <div class="room" id="room">
         <div class="stage"><div id="sceneHost" class="scene-host"></div>
         <div id="gifts"></div></div>
-        <div class="room-hint" id="roomHint">선물을 눌러서 흔들어 보세요</div>
+        <div class="room-hint" id="roomHint" data-en="Tap a gift to shake it">선물을 눌러서 흔들어 보세요</div>
       </div>
     </section>
     <div class="side-card" id="sideCard" hidden></div>
     </div>
-    <aside class="panel"><div id="panelBody"><p class="sub">불러오는 중…</p></div></aside>
+    <aside class="panel"><div id="panelBody"><p class="sub" data-en="Loading…">불러오는 중…</p></div></aside>
   </div>
 </div>
 <div class="overlay" id="overlay" hidden></div>
@@ -384,8 +389,9 @@ body.is-demo #kakaoShare,body.is-demo #moreShare,body.is-demo #logout,body.is-de
 
 <script src="/santa/room3d.js"></script>
 <script src="/santa/demo/demo-backend.js"></script>
+<script src="/santa/i18n.js?v=2"></script>
 <script src="/santa/gifts.js"></script>
-<script src="/santa/app.js?v=7"></script>
+<script src="/santa/app.js?v=8"></script>
 <script>
 (function () {
   const tabs = { host: document.getElementById("tabHost"), guest: document.getElementById("tabSend") };
@@ -401,6 +407,6 @@ body.is-demo #kakaoShare,body.is-demo #moreShare,body.is-demo #logout,body.is-de
   paint();
 })();
 </script>
-<script src="/music/player.js?v=5" defer></script>
+<script src="/music/player.js?v=6" defer></script>
 </body>
 </html>
