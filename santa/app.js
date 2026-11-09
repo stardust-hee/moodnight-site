@@ -30,8 +30,15 @@ const giftHTML = () => `<span class="spr"></span>`;
 const errMsg = e => { const m = (e && e.message) || "잠시 후 다시 시도해 주세요."; return m.includes(": ") ? m.split(": ").slice(1).join(": ") : m; };
 function toast(t) { const el = $("#toast"); el.textContent = t; el.classList.add("show"); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove("show"), 2800); }
 
-const pathSlug = (location.pathname.match(/\/santa\/r\/([a-z0-9]+)/i) || [])[1] || null;
-const MODE = pathSlug ? "guest" : "host";
+let pathSlug = (location.pathname.match(/\/santa\/r\/([a-z0-9]+)/i) || [])[1] || null;
+let MODE = pathSlug ? "guest" : "host";
+/* 체험판(santa/demo): demo-backend.js가 window.DEMO를 만들고, 탭으로 화면을 바꿔요 */
+if (window.DEMO) { MODE = DEMO.mode; pathSlug = MODE === "guest" ? "demo" : null; }
+window.demoSwitch = mode => {
+  DEMO.mode = MODE = mode; pathSlug = mode === "guest" ? "demo" : null;
+  sent = false; draft = freshDraft(); draftErr = ""; cur = null; $("#overlay").hidden = true;
+  return mode === "guest" ? loadGuest() : loadHost();
+};
 
 let session = null, room = null, sent = false;
 const freshDraft = () => ({ wrap: "red", item: null, msg: "", hints: ["", "", ""], name: "", decoys: ["", "", ""], autoInitial: true, realTier: null });
@@ -491,7 +498,7 @@ async function loadGuest() {
     panel(`<div class="stack"><div><h2>선물가게를 찾을 수 없어요</h2><p class="sub">링크가 잘못됐거나 선물가게가 삭제됐어요. 링크를 보낸 친구에게 다시 확인해 주세요.</p></div><a class="btn red wide" href="/santa/">나도 선물가게 만들기</a></div>`);
     return;
   }
-  if (data.is_owner) { location.replace("/santa/"); return; }
+  if (data.is_owner && !window.DEMO) { location.replace("/santa/"); return; }
   room = data; document.title = `${room.display_name}의 선물가게 | 산타의 선물가게`;
   renderTop(); renderGifts(); renderSend();
 }
