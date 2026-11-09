@@ -166,3 +166,8 @@ section + section{border-top:1px solid var(--night-3)}
   .picks td:nth-child(3){color:var(--cream-soft)}
 }
 
+
+.live-stats{display:flex;align-items:center;gap:8px;margin:0;font-size:.92rem;color:var(--cream-soft)}
+.live-stats b{color:var(--lamp);font-variant-numeric:tabular-nums}
+.live-stats .dot{flex:none;width:8px;height:8px;border-radius:50%;background:var(--pine);box-shadow:0 0 0 0 rgba(95,180,135,.6);animation:livePulse 2s infinite}
+@keyframes livePulse{70%{box-shadow:0 0 0 8px rgba(95,180,135,0)}100%{box-shadow:0 0 0 0 rgba(95,180,135,0)}}

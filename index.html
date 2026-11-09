@@ -79,6 +79,7 @@
             <li>크리스마스 전에는 상자를 흔들어 소리만 들을 수 있어요</li>
             <li>양말부터 플스까지, 상자 속 선물은 실제 상품 중에서 골라요</li>
           </ul>
+          <p class="live-stats" id="liveStats" hidden></p>
           <div class="btns"><a class="btn" href="/santa/">내 선물가게 만들기</a></div>
           <span class="addr">moodnight.co.kr/santa</span>
         </article>
@@ -244,6 +245,22 @@
     if(!still) requestAnimationFrame(draw);
   }
   draw(0);
+})();
+</script>
+<script>
+/* 실제 숫자 표시: 서버(public_stats)에서 진짜 개수를 가져와요. 선물이 MIN_GIFTS개 넘으면 보여요 */
+(function () {
+  const MIN_GIFTS = 30;
+  fetch("https://gbmlkyfguktjtroczqfw.supabase.co/rest/v1/rpc/public_stats", {
+    method: "POST",
+    headers: { "apikey": "sb_publishable_RO92ntdlSM5_Urctc5FD9w_4OHcZQzf", "Content-Type": "application/json" },
+    body: "{}"
+  }).then(r => r.ok ? r.json() : null).then(d => {
+    if (!d || d.gifts < MIN_GIFTS) return;
+    const el = document.getElementById("liveStats"), n = x => Number(x).toLocaleString("ko-KR");
+    el.innerHTML = `<span class="dot"></span><span>지금까지 선물가게 <b>${n(d.rooms)}</b>개, 맡겨진 선물 <b>${n(d.gifts)}</b>개</span>`;
+    el.hidden = false;
+  }).catch(() => {});
 })();
 </script>
 </body>
