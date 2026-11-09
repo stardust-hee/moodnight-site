@@ -329,7 +329,7 @@ function renderGuest() {
     ${mine ? '' : HOW_GUEST(S.name)}
     ${statsHTML()}
     ${listHTML()}
-    <a class="btn wide" href="/mansion/${EN ? '?lang=en' : ''}">${L('나도 내 맨션 만들기', 'Build my own mansion')}</a>
+    <a class="btn wide" href="/mansion/${EN ? 'en' : ''}">${L('나도 내 맨션 만들기', 'Build my own mansion')}</a>
     <p class="fine">${L('욕설이나 상처 주는 말은 집주인이 퇴거시킬 수 있어요. <a href="/terms.html">이용약관</a>', 'The owner can evict anyone who leaves hurtful words. <a href="/terms.html">Terms</a>')}</p>`);
   bindList();
 }
@@ -433,7 +433,7 @@ function openFactory() {
 }
 function openShop() {
   openSheet(L('산타의 선물가게', "Santa's Gift Shop"), `<div class="shop"><h3>${L('산타의 선물가게', "Santa's Gift Shop")}</h3><p>${L('맨션 1층 모퉁이 가게예요. 친구에게 익명 선물과 편지를 맡겨 두면, 크리스마스에 열어 보고 누가 보냈는지 단서로 맞혀요.', 'The corner shop on the ground floor. Friends leave anonymous gifts and letters, and on Christmas you open them and guess who sent each one from the clues.')}</p>
-    <a class="btn" href="/santa/${EN ? '?lang=en' : ''}" data-door="${L('산타의 선물가게', "Santa's Gift Shop")}">${L('선물가게 들어가기', 'Go to the gift shop')}</a></div>
+    <a class="btn" href="/santa/${EN ? 'en' : ''}" data-door="${L('산타의 선물가게', "Santa's Gift Shop")}">${L('선물가게 들어가기', 'Go to the gift shop')}</a></div>
     <p class="hint">${L('무드나잇의 또 다른 놀이, 산타의 선물가게로 연결돼요.', "Takes you to Moodnight's other game, Santa's Gift Shop.")}</p>`);
 }
 
@@ -546,7 +546,7 @@ async function loadHost() {
 }
 async function loadGuest() {
   const { data, error } = await sb.rpc('get_mansion', { p_slug: pathSlug, p_device: DEVICE });
-  if (error || !data) { render(); panel(`<div class="who"><b>${L('맨션을 찾을 수 없어요', 'Mansion not found')}</b></div><p class="sub">${L('링크가 잘못됐거나 맨션이 없어졌어요. 링크를 보낸 친구에게 다시 확인해 주세요.', 'The link may be wrong, or the mansion was deleted. Check with the friend who sent it.')}</p><a class="btn wide" href="/mansion/${EN ? '?lang=en' : ''}">${L('나도 내 맨션 만들기', 'Build my own mansion')}</a>`); return; }
+  if (error || !data) { render(); panel(`<div class="who"><b>${L('맨션을 찾을 수 없어요', 'Mansion not found')}</b></div><p class="sub">${L('링크가 잘못됐거나 맨션이 없어졌어요. 링크를 보낸 친구에게 다시 확인해 주세요.', 'The link may be wrong, or the mansion was deleted. Check with the friend who sent it.')}</p><a class="btn wide" href="/mansion/${EN ? 'en' : ''}">${L('나도 내 맨션 만들기', 'Build my own mansion')}</a>`); return; }
   if (data.is_owner) { location.replace('/mansion/'); return; }
   apply(data); render();
 }

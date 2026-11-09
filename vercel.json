@@ -1,12 +1,10 @@
 {
   "rewrites": [
-    {
-      "source": "/santa/r/:slug",
-      "destination": "/santa/index.html"
-    },
-    {
-      "source": "/mansion/r/:slug",
-      "destination": "/mansion/index.html"
-    }
+    { "source": "/santa/en", "destination": "/santa/index.en.html" },
+    { "source": "/santa/r/:slug", "has": [{ "type": "query", "key": "lang", "value": "en" }], "destination": "/santa/index.en.html" },
+    { "source": "/santa/r/:slug", "destination": "/santa/index.html" },
+    { "source": "/mansion/en", "destination": "/mansion/index.en.html" },
+    { "source": "/mansion/r/:slug", "has": [{ "type": "query", "key": "lang", "value": "en" }], "destination": "/mansion/index.en.html" },
+    { "source": "/mansion/r/:slug", "destination": "/mansion/index.html" }
   ]
 }

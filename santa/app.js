@@ -216,7 +216,7 @@ async function openCard() {
   const blob = await new Promise(ok => r.canvas.toBlob(ok, "image/png"));
   const file = blob && new File([blob], `moodnight-santa-${r.open ? "result" : "room"}.png`, { type: "image/png" });
   const text = r.open ? L(`내 선물가게에서 선물 ${r.total}개 중 ${r.solved}명을 맞혔어! 너도 해 봐`, `I guessed ${r.solved} of ${r.total} secret Santas in my gift shop! Try it yourself`) : L(`내 선물가게에 선물 ${r.total}개가 도착했어. 너도 몰래 하나 두고 가!`, `${r.total} gifts are already in my gift shop. Leave one secretly too!`);
-  const link = r.open ? `${location.origin}/santa/${EN ? "?lang=en" : ""}` : roomUrl();
+  const link = r.open ? `${location.origin}/santa/${EN ? "en" : ""}` : roomUrl();
   const canFile = file && navigator.canShare && navigator.canShare({ files: [file] });
   $("#overlay").hidden = false;
   sheet(`<div><h2>${r.open ? L("결과 카드", "Result card") : L("내 선물가게 이미지", "My gift shop image")}</h2><p class="sub">${L("메시지와 보낸 사람 이름은 이미지에 들어가지 않아요.", "Messages and sender names are never in the image.")}</p></div>
@@ -553,7 +553,7 @@ function renderSent() {
     <div class="sent-mark" aria-hidden="true"><span class="gift static w-gold">${giftHTML()}</span></div>
     <div><h2>${L("선물을 몰래 두고 왔어요", "Your secret gift is under the tree")}</h2><p class="sub">${L(`12월 25일에 ${host}님이 선물을 열고 누가 보냈는지 맞혀 볼 거예요. 그때까지 들키지 않게 조심하세요.`, `On Dec 25, ${host} will open it and try to guess who sent it. Don't give yourself away until then!`)}</p></div>
     ${buyable(lastItem) ? `<div class="real-card"><span class="label">상자에 담은 선물</span>${buyCard(lastItem).replace(/^<div class="real-card">|<\/div>$/g, "")}</div>` : ""}
-    <a class="btn red wide" href="/santa/${EN ? "?lang=en" : ""}">${L("나도 선물가게 만들기", "Make my own gift shop")}</a>
+    <a class="btn red wide" href="/santa/${EN ? "en" : ""}">${L("나도 선물가게 만들기", "Make my own gift shop")}</a>
     <button class="btn ghost wide" id="again">${L("선물 하나 더 보내기", "Send another gift")}</button>
     <!-- 광고 자리: 애드핏/애드센스 승인 후 이 아래에 광고 코드를 넣어요 -->
     <div class="ad-slot" id="adSent" hidden></div>
@@ -661,7 +661,7 @@ async function loadGuest() {
   const { data, error } = await sb.rpc("get_room", { p_slug: pathSlug });
   if (error || !data) {
     renderTop(); renderGifts();
-    panel(`<div class="stack"><div><h2>${L("선물가게를 찾을 수 없어요", "Gift shop not found")}</h2><p class="sub">${L("링크가 잘못됐거나 선물가게가 삭제됐어요. 링크를 보낸 친구에게 다시 확인해 주세요.", "The link may be wrong, or the gift shop was deleted. Check with the friend who sent it.")}</p></div><a class="btn red wide" href="/santa/${EN ? "?lang=en" : ""}">${L("나도 선물가게 만들기", "Make my own gift shop")}</a></div>`);
+    panel(`<div class="stack"><div><h2>${L("선물가게를 찾을 수 없어요", "Gift shop not found")}</h2><p class="sub">${L("링크가 잘못됐거나 선물가게가 삭제됐어요. 링크를 보낸 친구에게 다시 확인해 주세요.", "The link may be wrong, or the gift shop was deleted. Check with the friend who sent it.")}</p></div><a class="btn red wide" href="/santa/${EN ? "en" : ""}">${L("나도 선물가게 만들기", "Make my own gift shop")}</a></div>`);
     return;
   }
   if (data.is_owner && !window.DEMO) { location.replace("/santa/"); return; }
