@@ -178,13 +178,13 @@ async function drawCard() {
   const open = isOpen();
   // 구글 한글 글꼴은 글자 묶음별로 나눠 받아서, 카드에 쓸 글자를 다 알려 줘야 빠짐없이 받아져요
   const ALL = EN ? `${room.display_name}'s Gift Shop ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!?.,-` : `${room.display_name}의 선물가게 2026 크리스마스 선물 개봉 결과 크리스마스까지 D-0123456789 개 중 보낸 친구 명을 맞혔어요 가 열리길 기다려요 도착했어요 누가 보냈는지 단서로 맞히는 놀이 는 12월 25일에 맞혀 볼게요 moodnight.co.kr/santa 완벽한 명탐정 눈치 백단 탐정 새싹 비밀 산타들의 완승`;
-  try { await Promise.all([document.fonts.load('60px "Jua"', ALL), document.fonts.load('30px "Gowun Dodum"', ALL)]); } catch (e) {}
+  try { await Promise.all([document.fonts.load('60px "Jua"', ALL), document.fonts.load('30px "Pretendard Variable"', ALL)]); } catch (e) {}
   const kinds = [...new Set(boxes.map(b => b.wrap))];
   const [bg, ...gi] = await Promise.all(["/santa/3d/room-1600.webp?v=1", ...kinds.map(k => `/santa/3d/gift-${k}.webp?v=1`)].map(loadImg));
   const GI = Object.fromEntries(kinds.map((k, i) => [k, gi[i]]));
   const c = document.createElement("canvas"); c.width = 1080; c.height = 1350; const g = c.getContext("2d");
   const rr = (x, y, w, h, r) => { g.beginPath(); g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r); g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath(); };
-  const D = '"Jua","Gowun Dodum",sans-serif', B = '"Gowun Dodum","Jua",sans-serif';
+  const D = '"Jua","Gowun Dodum",sans-serif', B = '"Pretendard Variable","Jua",sans-serif';
   g.fillStyle = "#F4ECDD"; g.fillRect(0, 0, 1080, 1350);
   g.textAlign = "center"; g.textBaseline = "alphabetic";
   g.fillStyle = "#C23A2E"; g.font = `64px ${D}`; g.fillText(L(`${room.display_name}의 선물가게`, `${POSS(room.display_name)} Gift Shop`), 540, 118);
