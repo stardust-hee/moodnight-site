@@ -244,7 +244,7 @@ function renderHost() {
       ${navigator.share ? `<button class="btn ghost wide" id="moreShare">다른 앱으로 공유</button>` : ""}
       <span class="sub" style="margin:0">선물이 <b>3개만</b> 모여도 추리가 재밌어져요. 단톡방 하나에 올리는 걸로 충분해요. 인스타 스토리에는 링크를 복사해서 링크 스티커로 붙여 주세요.</span>
     </div>
-    <p class="fine">다음에 들어올 때도 처음 로그인한 방법으로 로그인해야 이 선물가게가 보여요. <button class="linkish" id="logout">로그아웃</button></p>
+    <p class="fine">다음에 들어올 때도 처음 로그인한 방법으로 로그인해야 이 선물가게가 보여요. <button class="linkish" id="logout">로그아웃</button> · <button class="linkish" id="delRoom">선물가게 삭제</button></p>
   </div>`);
   $("#renameBtn").onclick = () => { $("#nameView").hidden = true; $("#nameEdit").hidden = false; $("#renameIn").focus(); };
   $("#renameCancel").onclick = () => { $("#nameEdit").hidden = true; $("#nameView").hidden = false; };
@@ -262,6 +262,7 @@ function renderHost() {
   if ($("#moreShare")) $("#moreShare").onclick = () => { window.mnTrack && mnTrack("share", "more"); navigator.share({ title: `${room.display_name}의 선물가게`, text: "몰래 선물을 두고 가 주세요. 크리스마스에 열어볼게요!", url: roomUrl() }).catch(() => {}); };
   $("#logout").onclick = logout;
   if ($("#cardBtn")) $("#cardBtn").onclick = openCard;
+  $("#delRoom").onclick = askDelete;
   // 방 그림 오른쪽 위에도 카드 버튼 (방 그림을 꾹 눌러 저장하면 선물 없는 배경만 저장돼서)
   let rb = $("#roomCardBtn");
   if (visible.length) {
@@ -293,6 +294,20 @@ function kakaoShare() {
       buttons: [{ title: "선물 맡기러 가기", link: { mobileWebUrl: url, webUrl: url } }]
     });
   } catch (e) { copyLink(); }
+}
+
+function askDelete() {
+  $("#overlay").hidden = false;
+  sheet(`<div><h2>선물가게를 삭제할까요?</h2><p class="sub">받은 선물 ${room.boxes.length}개와 메시지, 단서, 맞히기 기록이 모두 지워지고 되돌릴 수 없어요. 친구들이 가진 링크도 더는 열리지 않아요.</p></div>
+    <button class="btn red wide" id="delYes">삭제하기</button><button class="btn ghost wide" id="delNo">취소</button>`);
+  $("#delNo").onclick = closeModal;
+  $("#delYes").onclick = async () => {
+    $("#delYes").disabled = true;
+    const { error } = await sb.rpc("delete_my_room");
+    if (error) { $("#delYes").disabled = false; return toast(errMsg(error)); }
+    $("#overlay").hidden = true; room = null; $("#roomCardBtn") && $("#roomCardBtn").remove();
+    renderTop(); renderGifts(); renderCreate(); toast("선물가게를 삭제했어요");
+  };
 }
 
 async function logout() { await sb.auth.signOut(); session = null; room = null; $("#roomCardBtn") && $("#roomCardBtn").remove(); renderTop(); renderGifts(); renderLogin(); }

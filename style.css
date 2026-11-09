@@ -171,3 +171,9 @@ section + section{border-top:1px solid var(--night-3)}
 .live-stats b{color:var(--lamp);font-variant-numeric:tabular-nums}
 .live-stats .dot{flex:none;width:8px;height:8px;border-radius:50%;background:var(--pine);box-shadow:0 0 0 0 rgba(95,180,135,.6);animation:livePulse 2s infinite}
 @keyframes livePulse{70%{box-shadow:0 0 0 8px rgba(95,180,135,0)}100%{box-shadow:0 0 0 0 rgba(95,180,135,0)}}
+
+/* 공지 띠 */
+.notice-bar{background:var(--night-2);border-bottom:1px solid var(--night-3);font-size:.85rem;color:var(--cream-soft);line-height:1.6}
+.notice-bar .wrap{padding-top:10px;padding-bottom:10px}
+.notice-bar b{color:var(--lamp);margin-right:6px}
+.notice-bar a{color:var(--lamp);white-space:nowrap}

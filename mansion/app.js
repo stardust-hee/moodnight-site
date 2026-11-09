@@ -262,11 +262,22 @@ function renderHost() {
       ${navigator.share ? '<button class="btn ghost wide" id="moreShare">다른 앱으로 공유</button>' : ''}
       <p class="sub">${n ? `빈 집이 ${12 - n}개 남았어요.` : '집이 12채 있어요.'} 단톡방에 링크 하나만 올려도 금방 불이 켜져요.</p></div>
     ${listHTML()}
-    <p class="fine">다음에 들어올 때도 처음 로그인한 방법으로 로그인해야 이 맨션이 보여요. <button class="linkish" id="logout">로그아웃</button></p>`);
+    <p class="fine">다음에 들어올 때도 처음 로그인한 방법으로 로그인해야 이 맨션이 보여요. <button class="linkish" id="logout">로그아웃</button> · <button class="linkish" id="delMansion">맨션 삭제</button></p>`);
   bindList();
   $('#copyBtn').onclick = copyLink; $('#kakaoBtn').onclick = kakaoShare;
   if ($('#moreShare')) $('#moreShare').onclick = () => navigator.share({ title: `${S.name}의 성탄맨션`, text: shareText(), url: shareUrl() }).catch(() => {});
   $('#logout').onclick = logout;
+  $('#delMansion').onclick = () => {
+    openSheet('맨션을 삭제할까요?', `<p class="sub">입주한 친구들의 집과 편지, 벽보가 모두 지워지고 되돌릴 수 없어요. 친구들이 가진 링크도 더는 열리지 않아요.</p>
+      <div class="ctas"><button class="btn sm" id="delYes">삭제하기</button><button class="btn ghost sm" id="delNo">취소</button></div>`);
+    $('#delNo').onclick = closeSheet;
+    $('#delYes').onclick = async () => {
+      $('#delYes').disabled = true;
+      const { error } = await sb.rpc('delete_my_mansion');
+      if (error) { $('#delYes').disabled = false; return toast('삭제하지 못했어요. 잠시 후 다시 시도해 주세요'); }
+      closeSheet(); S = { name: '', slug: null, res: {}, notes: [], owner: false }; render(); loadHost(); toast('맨션을 삭제했어요');
+    };
+  };
   $('#renameBtn').onclick = () => { $('#renameBox').hidden = false; $('#renameIn').focus(); };
   $('#renameCancel').onclick = () => { $('#renameBox').hidden = true; };
   $('#renameSave').onclick = async () => {
