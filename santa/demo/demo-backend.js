@@ -54,6 +54,7 @@
       }
       return { data: view(g) };
     },
+    list_my_gifts: () => ({ data: gifts.map(g => g.opened || g.result ? Object.assign(view(g), { opened: true, hidden: g.hidden }) : { id: g.id, wrap: g.wrap, item: g.item, opened: false, hidden: g.hidden }) }),
     hide_gift: p => { const g = find(p.p_gift_id); if (g) g.hidden = !!p.p_hidden; return { data: null }; },
     report_gift: p => { const g = find(p.p_gift_id); if (g) g.hidden = true; return { data: null }; }
   };

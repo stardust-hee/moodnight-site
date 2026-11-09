@@ -301,8 +301,25 @@ textarea{min-height:110px}
 
 .room img,.room .r3d{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
 .room .r3d img{pointer-events:none}
-.room-card-btn{position:absolute;left:10px;bottom:10px;z-index:3000;border:0;border-radius:999px;padding:7px 12px;background:rgba(40,25,15,.72);color:#FFF6E6;font-family:var(--font-display);font-size:.85rem;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+.room-tools{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding-top:10px}
+.room-tools .room-card-btn:only-child{grid-column:1/-1}
+.room-card-btn{border:1px solid var(--line);border-radius:14px;padding:11px 12px;background:var(--cream);color:var(--ink);font-family:var(--font-display);font-size:1rem;cursor:pointer}
 .room-card-btn:active{transform:translateY(1px)}
+.gift-list{list-style:none;margin:0;padding:0;display:grid;gap:8px;max-height:60vh;overflow-y:auto;overscroll-behavior:contain}
+.gl-row{width:100%;display:flex;align-items:flex-start;gap:12px;text-align:left;background:#fff;border:1px solid var(--line);border-radius:16px;padding:10px 12px;font:inherit;color:var(--ink);cursor:pointer}
+.gl-row:disabled{cursor:default;color:var(--ink)}
+.gl-row .gift{width:52px;flex:none}
+.gl-text{flex:1;min-width:0;display:grid;gap:3px}
+.gl-head{display:flex;align-items:center;gap:6px}
+.gl-head b{font-family:var(--font-display);font-weight:400;font-size:1rem}
+.gl-tag{font-size:.72rem;padding:1px 8px;border-radius:999px;background:#EFE5D3;color:var(--ink-soft)}
+.gl-tag.ok{background:var(--green);color:#FFF8EA}
+.gl-tag.off{background:#E8E1D6;color:#9A8E80}
+.gl-sub{margin:0;font-size:.85rem;color:var(--ink-soft)}
+.gl-item{margin:0;font-size:.85rem;color:var(--ink-soft)}
+.gl-msg{margin:0;font-size:.95rem;line-height:1.55;white-space:pre-line;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.gl-from{margin:0;font-size:.82rem;color:var(--ink-soft);text-align:right}
+.gl-go{flex:none;align-self:center;font-size:.85rem;color:var(--red);white-space:nowrap}
 .card-shot{display:block;width:100%;height:auto;border-radius:16px;box-shadow:0 8px 24px -10px rgba(80,50,20,.45)}
 a.btn{display:block;text-align:center;text-decoration:none;box-sizing:border-box}
 .prod{display:grid;gap:4px;min-width:0}
@@ -344,7 +361,7 @@ a.btn{display:block;text-align:center;text-decoration:none;box-sizing:border-box
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js" crossorigin="anonymous"></script>
 <script src="/santa/gifts.js"></script>
-<script src="/santa/app.js?v=4"></script>
+<script src="/santa/app.js?v=5"></script>
 <script src="/door.js"></script>
 <script src="/music/player.js?v=5" defer></script>
 <script src="/track.js" defer></script>

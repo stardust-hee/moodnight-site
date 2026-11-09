@@ -62,7 +62,7 @@ function renderTop() {
 
 function renderGifts(newId) {
   const wrap = $("#gifts"); wrap.innerHTML = "";
-  if (MODE !== "host" && $("#roomCardBtn")) $("#roomCardBtn").remove();
+  if (MODE !== "host" && $("#roomTools")) $("#roomTools").remove();
   const boxes = room ? room.boxes : [];
   boxes.forEach((g, i) => {
     const s = slot(i);
@@ -263,12 +263,44 @@ function renderHost() {
   $("#logout").onclick = logout;
   if ($("#cardBtn")) $("#cardBtn").onclick = openCard;
   $("#delRoom").onclick = askDelete;
-  // 방 그림 오른쪽 위에도 카드 버튼 (방 그림을 꾹 눌러 저장하면 선물 없는 배경만 저장돼서)
-  let rb = $("#roomCardBtn");
-  if (visible.length) {
-    if (!rb) { rb = document.createElement("button"); rb.id = "roomCardBtn"; rb.className = "room-card-btn"; $("#room").appendChild(rb); }
-    rb.textContent = isOpen() ? "📸 결과 카드" : "📸 이미지 저장"; rb.onclick = openCard;
-  } else if (rb) rb.remove();
+  // 방 그림 바로 아래 버튼: 선물 목록, 이미지 저장 (방 그림을 꾹 눌러 저장하면 선물 없는 배경만 저장돼서)
+  let bar = $("#roomTools");
+  if (room.boxes.length) {
+    if (!bar) { bar = document.createElement("div"); bar.id = "roomTools"; bar.className = "room-tools"; $("#room").after(bar); }
+    bar.innerHTML = `<button class="room-card-btn" id="listBtn" aria-label="받은 선물 목록">☰ 선물 목록</button>`
+      + (visible.length ? `<button class="room-card-btn" id="roomCardBtn">${isOpen() ? "📸 결과 카드" : "📸 이미지 저장"}</button>` : "");
+    $("#listBtn").onclick = openList;
+    if ($("#roomCardBtn")) $("#roomCardBtn").onclick = openCard;
+  } else if (bar) bar.remove();
+}
+
+/* ── 받은 선물 목록 (주인만) ──
+ * 크리스마스 전: 상자와 흔든 소리만. 메시지는 개봉 전엔 서버가 주지 않아요.
+ * 크리스마스 뒤: 연 선물은 메시지와 보낸 사람(맞혔거나 공개된 경우)까지, 안 연 선물은 "열기" */
+async function openList() {
+  $("#overlay").hidden = false;
+  sheet(`<div><h2>받은 선물</h2><p class="sub">불러오는 중…</p></div>`);
+  const { data, error } = await sb.rpc("list_my_gifts");
+  if (error) { toast(errMsg(error)); closeModal(); return; }
+  const list = data || [], open = isOpen();
+  const rows = list.map((g, i) => {
+    const it = item(g.item);
+    const tag = g.hidden ? `<span class="gl-tag off">숨김</span>` : g.result === "right" ? `<span class="gl-tag ok">정답</span>` : g.result === "miss" ? `<span class="gl-tag">공개</span>` : g.opened ? `<span class="gl-tag">추리 중</span>` : "";
+    let body;
+    if (!open) body = `<p class="gl-sub">흔들어 보니 ${esc(it.shake)}</p>`;
+    else if (!g.opened) body = `<p class="gl-sub">아직 리본을 안 풀었어요</p>`;
+    else body = `<p class="gl-item">${it.icon} ${esc(it.name)}</p><p class="gl-msg">${esc(g.message)}</p><p class="gl-from">From. ${g.sender_name ? esc(g.sender_name) : "???"}</p>`;
+    const action = open ? `<span class="gl-go">${g.opened ? "보기" : "열기"} ›</span>` : "";
+    return `<li><button class="gl-row" data-id="${esc(g.id)}" ${open ? "" : "disabled"}>
+      <span class="gift static w-${esc(g.wrap)}">${giftHTML()}</span>
+      <span class="gl-text"><span class="gl-head"><b>선물 ${i + 1}</b>${tag}</span>${body}</span>${action}</button></li>`;
+  }).join("");
+  const opened = list.filter(g => g.opened).length;
+  sheet(`<div><h2>받은 선물 ${list.length}개</h2><p class="sub">${open ? `${opened}개를 열어 봤어요. 선물을 누르면 단서를 보고 보낸 사람을 맞힐 수 있어요.` : "메시지는 12월 25일에 선물을 열면 여기서 한 번에 볼 수 있어요."}</p></div>
+    <ul class="gift-list">${rows}</ul>`);
+  document.querySelectorAll(".gl-row:not(:disabled)").forEach(b => b.onclick = () => {
+    const box = room.boxes.find(x => x.id === b.dataset.id); if (box) openModal(box);
+  });
 }
 
 async function copyLink() {
@@ -305,12 +337,12 @@ function askDelete() {
     $("#delYes").disabled = true;
     const { error } = await sb.rpc("delete_my_room");
     if (error) { $("#delYes").disabled = false; return toast(errMsg(error)); }
-    $("#overlay").hidden = true; room = null; $("#roomCardBtn") && $("#roomCardBtn").remove();
+    $("#overlay").hidden = true; room = null; $("#roomTools") && $("#roomTools").remove();
     renderTop(); renderGifts(); renderCreate(); toast("선물가게를 삭제했어요");
   };
 }
 
-async function logout() { await sb.auth.signOut(); session = null; room = null; $("#roomCardBtn") && $("#roomCardBtn").remove(); renderTop(); renderGifts(); renderLogin(); }
+async function logout() { await sb.auth.signOut(); session = null; room = null; $("#roomTools") && $("#roomTools").remove(); renderTop(); renderGifts(); renderLogin(); }
 
 
 
