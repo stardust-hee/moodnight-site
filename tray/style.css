@@ -25,3 +25,6 @@
 /* 트레이 4종: 폰에서는 그림 위, 이름 아래로 세워서 이름이 잘리지 않게 */
 @media(max-width:860px){.mobile-tray-pick .tray-option{flex-direction:column;justify-content:center;align-items:center;height:74px;gap:3px;padding:5px 3px}.mobile-tray-pick .tray-thumb{width:48px;height:40px}.mobile-tray-pick .tray-meta{align-items:center}.mobile-tray-pick .tray-meta b{overflow:visible;text-overflow:clip}}
 @media(max-width:400px){.mobile-tray-pick .tray-thumb{width:44px;height:38px}}
+/* 폰: 작업판을 화면 폭에 꽉 차게 (아이폰에서 너무 작게 보이던 문제) */
+@media(max-width:860px){.workspace-wrap{justify-content:center}.art-frame,.art-frame{width:min(100%,600px)}}
+@media(max-width:400px){.art-frame{width:100%}}

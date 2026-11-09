@@ -88,7 +88,7 @@ async function saveImage(){const D=1600;const c=document.createElement('canvas')
  let seed=23;for(let i=0;i<1900;i++){seed=(seed*16807)%2147483647;let x=seed%1600;seed=(seed*16807)%2147483647;let y=seed%1600;ctx.strokeStyle='rgba(87,67,55,.026)';ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+9,y-14);ctx.stroke()}
  const trayIm=getImage(trays.find(t=>t.id===state.tray).src);await preload(trayIm);ctx.save();ctx.shadowColor='#483a3290';ctx.shadowBlur=47;ctx.shadowOffsetY=28;drawImg(ctx,trayIm,D/2,D/2,D*.88,D*.88);ctx.restore();
  for(const item of state.items){const img=getImage(item.customSrc||source(item.id));await preload(img);ctx.save();ctx.translate(D*item.x/100,D*item.y/100);ctx.rotate(item.rotation*Math.PI/180);ctx.scale(item.flip,1);ctx.shadowColor='#2b241d55';ctx.shadowBlur=14;ctx.shadowOffsetY=12;ctx.shadowOffsetX=4;if(img.naturalWidth){if(item.customSrc){drawImg(ctx,img,0,0,D*item.size/100,D*item.size*1.08/100)}else{ctx.drawImage(img,-D*item.size/200,-D*item.size*1.08/200,D*item.size/100,D*item.size*1.08/100)}}ctx.restore()}
- ctx.fillStyle='rgba(84,70,64,.65)';ctx.font='italic 33px Georgia';ctx.fillText('a little still life',45,65);ctx.textAlign='right';ctx.font='21px Georgia';ctx.fillText('silver tray studio ✳',D-48,D-47);
+ ctx.fillStyle='rgba(84,70,64,.65)';ctx.font='italic 33px Georgia';ctx.fillText('a little still life',45,65);ctx.textAlign='right';ctx.font='21px Georgia';ctx.fillText('silver tray studio ✳︎',D-48,D-47);
  try{window.mnTrack&&window.mnTrack('act','tray_save')}catch(e){}const a=document.createElement('a');a.download='my-little-tray.png';a.href=c.toDataURL('image/png');a.click();notify('이미지가 저장되었어요 ♡')}
 const adjustMQ=window.matchMedia('(max-width:860px)');
 // 폰: 고른 소품 바로 아래(공간이 없으면 위)에 크기·회전 패널을 띄움
