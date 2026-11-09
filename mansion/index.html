@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ko">
+<html lang="ko" data-en-title="Christmas Mansion | Moodnight">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -186,6 +186,9 @@ button{cursor:pointer}
 /* 실제 서비스용 */
 .site-nav{max-width:1074px;margin:0 auto 18px;display:flex;justify-content:space-between;align-items:center;gap:12px}
 .site-nav a{color:var(--candle);text-decoration:none;font-weight:700}
+.site-nav{flex-wrap:wrap}.site-nav a:last-of-type{order:3}
+.lang-btn{order:2;margin-left:auto;font:inherit;font-size:12px;color:var(--snow);background:var(--night2);border:0;padding:4px 10px;cursor:pointer;box-shadow:0 -2px var(--night3),0 2px var(--night3),-2px 0 var(--night3),2px 0 var(--night3)}
+html[lang=en] .panel::before{content:"Office.exe"}
 .who button,.linkish{border:0;background:none;padding:0;color:var(--candle);text-decoration:underline;text-underline-offset:3px;font:inherit;cursor:pointer}
 .fine{margin:0;font-size:11px;color:var(--snow-soft)}
 .fine a{color:var(--candle)}
@@ -198,40 +201,40 @@ a.btn{display:block;text-align:center;text-decoration:none}
 #panelBody{display:grid;gap:16px;min-width:0}
 </style>
 
-<nav class="site-nav"><a href="/">← 무드나잇</a><a href="/santa/" data-door="산타의 선물가게">산타의 선물가게 →</a></nav>
+<nav class="site-nav"><a href="/" data-en="← Moodnight">← 무드나잇</a><a href="/santa/" data-door="산타의 선물가게" data-en="Santa's Gift Shop →">산타의 선물가게 →</a></nav>
 
 <div class="app">
   <header class="top">
     <div class="brand">
       <div class="brand-mark" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" shape-rendering="crispEdges"><rect x="5" y="3" width="14" height="19" fill="#4A3A3C"/><rect x="4" y="2" width="16" height="2" fill="#EEF3F8"/><rect x="7" y="6" width="4" height="3" fill="#FFA347"/><rect x="13" y="6" width="4" height="3" fill="#2A3B4E"/><rect x="7" y="11" width="4" height="3" fill="#FFD27A"/><rect x="13" y="11" width="4" height="3" fill="#FF8F7A"/><rect x="10" y="17" width="4" height="5" fill="#FFD27A"/></svg></div>
-      <div><h1 id="title">성탄맨션</h1><p>친구가 빈 집에 입주해 창문에 불을 켜고 편지를 남기는 겨울밤 맨션</p></div>
+      <div><h1 id="title" data-en="Christmas Mansion">성탄맨션</h1><p data-en="Friends move into empty units, light up the windows and leave you letters">친구가 빈 집에 입주해 창문에 불을 켜고 편지를 남기는 겨울밤 맨션</p></div>
     </div>
-    <span class="pill" id="viewPill">불러오는 중</span>
+    <span class="pill" id="viewPill" data-en="Loading">불러오는 중</span>
   </header>
 
   <div class="main">
     <section class="yard" aria-label="맨션">
       <div class="frame" id="frame">
-        <canvas id="cv" width="240" height="264" role="img" aria-label="눈 내리는 밤, 창문마다 불이 켜진 작은 맨션"></canvas>
+        <canvas id="cv" width="240" height="264" role="img" aria-label="눈 내리는 밤, 창문마다 불이 켜진 작은 맨션" data-en-label="A small mansion on a snowy night, with lit windows"></canvas>
         <div class="hits" id="hits"></div>
-        <span class="plaque">성탄맨션</span><span class="shopsign">산타의 선물가게</span><span class="shoptip">눌러서 들어가기</span><span class="factsign">루돌프네 양말공장</span><span class="boardtag" id="boardTag">벽보</span>
-        <span class="hint-chip" id="hintChip">불러오는 중…</span>
+        <span class="plaque" data-en="MANSION">성탄맨션</span><span class="shopsign" data-en="GIFT SHOP">산타의 선물가게</span><span class="shoptip" data-en="Tap to enter">눌러서 들어가기</span><span class="factsign" data-en="SOCK FACTORY">루돌프네 양말공장</span><span class="boardtag" id="boardTag" data-en="Notes">벽보</span>
+        <span class="hint-chip" id="hintChip" data-en="Loading…">불러오는 중…</span>
         <div class="stamp" id="stamp" hidden><b id="stampText"></b></div>
       </div>
       <div class="ctas" id="ctas" hidden>
         <button class="btn" id="moveBtn">빈 집에 입주하기</button>
-        <button class="btn ghost" id="saveBtn">인스타 공유 이미지</button>
+        <button class="btn ghost" id="saveBtn" data-en="Image for Instagram">인스타 공유 이미지</button>
         <button class="btn ghost board-btn" id="boardBtn" hidden>📌 벽보 붙이기</button>
       </div>
     </section>
 
-    <aside class="panel"><div id="panelBody"><p class="sub">불러오는 중…</p></div></aside>
+    <aside class="panel"><div id="panelBody"><p class="sub" data-en="Loading…">불러오는 중…</p></div></aside>
   </div>
 </div>
 
 <div class="overlay" id="overlay" hidden>
   <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
-    <div class="sbar"><span id="sheetTitle"></span><button id="sheetClose" aria-label="닫기">×</button></div>
+    <div class="sbar"><span id="sheetTitle"></span><button id="sheetClose" aria-label="닫기" data-en-label="Close">×</button></div>
     <div class="sbody" id="sheetBody"></div>
   </div>
 </div>
@@ -239,9 +242,10 @@ a.btn{display:block;text-align:center;text-decoration:none}
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js" crossorigin="anonymous"></script>
-<script src="/mansion/app.js?v=5"></script>
+<script src="/lang.js?v=1"></script>
+<script src="/mansion/app.js?v=6"></script>
 <script src="/door.js"></script>
-<script src="/music/player.js?v=4" defer></script>
+<script src="/music/player.js?v=6" defer></script>
 <script src="/track.js" defer></script>
 </body>
 </html>

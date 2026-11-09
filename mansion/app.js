@@ -12,12 +12,20 @@ try { if (window.Kakao && !Kakao.isInitialized()) Kakao.init(KAKAO_JS_KEY); } ca
 const $ = s => document.querySelector(s);
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches, REDUCE = reduce;
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-const errMsg = e => { const m = (e && e.message) || '잠시 후 다시 시도해 주세요.'; return m.includes(': ') ? m.split(': ').slice(1).join(': ') : m; };
+const EN = window.LANG === 'en', L = window.L || ((k) => k);
+const POSS = n => /s$/i.test(n) ? `${n}'` : `${n}'s`;
+const MN = n => L(`${n}의 성탄맨션`, `${POSS(n)} Christmas Mansion`);
+const nameOk = n => EN ? n.length >= 2 && n.length <= 12 : n.length >= 2 && n.length <= 3;
+const cleanName = v => EN ? v.trim().replace(/\s+/g, ' ') : v.replace(/\s/g, '');
+const ERR_EN = { not_found: "We couldn't find that.", nick: 'Please choose a different nickname.', banned: "The owner has blocked you from this mansion.", dup: "You've already moved in. One home per person.", taken: 'Someone just took that unit. Pick another one.', full: 'The mansion is full. Leave a note on the board instead!', text: 'Please write something.', limit: 'You can post up to 5 notes.', login: 'Please log in first.' };
+const errMsg = e => { const m = (e && e.message) || L('잠시 후 다시 시도해 주세요.', 'Something went wrong. Please try again.'); const code = m.split(':')[0].trim();
+  if (EN) return ERR_EN[code] || (/[가-힣]/.test(m) ? 'Something went wrong. Please try again.' : m);
+  return m.includes(': ') ? m.split(': ').slice(1).join(': ') : m; };
 
 const pathSlug = (location.pathname.match(/\/mansion\/r\/([a-z0-9]+)/i) || [])[1] || null;
 const MODE = pathSlug ? 'guest' : 'host';
 let session = null, S = { name: '', slug: null, res: {}, notes: [], owner: false }, view = 'visit', lastNew = null;
-const OWNER_NAME = () => S.name || '주인';
+const OWNER_NAME = () => S.name || L('주인', 'the owner');
 
 /* 기기 표시: 한 사람이 집을 여러 채 차지하거나, 퇴거된 친구가 닉네임만 바꿔 다시 들어오는 걸 막는 용도 */
 const DEVICE = (() => {
@@ -31,10 +39,10 @@ const mix=(a,b,t)=>{const A=hex(a),B=hex(b);return toHex(A.map((v,i)=>v+(B[i]-v)
 const rgba=(h,a)=>{const[r,g,b]=hex(h);return `rgba(${r},${g},${b},${a})`};
 
 /* ── 선택지 ── */
-const LIGHTS=[{id:'amber',name:'호박빛',c:'#FF9A3C'},{id:'candle',name:'촛불빛',c:'#FFD27A'},{id:'rose',name:'장밋빛',c:'#FF8F7A'},{id:'leaf',name:'풀빛',c:'#D4E89A'},{id:'moon',name:'달빛',c:'#A9C8F0'}];
-const SILS=[{id:'party',name:'신나는 파티'},{id:'blanket',name:'이불 쓰고 컴퓨터'},{id:'lean',name:'창가에 기대기'},{id:'cat',name:'고양이랑 쉬기'},{id:'cook',name:'뭔가 끓이는 중'},{id:'dance',name:'혼자 춤추기'}];
-const ITEMS=[{id:'none',name:'없음'},{id:'sock',name:'양말'},{id:'wreath',name:'리스'},{id:'tree',name:'작은 트리'},{id:'lights',name:'전구 줄'},{id:'candle',name:'촛불 랜턴'},{id:'snowman',name:'꼬마 눈사람'}];
-const POSES=[{id:'stand',name:'서 있기'},{id:'sit',name:'앉아 있기'},{id:'manse',name:'만세'},{id:'lie',name:'드러눕기'}];
+const LIGHTS=[{id:'amber',name:L('호박빛','Amber'),c:'#FF9A3C'},{id:'candle',name:L('촛불빛','Candle'),c:'#FFD27A'},{id:'rose',name:L('장밋빛','Rose'),c:'#FF8F7A'},{id:'leaf',name:L('풀빛','Leaf'),c:'#D4E89A'},{id:'moon',name:L('달빛','Moonlight'),c:'#A9C8F0'}];
+const SILS=[{id:'party',name:L('신나는 파티','Party time')},{id:'blanket',name:L('이불 쓰고 컴퓨터','Blanket + laptop')},{id:'lean',name:L('창가에 기대기','By the window')},{id:'cat',name:L('고양이랑 쉬기','Chilling with a cat')},{id:'cook',name:L('뭔가 끓이는 중','Cooking something')},{id:'dance',name:L('혼자 춤추기','Dancing alone')}];
+const ITEMS=[{id:'none',name:L('없음','None')},{id:'sock',name:L('양말','Stocking')},{id:'wreath',name:L('리스','Wreath')},{id:'tree',name:L('작은 트리','Mini tree')},{id:'lights',name:L('전구 줄','String lights')},{id:'candle',name:L('촛불 랜턴','Candle lantern')},{id:'snowman',name:L('꼬마 눈사람','Little snowman')}];
+const POSES=[{id:'stand',name:L('서 있기','Standing')},{id:'sit',name:L('앉아 있기','Sitting')},{id:'manse',name:L('만세','Hands up')},{id:'lie',name:L('드러눕기','Lying down')}];
 const SWEATERS=['#C8553D','#3F6C8E','#5B8C5A','#B88B4A','#8A5A9E','#D07A8C','#4E8C8A'];
 const nm=(arr,id)=>arr.find(x=>x.id===id).name;
 const lc=id=>LIGHTS.find(l=>l.id===id).c;
@@ -193,9 +201,10 @@ function drawRoom(c,r,no,t){
 const order = () => Object.keys(S.res);
 const sweaterOf = no => SWEATERS[(order().indexOf(no) + SWEATERS.length) % SWEATERS.length];
 const canRead = r => view === 'owner' || r.vis === 'all' || r.mine;
-const whoOf = r => r.who || '친구';
+const whoOf = r => r.who || L('친구', 'a friend');
 const mineUnit = () => order().find(no => S.res[no].mine) || null;
-const shareUrl = () => `${location.origin}/mansion/r/${S.slug}`;
+const shareUrl = () => `${location.origin}/mansion/r/${S.slug}${EN ? '?lang=en' : ''}`;
+const HO = no => L(`${no}호`, `#${no}`);
 function apply(d) {
   S = { name: d.display_name, slug: d.slug, owner: !!d.is_owner, res: {}, notes: (d.notes || []).map(n => ({ id: n.id, who: n.who, text: n.text })) };
   (d.residents || []).forEach(r => { S.res[r.unit] = { id: r.id, who: r.nick, light: r.light, sil: r.sil, item: r.item, pose: r.pose, msg: r.msg, vis: r.vis, mine: !!r.mine }; });
@@ -216,86 +225,96 @@ function render() {
   UNITS.forEach(u => {
     const r = S.res[u.no], b = document.createElement('button'); b.className = 'unit' + (lastNew === u.no ? ' new' : '');
     Object.assign(b.style, { left: (u.x / 240 * 100) + '%', top: (u.y / 264 * 100) + '%', width: (40 / 240 * 100) + '%', height: (36 / 264 * 100) + '%' });
-    b.innerHTML = `<span class="no">${u.no}호${r ? (r.mine ? ' · 내 집' : '') : ' · 빈 집'}</span>`;
-    b.setAttribute('aria-label', r ? `${u.no}호, ${canRead(r) ? whoOf(r) : '친구'}네 집` : `${u.no}호, 빈 집`);
+    b.innerHTML = `<span class="no">${HO(u.no)}${r ? (r.mine ? L(' · 내 집', ' · mine') : '') : L(' · 빈 집', ' · empty')}</span>`;
+    b.setAttribute('aria-label', r ? L(`${u.no}호, ${canRead(r) ? whoOf(r) : '친구'}네 집`, `#${u.no}, ${canRead(r) ? whoOf(r) : 'a friend'}'s home`) : L(`${u.no}호, 빈 집`, `#${u.no}, empty`));
     b.onclick = () => live && openUnit(u.no); hits.appendChild(b);
   });
   const spot = (x, y, w, h, label, fn) => { const b = document.createElement('button'); b.className = 'spot'; Object.assign(b.style, { left: (x / 240 * 100) + '%', top: (y / 264 * 100) + '%', width: (w / 240 * 100) + '%', height: (h / 264 * 100) + '%' }); b.setAttribute('aria-label', label); b.onclick = fn; hits.appendChild(b); };
-  spot(0, 184, 54, 42, '산타의 선물가게 들어가기', openShop); spot(182, 184, 58, 42, '루돌프네 양말공장 엿보기', openFactory);
-  if (live) spot(138, 205, 38, 21, `벽보 보기, ${S.notes.length}장`, () => openBoard());
-  $('#title').textContent = live ? `${S.name}의 성탄맨션` : '성탄맨션';
-  document.title = live ? `${S.name}의 성탄맨션 | 무드나잇` : '성탄맨션 | 무드나잇';
+  spot(0, 184, 54, 42, L('산타의 선물가게 들어가기', "Enter Santa's Gift Shop"), openShop); spot(182, 184, 58, 42, L('루돌프네 양말공장 엿보기', "Peek into Rudolph's Sock Factory"), openFactory);
+  if (live) spot(138, 205, 38, 21, L(`벽보 보기, ${S.notes.length}장`, `Notice board, ${S.notes.length} notes`), () => openBoard());
+  $('#title').textContent = live ? MN(S.name) : L('성탄맨션', 'Christmas Mansion');
+  document.title = live ? `${MN(S.name)} | ${L('무드나잇', 'Moodnight')}` : L('성탄맨션 | 무드나잇', 'Christmas Mansion | Moodnight');
   const n = order().length;
-  $('#hintChip').textContent = !live ? '내 맨션을 만들면 친구들이 빈 집에 입주해요' : n ? '불 켜진 창문을 누르면 그 집에 들어가 볼 수 있어요' : (S.owner ? '아직 빈 맨션이에요. 친구들에게 링크를 보내 보세요' : '첫 번째 입주자가 되어 주세요');
+  $('#hintChip').textContent = !live ? L('내 맨션을 만들면 친구들이 빈 집에 입주해요', 'Build your mansion and friends move in') : n ? L('불 켜진 창문을 누르면 그 집에 들어가 볼 수 있어요', 'Tap a lit window to peek inside') : (S.owner ? L('아직 빈 맨션이에요. 친구들에게 링크를 보내 보세요', 'Still empty. Send your link to friends!') : L('첫 번째 입주자가 되어 주세요', 'Be the first to move in'));
   $('#ctas').hidden = !live;
   if (live) {
     const mine = mineUnit(), full = n >= 12;
-    $('#moveBtn').textContent = S.owner ? '벽보 보기' : mine ? `내 집 ${mine}호 보기` : full ? '벽보 붙이기' : '빈 집에 입주하기';
-    const bb = $('#boardBtn'); if (bb) { bb.hidden = S.owner || (!mine && full); bb.textContent = `📌 벽보 ${S.notes.length ? `보기·붙이기 (${S.notes.length})` : '붙이기'}`; }
+    $('#moveBtn').textContent = S.owner ? L('벽보 보기', 'Notice board') : mine ? L(`내 집 ${mine}호 보기`, `My home #${mine}`) : full ? L('벽보 붙이기', 'Post a note') : L('빈 집에 입주하기', 'Move into an empty unit');
+    const bb = $('#boardBtn'); if (bb) { bb.hidden = S.owner || (!mine && full); bb.textContent = S.notes.length ? L(`📌 벽보 보기·붙이기 (${S.notes.length})`, `📌 Notice board (${S.notes.length})`) : L('📌 벽보 붙이기', '📌 Post a note'); }
   }
   if (!live) return;
   if (MODE === 'host') renderHost(); else renderGuest();
 }
 function statsHTML() {
   const n = order().length;
-  return `<div class="stats"><div class="stat"><b>${n}</b><span>입주한 집</span></div><div class="stat"><b>${12 - n}</b><span>빈 집</span></div><div class="stat"><b>${S.notes.length}</b><span>벽보</span></div></div>`;
+  return `<div class="stats"><div class="stat"><b>${n}</b><span>${L('입주한 집', 'Moved in')}</span></div><div class="stat"><b>${12 - n}</b><span>${L('빈 집', 'Empty')}</span></div><div class="stat"><b>${S.notes.length}</b><span>${L('벽보', 'Notes')}</span></div></div>`;
 }
 function listHTML() {
-  return `<div style="display:grid;gap:8px"><p class="h2">입주자 명단</p><ul class="res">${UNITS.map(u => {
+  return `<div style="display:grid;gap:8px"><p class="h2">${L('입주자 명단', 'Residents')}</p><ul class="res">${UNITS.map(u => {
     const r = S.res[u.no];
-    if (!r) return `<li><button data-unit="${u.no}"><span class="ho off">${u.no}</span><span><b style="color:var(--snow-soft)">빈 집</b><p>${S.owner ? '아직 아무도 안 들어왔어요' : '눌러서 입주하기'}</p></span></button></li>`;
+    if (!r) return `<li><button data-unit="${u.no}"><span class="ho off">${u.no}</span><span><b style="color:var(--snow-soft)">${L('빈 집', 'Empty')}</b><p>${S.owner ? L('아직 아무도 안 들어왔어요', 'No one yet') : L('눌러서 입주하기', 'Tap to move in')}</p></span></button></li>`;
     const ok = canRead(r);
-    return `<li><button data-unit="${u.no}"><span class="ho">${u.no}</span><span style="min-width:0"><b>${esc(ok ? whoOf(r) : '친구')}</b>${r.mine ? '<span class="lock" style="background:var(--candle);color:#2A1608">내 집</span>' : ''}${r.vis === 'owner' ? '<span class="lock">주인만</span>' : ''}<p>${ok ? esc(r.msg || '(말 없이 불만 켜 뒀어요)') : `${esc(OWNER_NAME())}님만 볼 수 있는 편지예요`}</p></span></button></li>`;
+    return `<li><button data-unit="${u.no}"><span class="ho">${u.no}</span><span style="min-width:0"><b>${esc(ok ? whoOf(r) : L('친구', 'A friend'))}</b>${r.mine ? `<span class="lock" style="background:var(--candle);color:#2A1608">${L('내 집', 'Mine')}</span>` : ''}${r.vis === 'owner' ? `<span class="lock">${L('주인만', 'Owner only')}</span>` : ''}<p>${ok ? esc(r.msg || L('(말 없이 불만 켜 뒀어요)', '(Just left the light on)')) : L(`${esc(OWNER_NAME())}님만 볼 수 있는 편지예요`, `Only ${esc(OWNER_NAME())} can read this`)}</p></span></button></li>`;
   }).join('')}</ul></div>`;
 }
 function bindList() { document.querySelectorAll('[data-unit]').forEach(b => b.onclick = () => openUnit(b.dataset.unit)); }
 
 function renderHost() {
   const n = order().length;
-  $('#viewPill').textContent = '집주인';
-  panel(`<div class="who"><b>${esc(S.name)}의 성탄맨션</b><button class="linkish" id="renameBtn">이름 바꾸기</button></div>
-    <div id="renameBox" class="field" hidden><label class="lbl2" for="renameIn">친구들이 부르는 이름 <small>2~3글자</small></label><input type="text" id="renameIn" maxlength="3" value="${esc(S.name)}"><p class="err" id="renameErr"></p><div class="ctas"><button class="btn sm" id="renameSave">저장</button><button class="btn ghost sm" id="renameCancel">취소</button></div></div>
-    <p class="sub">불 켜진 창문을 누르면 친구가 남긴 편지를 읽을 수 있어요. 맨션 1층 벽보판에는 입주 못 한 친구들도 한마디 붙여요. 이상한 입주자는 퇴거시키고, 벽보는 뗄 수 있어요.</p>
+  $('#viewPill').textContent = L('집주인', 'Owner');
+  panel(`<div class="who"><b>${esc(MN(S.name))}</b><button class="linkish" id="renameBtn">${L('이름 바꾸기', 'Rename')}</button></div>
+    <div id="renameBox" class="field" hidden><label class="lbl2" for="renameIn">${L('친구들이 부르는 이름 <small>2~3글자</small>', 'Name your friends call you <small>2–12 characters</small>')}</label><input type="text" id="renameIn" maxlength="${EN ? 12 : 3}" value="${esc(S.name)}"><p class="err" id="renameErr"></p><div class="ctas"><button class="btn sm" id="renameSave">${L('저장', 'Save')}</button><button class="btn ghost sm" id="renameCancel">${L('취소', 'Cancel')}</button></div></div>
+    <p class="sub">${L('불 켜진 창문을 누르면 친구가 남긴 편지를 읽을 수 있어요. 맨션 1층 벽보판에는 입주 못 한 친구들도 한마디 붙여요. 이상한 입주자는 퇴거시키고, 벽보는 뗄 수 있어요.', "Tap a lit window to read your friend's letter. Friends who couldn't move in can post on the ground-floor notice board. You can evict rude residents and take down notes.")}</p>
     ${statsHTML()}
-    <div class="share"><p class="h2">친구 불러서 불 밝히기</p>
-      <div class="linkrow"><code id="linkTxt">${esc(shareUrl().replace(/^https?:\/\//, ''))}</code><button class="btn sm" id="copyBtn">복사</button></div>
-      <button class="btn wide kakao" id="kakaoBtn">카카오톡으로 링크 보내기</button>
-      ${navigator.share ? '<button class="btn ghost wide" id="moreShare">다른 앱으로 공유</button>' : ''}
-      <p class="sub">${n ? `빈 집이 ${12 - n}개 남았어요.` : '집이 12채 있어요.'} 단톡방에 링크 하나만 올려도 금방 불이 켜져요.</p></div>
+    <div class="share"><p class="h2">${L('친구 불러서 불 밝히기', 'Invite friends to light it up')}</p>
+      <div class="linkrow"><code id="linkTxt">${esc(shareUrl().replace(/^https?:\/\//, ''))}</code><button class="btn sm" id="copyBtn">${L('복사', 'Copy')}</button></div>
+      ${EN ? '' : '<button class="btn wide kakao" id="kakaoBtn">카카오톡으로 링크 보내기</button>'}
+      ${navigator.share ? `<button class="btn ${EN ? '' : 'ghost '}wide" id="moreShare">${L('다른 앱으로 공유', 'Share link')}</button>` : ''}
+      <p class="sub">${n ? L(`빈 집이 ${12 - n}개 남았어요.`, `${12 - n} empty unit${12 - n === 1 ? '' : 's'} left.`) : L('집이 12채 있어요.', 'There are 12 units.')} ${L('단톡방에 링크 하나만 올려도 금방 불이 켜져요.', 'Drop the link in one group chat and the lights come on fast.')}</p></div>
     ${listHTML()}
-    <p class="fine">다음에 들어올 때도 처음 로그인한 방법으로 로그인해야 이 맨션이 보여요. <button class="linkish" id="logout">로그아웃</button> · <button class="linkish" id="delMansion">맨션 삭제</button></p>`);
+    <p class="fine">${L('다음에 들어올 때도 처음 로그인한 방법으로 로그인해야 이 맨션이 보여요.', 'Next time, log in the same way to see this mansion.')} <button class="linkish" id="logout">${L('로그아웃', 'Log out')}</button> · <button class="linkish" id="delMansion">${L('맨션 삭제', 'Delete mansion')}</button></p>`);
   bindList();
-  $('#copyBtn').onclick = copyLink; $('#kakaoBtn').onclick = kakaoShare;
-  if ($('#moreShare')) $('#moreShare').onclick = () => navigator.share({ title: `${S.name}의 성탄맨션`, text: shareText(), url: shareUrl() }).catch(() => {});
+  $('#copyBtn').onclick = copyLink; if ($('#kakaoBtn')) $('#kakaoBtn').onclick = kakaoShare;
+  if ($('#moreShare')) $('#moreShare').onclick = () => navigator.share({ title: MN(S.name), text: shareText(), url: shareUrl() }).catch(() => {});
   $('#logout').onclick = logout;
   $('#delMansion').onclick = () => {
-    openSheet('맨션을 삭제할까요?', `<p class="sub">입주한 친구들의 집과 편지, 벽보가 모두 지워지고 되돌릴 수 없어요. 친구들이 가진 링크도 더는 열리지 않아요.</p>
-      <div class="ctas"><button class="btn sm" id="delYes">삭제하기</button><button class="btn ghost sm" id="delNo">취소</button></div>`);
+    openSheet(L('맨션을 삭제할까요?', 'Delete your mansion?'), `<p class="sub">${L('입주한 친구들의 집과 편지, 벽보가 모두 지워지고 되돌릴 수 없어요. 친구들이 가진 링크도 더는 열리지 않아요.', "All homes, letters and notes will be deleted for good. Your friends' links will stop working.")}</p>
+      <div class="ctas"><button class="btn sm" id="delYes">${L('삭제하기', 'Delete')}</button><button class="btn ghost sm" id="delNo">${L('취소', 'Cancel')}</button></div>`);
     $('#delNo').onclick = closeSheet;
     $('#delYes').onclick = async () => {
       $('#delYes').disabled = true;
       const { error } = await sb.rpc('delete_my_mansion');
-      if (error) { $('#delYes').disabled = false; return toast('삭제하지 못했어요. 잠시 후 다시 시도해 주세요'); }
-      closeSheet(); S = { name: '', slug: null, res: {}, notes: [], owner: false }; render(); loadHost(); toast('맨션을 삭제했어요');
+      if (error) { $('#delYes').disabled = false; return toast(L('삭제하지 못했어요. 잠시 후 다시 시도해 주세요', "Couldn't delete. Please try again.")); }
+      closeSheet(); S = { name: '', slug: null, res: {}, notes: [], owner: false }; render(); loadHost(); toast(L('맨션을 삭제했어요', 'Mansion deleted'));
     };
   };
   $('#renameBtn').onclick = () => { $('#renameBox').hidden = false; $('#renameIn').focus(); };
   $('#renameCancel').onclick = () => { $('#renameBox').hidden = true; };
   $('#renameSave').onclick = async () => {
-    const name = $('#renameIn').value.replace(/\s/g, '');
-    if (name.length < 2 || name.length > 3) { $('#renameErr').textContent = '이름은 2~3글자로 적어 주세요.'; return; }
+    const name = cleanName($('#renameIn').value);
+    if (!nameOk(name)) { $('#renameErr').textContent = L('이름은 2~3글자로 적어 주세요.', 'Please use 2–12 characters.'); return; }
     const { error } = await sb.from('mansions').update({ display_name: name }).eq('owner_id', session.user.id);
-    if (error) { $('#renameErr').textContent = '바꾸지 못했어요. 잠시 후 다시 시도해 주세요.'; return; }
-    await reload(); toast('이름을 바꿨어요');
+    if (error) { $('#renameErr').textContent = L('바꾸지 못했어요. 잠시 후 다시 시도해 주세요.', "Couldn't rename. Please try again."); return; }
+    await reload(); toast(L('이름을 바꿨어요', 'Renamed'));
   };
 }
-const HOW_GUEST = n => `<ol class="how">
+const HOW_GUEST = n => EN ? `<ol class="how">
+  <li data-i="🏠"><b>Move in</b>Pick one of the 12 units and choose a nickname. No sign-up needed</li>
+  <li data-i="🪟"><b>Decorate your window</b>Choose a light color, a window silhouette and a balcony decoration to light up your home</li>
+  <li data-i="💌"><b>Leave a letter</b>Write ${esc(n)} a speech-bubble note. Make it 'Only ${esc(n)}' for a secret one</li>
+  <li data-i="📌"><b>Notice board</b>Anyone can post on the ground-floor notice board, even without moving in. Notes are public</li>
+</ol>` : `<ol class="how">
   <li data-i="🏠"><b>빈 집에 입주</b>12채 중 빈 집 하나를 골라 닉네임을 정해요. 로그인은 필요 없어요</li>
   <li data-i="🪟"><b>창문 꾸미기</b>불빛 색, 창가 그림자, 베란다 소품을 골라 내 집에 불을 켜요</li>
   <li data-i="💌"><b>말풍선 편지</b>${esc(n)}님에게 한마디 남겨요. '${esc(n)}님만 보기'로 비밀 편지도 돼요</li>
   <li data-i="📌"><b>벽보 붙이기</b>맨션 1층 벽보판에는 입주하지 않아도 누구나 한마디 붙일 수 있어요. 벽보는 모두에게 보여요</li>
 </ol>`;
-const HOW_HOST = `<ol class="how">
+const HOW_HOST = EN ? `<ol class="how">
+  <li data-i="🔗"><b>Share your link</b>Post your mansion link in a group chat or on Instagram</li>
+  <li data-i="🏠"><b>Friends move in</b>Friends pick empty units, decorate their windows and turn on the lights. Fill all 12 and your mansion glows</li>
+  <li data-i="💌"><b>Read letters</b>Tap a lit window to read the speech-bubble letter your friend left</li>
+  <li data-i="📌"><b>Notice board</b>Friends who couldn't move in can post on the ground-floor notice board</li>
+</ol>` : `<ol class="how">
   <li data-i="🔗"><b>링크 공유</b>내 맨션 링크를 단톡방이나 인스타에 올려요</li>
   <li data-i="🏠"><b>친구 입주</b>친구들이 빈 집을 골라 창문을 꾸미고 불을 켜요. 12집이 다 차면 맨션이 환해져요</li>
   <li data-i="💌"><b>편지 읽기</b>불 켜진 창문을 누르면 그 친구가 남긴 말풍선 편지를 읽을 수 있어요</li>
@@ -304,14 +323,14 @@ const HOW_HOST = `<ol class="how">
 
 function renderGuest() {
   const mine = mineUnit(), n = order().length;
-  $('#viewPill').textContent = mine ? `${mine}호 입주자` : '놀러 온 친구';
-  panel(`<div class="who"><b>${esc(S.name)}의 성탄맨션</b></div>
-    <p class="sub">${mine ? `${mine}호에 불을 켜 두었어요. 다른 친구들이 들어올수록 맨션이 환해져요.` : n >= 12 ? '맨션이 꽉 찼어요. 들어오지 못한 친구는 벽보에 한마디 남길 수 있어요.' : `${esc(S.name)}님의 맨션 빈 집에 들어와 불을 켜 주세요. 이렇게 놀아요.`}</p>
+  $('#viewPill').textContent = mine ? L(`${mine}호 입주자`, `Resident of #${mine}`) : L('놀러 온 친구', 'Visitor');
+  panel(`<div class="who"><b>${esc(MN(S.name))}</b></div>
+    <p class="sub">${mine ? L(`${mine}호에 불을 켜 두었어요. 다른 친구들이 들어올수록 맨션이 환해져요.`, `Your light is on in #${mine}. The more friends move in, the brighter it gets.`) : n >= 12 ? L('맨션이 꽉 찼어요. 들어오지 못한 친구는 벽보에 한마디 남길 수 있어요.', "The mansion is full. You can still leave a note on the notice board.") : L(`${esc(S.name)}님의 맨션 빈 집에 들어와 불을 켜 주세요. 이렇게 놀아요.`, `Move into an empty unit in ${esc(POSS(S.name))} mansion and turn on the light. Here's how:`)}</p>
     ${mine ? '' : HOW_GUEST(S.name)}
     ${statsHTML()}
     ${listHTML()}
-    <a class="btn wide" href="/mansion/">나도 내 맨션 만들기</a>
-    <p class="fine">욕설이나 상처 주는 말은 집주인이 퇴거시킬 수 있어요. <a href="/terms.html">이용약관</a></p>`);
+    <a class="btn wide" href="/mansion/${EN ? '?lang=en' : ''}">${L('나도 내 맨션 만들기', 'Build my own mansion')}</a>
+    <p class="fine">${L('욕설이나 상처 주는 말은 집주인이 퇴거시킬 수 있어요. <a href="/terms.html">이용약관</a>', 'The owner can evict anyone who leaves hurtful words. <a href="/terms.html">Terms</a>')}</p>`);
   bindList();
 }
 
@@ -319,22 +338,23 @@ function renderGuest() {
 let roomTimer = null;
 function openUnit(no) {
   const r = S.res[no];
-  if (!r) { if (S.owner) { toast(`${no}호는 아직 빈 집이에요`); return; } if (mineUnit()) { toast('이미 이 맨션에 입주했어요. 한 사람당 한 집이에요'); return; } F.unit = no; return openMove(); }
+  if (!r) { if (S.owner) { toast(L(`${no}호는 아직 빈 집이에요`, `#${no} is still empty`)); return; } if (mineUnit()) { toast(L('이미 이 맨션에 입주했어요. 한 사람당 한 집이에요', "You've already moved in. One home per person")); return; } F.unit = no; return openMove(); }
   const ok = canRead(r);
-  openSheet(`${no}호`, `<div class="who"><b>${esc(ok ? whoOf(r) : '친구')}네 집${r.mine ? ' (내 집)' : ''}</b><span>${nm(LIGHTS, r.light)} · ${nm(SILS, r.sil)} · ${nm(POSES, r.pose)}</span></div>
-   <div class="room"><canvas id="roomCv" width="200" height="125"></canvas><div class="bubble${ok ? '' : ' locked'}">${ok ? (r.msg ? esc(r.msg) : '…') : `이 집 편지는 ${esc(OWNER_NAME())}님만 볼 수 있어요`}</div></div>
-   <p class="hint">${r.vis === 'owner' ? (view === 'owner' || r.mine ? `'주인만 보기'로 남긴 편지예요. 다른 친구에게는 잠겨 보여요.` : '입주한 친구가 맨션 주인만 읽게 해 뒀어요.') : '이 집 편지는 놀러 온 친구 누구나 읽을 수 있어요.'}</p>
-   ${view === 'owner' && r.id ? `<div class="evict" id="evictBox"><p>집주인 관리 · 이상한 말을 남긴 입주자는 내보낼 수 있어요.</p><div class="row"><button class="btn danger sm" id="evictBtn">${no}호 퇴거시키기</button></div></div>` : ''}`);
+  const who = esc(ok ? whoOf(r) : L('친구', 'A friend'));
+  openSheet(HO(no), `<div class="who"><b>${L(`${who}네 집`, `${who}'s home`)}${r.mine ? L(' (내 집)', ' (mine)') : ''}</b><span>${nm(LIGHTS, r.light)} · ${nm(SILS, r.sil)} · ${nm(POSES, r.pose)}</span></div>
+   <div class="room"><canvas id="roomCv" width="200" height="125"></canvas><div class="bubble${ok ? '' : ' locked'}">${ok ? (r.msg ? esc(r.msg) : '…') : L(`이 집 편지는 ${esc(OWNER_NAME())}님만 볼 수 있어요`, `Only ${esc(OWNER_NAME())} can read this letter`)}</div></div>
+   <p class="hint">${r.vis === 'owner' ? (view === 'owner' || r.mine ? L(`'주인만 보기'로 남긴 편지예요. 다른 친구에게는 잠겨 보여요.`, "This letter is 'owner only'. Other friends see it locked.") : L('입주한 친구가 맨션 주인만 읽게 해 뒀어요.', 'This resident made their letter owner-only.')) : L('이 집 편지는 놀러 온 친구 누구나 읽을 수 있어요.', 'Any visitor can read this letter.')}</p>
+   ${view === 'owner' && r.id ? `<div class="evict" id="evictBox"><p>${L('집주인 관리 · 이상한 말을 남긴 입주자는 내보낼 수 있어요.', 'Owner tools · You can evict residents who leave hurtful words.')}</p><div class="row"><button class="btn danger sm" id="evictBtn">${L(`${no}호 퇴거시키기`, `Evict #${no}`)}</button></div></div>` : ''}`);
   const eb = $('#evictBtn'); if (eb) eb.onclick = () => {
-    $('#evictBox').innerHTML = `<p>${esc(whoOf(r))}님을 내보낼까요? 집과 편지가 모두 사라지고, 같은 닉네임이나 같은 기기로는 다시 입주할 수 없어요.</p>
-      <label class="check"><input type="checkbox" id="evictReport"> 욕설이나 괴롭힘이라 신고도 함께 할게요</label>
-      <div class="row"><button class="btn danger sm" id="evictYes">퇴거시키기</button><button class="btn ghost sm" id="evictNo">그만두기</button></div>`;
+    $('#evictBox').innerHTML = `<p>${L(`${esc(whoOf(r))}님을 내보낼까요? 집과 편지가 모두 사라지고, 같은 닉네임이나 같은 기기로는 다시 입주할 수 없어요.`, `Evict ${esc(whoOf(r))}? Their home and letter will be removed, and they can't move back in with the same nickname or device.`)}</p>
+      <label class="check"><input type="checkbox" id="evictReport"> ${L('욕설이나 괴롭힘이라 신고도 함께 할게요', "Also report it as abuse or harassment")}</label>
+      <div class="row"><button class="btn danger sm" id="evictYes">${L('퇴거시키기', 'Evict')}</button><button class="btn ghost sm" id="evictNo">${L('그만두기', 'Cancel')}</button></div>`;
     $('#evictNo').onclick = () => openUnit(no);
     $('#evictYes').onclick = async () => {
       $('#evictYes').disabled = true;
       const { error } = await sb.rpc('evict_resident', { p_resident_id: r.id, p_reason: $('#evictReport').checked ? '집주인 신고: 욕설·괴롭힘' : null });
       if (error) { toast(errMsg(error)); $('#evictYes').disabled = false; return; }
-      lastNew = null; closeSheet(); await reload(); stamp(`${no}호 방 빼!`); toast(`${whoOf(r)}님을 퇴거시켰어요. ${no}호가 빈 집이 됐어요`);
+      lastNew = null; closeSheet(); await reload(); stamp(L(`${no}호 방 빼!`, `#${no}, out!`)); toast(L(`${whoOf(r)}님을 퇴거시켰어요. ${no}호가 빈 집이 됐어요`, `${whoOf(r)} was evicted. #${no} is empty now`));
     };
   };
   const rc = $('#roomCv'); let tt = 0; const loop = () => { if ($('#overlay').hidden || !document.body.contains(rc)) return; drawRoom(rc, r, no, tt); tt += 16; roomTimer = reduce ? null : setTimeout(loop, 60); }; loop();
@@ -345,23 +365,24 @@ function stamp(t) { $('#stampText').textContent = t; const s = $('#stamp'); s.hi
 const F = { unit: null, nick: '', light: 'amber', sil: 'lean', item: 'sock', pose: 'stand', msg: '', vis: 'all' };
 function openMove() {
   const empties = UNITS.filter(u => !S.res[u.no]).map(u => u.no);
-  if (!empties.length) { openBoard('빈 집이 없어요. 들어오지 못한 친구는 벽보에 한마디 남길 수 있어요.'); return; }
+  if (!empties.length) { openBoard(L('빈 집이 없어요. 들어오지 못한 친구는 벽보에 한마디 남길 수 있어요.', "No empty units left. You can still leave a note on the board.")); return; }
   if (!F.unit || S.res[F.unit]) F.unit = empties[empties.length - 1];
   const chip = (arr, key, sw) => arr.map(o => `<button type="button" data-k="${key}" data-v="${o.id}" aria-pressed="${F[key] === o.id}">${sw ? `<i style="background:${o.c};color:${o.c}"></i>` : ''}${o.name}</button>`).join('');
   const h = `<div class="pv"><canvas id="pvUnit" width="40" height="36"></canvas><canvas id="pvRoom" width="200" height="125"></canvas></div>
-  <div class="field"><label class="lbl2" for="fnick"><span class="n">1</span>닉네임 <small>문패와 명단에 나와요</small></label><input type="text" id="fnick" maxlength="8" placeholder="예: 302호 고양이" autocomplete="off" value="${esc(F.nick)}"></div>
-  <div class="field"><div class="lbl2"><span class="n">2</span>호수 고르기</div><div class="units">${UNITS.map(u => `<button type="button" data-u="${u.no}" aria-pressed="${F.unit === u.no}" ${S.res[u.no] ? 'disabled' : ''}>${u.no}<small>${S.res[u.no] ? '입주 완료' : '빈 집'}</small></button>`).join('')}</div></div>
-  <div class="field"><div class="lbl2"><span class="n">3</span>창문 불빛</div><div class="chips">${chip(LIGHTS, 'light', true)}</div></div>
-  <div class="field"><div class="lbl2"><span class="n">4</span>창에 비치는 그림자</div><div class="chips">${chip(SILS, 'sil')}</div></div>
-  <div class="field"><div class="lbl2"><span class="n">5</span>베란다 꾸미기</div><div class="chips">${chip(ITEMS, 'item')}</div></div>
-  <div class="field"><div class="lbl2"><span class="n">6</span>집 안 내 모습</div><div class="chips">${chip(POSES, 'pose')}</div></div>
-  <div class="field"><label class="lbl2" for="fmsg"><span class="n">7</span>말풍선 한마디 <small>창문을 누르면 보여요</small></label><textarea id="fmsg" maxlength="60" placeholder="올해 고마웠던 거 한 줄">${esc(F.msg)}</textarea><div class="meta"><span>최대 60자</span><span id="fcount">${F.msg.length}/60</span></div>
-   <div class="chips"><button type="button" data-k="vis" data-v="all" aria-pressed="${F.vis === 'all'}">모두 보기</button><button type="button" data-k="vis" data-v="owner" aria-pressed="${F.vis === 'owner'}">${esc(OWNER_NAME())}님만 보기</button></div></div>
-  <p class="err" id="ferr" role="alert"></p><button class="btn wide" id="fgo">${F.unit}호에 입주하기</button>
-  <p class="hint">한 사람당 한 집이에요. 입주한 뒤에는 고칠 수 없어요.</p>`;
-  const sh = $('.sheet'), keep = !$('#overlay').hidden && $('#sheetTitle').textContent === '빈 집에 입주하기' ? sh.scrollTop : 0;
-  openSheet('빈 집에 입주하기', h); sh.scrollTop = keep;
-  const preview = { who: F.nick || '나', light: F.light, sil: F.sil, item: F.item, pose: F.pose, msg: F.msg, vis: F.vis };
+  <div class="field"><label class="lbl2" for="fnick"><span class="n">1</span>${L('닉네임 <small>문패와 명단에 나와요</small>', 'Nickname <small>Shown on your door and the list</small>')}</label><input type="text" id="fnick" maxlength="8" placeholder="${L('예: 302호 고양이', 'e.g. Cat in 302')}" autocomplete="off" value="${esc(F.nick)}"></div>
+  <div class="field"><div class="lbl2"><span class="n">2</span>${L('호수 고르기', 'Pick a unit')}</div><div class="units">${UNITS.map(u => `<button type="button" data-u="${u.no}" aria-pressed="${F.unit === u.no}" ${S.res[u.no] ? 'disabled' : ''}>${u.no}<small>${S.res[u.no] ? L('입주 완료', 'Taken') : L('빈 집', 'Empty')}</small></button>`).join('')}</div></div>
+  <div class="field"><div class="lbl2"><span class="n">3</span>${L('창문 불빛', 'Window light')}</div><div class="chips">${chip(LIGHTS, 'light', true)}</div></div>
+  <div class="field"><div class="lbl2"><span class="n">4</span>${L('창에 비치는 그림자', 'Silhouette in the window')}</div><div class="chips">${chip(SILS, 'sil')}</div></div>
+  <div class="field"><div class="lbl2"><span class="n">5</span>${L('베란다 꾸미기', 'Balcony decoration')}</div><div class="chips">${chip(ITEMS, 'item')}</div></div>
+  <div class="field"><div class="lbl2"><span class="n">6</span>${L('집 안 내 모습', 'You, inside')}</div><div class="chips">${chip(POSES, 'pose')}</div></div>
+  <div class="field"><label class="lbl2" for="fmsg"><span class="n">7</span>${L('말풍선 한마디 <small>창문을 누르면 보여요</small>', 'Speech bubble <small>Shows when someone taps your window</small>')}</label><textarea id="fmsg" maxlength="60" placeholder="${L('올해 고마웠던 거 한 줄', 'One line about what you were thankful for this year')}">${esc(F.msg)}</textarea><div class="meta"><span>${L('최대 60자', 'Up to 60 characters')}</span><span id="fcount">${F.msg.length}/60</span></div>
+   <div class="chips"><button type="button" data-k="vis" data-v="all" aria-pressed="${F.vis === 'all'}">${L('모두 보기', 'Everyone')}</button><button type="button" data-k="vis" data-v="owner" aria-pressed="${F.vis === 'owner'}">${L(`${esc(OWNER_NAME())}님만 보기`, `Only ${esc(OWNER_NAME())}`)}</button></div></div>
+  <p class="err" id="ferr" role="alert"></p><button class="btn wide" id="fgo">${L(`${F.unit}호에 입주하기`, `Move into #${F.unit}`)}</button>
+  <p class="hint">${L('한 사람당 한 집이에요. 입주한 뒤에는 고칠 수 없어요.', "One home per person. You can't change it after moving in.")}</p>`;
+  const MOVE_T = L('빈 집에 입주하기', 'Move into an empty unit');
+  const sh = $('.sheet'), keep = !$('#overlay').hidden && $('#sheetTitle').textContent === MOVE_T ? sh.scrollTop : 0;
+  openSheet(MOVE_T, h); sh.scrollTop = keep;
+  const preview = { who: F.nick || L('나', 'Me'), light: F.light, sil: F.sil, item: F.item, pose: F.pose, msg: F.msg, vis: F.vis };
   const tmp = document.createElement('canvas'); tmp.width = 240; tmp.height = 264; C = tmp.getContext('2d'); drawStatic({ res: { ...S.res, [F.unit]: preview }, notes: S.notes });
   const u = UNITS.find(x => x.no === F.unit), pu = $('#pvUnit').getContext('2d'); pu.drawImage(tmp, u.x, u.y, 40, 36, 0, 0, 40, 36);
   drawRoom($('#pvRoom'), preview, F.unit, 0);
@@ -370,12 +391,12 @@ function openMove() {
   document.querySelectorAll('.chips button[data-k]').forEach(b => b.onclick = () => { F[b.dataset.k] = b.dataset.v; openMove(); });
   $('#fgo').onclick = async () => {
     const err = $('#ferr'), nick = F.nick.trim();
-    if (!nick) { err.textContent = '닉네임을 적어 주세요. 문패에 들어가요.'; ni.focus(); return; }
-    $('#fgo').disabled = true; $('#fgo').textContent = '이삿짐 옮기는 중…';
+    if (!nick) { err.textContent = L('닉네임을 적어 주세요. 문패에 들어가요.', 'Enter a nickname. It goes on your door.'); ni.focus(); return; }
+    $('#fgo').disabled = true; $('#fgo').textContent = L('이삿짐 옮기는 중…', 'Moving in…');
     const { error } = await sb.rpc('move_in', { p_slug: S.slug, p_unit: F.unit, p_nick: nick, p_light: F.light, p_sil: F.sil, p_item: F.item, p_pose: F.pose, p_msg: F.msg.trim(), p_vis: F.vis, p_device: DEVICE });
-    if (error) { err.textContent = errMsg(error); $('#fgo').disabled = false; $('#fgo').textContent = `${F.unit}호에 입주하기`; if (/taken|full/.test(error.message || '')) { await reload(); } return; }
+    if (error) { err.textContent = errMsg(error); $('#fgo').disabled = false; $('#fgo').textContent = L(`${F.unit}호에 입주하기`, `Move into #${F.unit}`); if (/taken|full/.test(error.message || '')) { await reload(); } return; }
     const no = F.unit; lastNew = no; Object.assign(F, { unit: null, nick: '', msg: '' });
-    closeSheet(); await reload(); $('#frame').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' }); stamp(`${no}호에 불이 켜졌어요`);
+    closeSheet(); await reload(); $('#frame').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' }); stamp(L(`${no}호에 불이 켜졌어요`, `#${no} lights up!`));
   };
 }
 
@@ -383,37 +404,37 @@ function openMove() {
 const B = { who: '', text: '' }; let newNote = -1;
 function openBoard(lead) {
   const full = order().length >= 12;
-  const h = `${lead || full ? `<p class="hint">${esc(lead || '맨션이 꽉 찼어요. 들어오지 못한 친구는 벽보에 한마디 남겨요.')}</p>` : '<p class="hint">입주하지 않아도 누구나 벽보에 한마디 붙일 수 있어요. 벽보는 모두에게 보여요.</p>'}
-   <div class="notes">${S.notes.length ? S.notes.map((n, i) => `<div class="note${i === newNote ? ' new' : ''}" style="background:${NOTE_COLORS[i % 5]};transform:rotate(${(i % 3 - 1) * 2.5}deg)">${esc(n.text)}<b>— ${esc(n.who)}</b>${view === 'owner' && n.id ? `<button class="rm" data-rm="${n.id}" aria-label="${esc(n.who)}님 벽보 떼기">떼기</button>` : ''}</div>`).join('') : '<p class="hint" style="color:#F3E3D0">아직 붙은 벽보가 없어요.</p>'}</div>
-   ${S.owner ? '<p class="hint">욕설이 담긴 벽보는 떼면 같은 기기에서 다시 붙일 수 없게 막아 둘게요.</p>' : `<div class="field"><label class="lbl2" for="bwho">닉네임 <small>비우면 익명</small></label><input type="text" id="bwho" maxlength="8" placeholder="익명" autocomplete="off" value="${esc(B.who)}"></div>
-   <div class="field"><label class="lbl2" for="btext">벽보 한마디</label><textarea id="btext" maxlength="40" placeholder="방빼!! 나도 들어가고 싶었는데">${esc(B.text)}</textarea><div class="meta"><span>최대 40자</span><span id="bcount">${B.text.length}/40</span></div>
-   <div class="chips">${['방빼!!', '나도 들어가고 싶었는데', '크리스마스 잘 보내', '내년엔 꼭 입주한다'].map(t => `<button type="button" data-t="${t}">${t}</button>`).join('')}</div></div>
-   <p class="err" id="berr" role="alert"></p><button class="btn wide" id="bgo">벽보 붙이기</button>`}`;
-  openSheet(`벽보 · ${S.notes.length}장`, h);
+  const h = `${lead || full ? `<p class="hint">${esc(lead || L('맨션이 꽉 찼어요. 들어오지 못한 친구는 벽보에 한마디 남겨요.', "The mansion is full. Friends who couldn't move in leave a note here."))}</p>` : `<p class="hint">${L('입주하지 않아도 누구나 벽보에 한마디 붙일 수 있어요. 벽보는 모두에게 보여요.', "Anyone can post a note, even without moving in. Notes are public.")}</p>`}
+   <div class="notes">${S.notes.length ? S.notes.map((n, i) => `<div class="note${i === newNote ? ' new' : ''}" style="background:${NOTE_COLORS[i % 5]};transform:rotate(${(i % 3 - 1) * 2.5}deg)">${esc(n.text)}<b>— ${esc(n.who)}</b>${view === 'owner' && n.id ? `<button class="rm" data-rm="${n.id}" aria-label="${esc(L(`${n.who}님 벽보 떼기`, `Remove ${n.who}'s note`))}">${L('떼기', 'Remove')}</button>` : ''}</div>`).join('') : `<p class="hint" style="color:#F3E3D0">${L('아직 붙은 벽보가 없어요.', 'No notes yet.')}</p>`}</div>
+   ${S.owner ? `<p class="hint">${L('욕설이 담긴 벽보는 떼면 같은 기기에서 다시 붙일 수 없게 막아 둘게요.', "If you remove an abusive note, that device can't post again.")}</p>` : `<div class="field"><label class="lbl2" for="bwho">${L('닉네임 <small>비우면 익명</small>', 'Nickname <small>Leave blank to stay anonymous</small>')}</label><input type="text" id="bwho" maxlength="8" placeholder="${L('익명', 'Anonymous')}" autocomplete="off" value="${esc(B.who)}"></div>
+   <div class="field"><label class="lbl2" for="btext">${L('벽보 한마디', 'Your note')}</label><textarea id="btext" maxlength="40" placeholder="${L('방빼!! 나도 들어가고 싶었는데', 'No vacancy?! I wanted in too')}">${esc(B.text)}</textarea><div class="meta"><span>${L('최대 40자', 'Up to 40 characters')}</span><span id="bcount">${B.text.length}/40</span></div>
+   <div class="chips">${(EN ? ['No vacancy?!', 'I wanted in too', 'Merry Christmas!', "I'm moving in next year"] : ['방빼!!', '나도 들어가고 싶었는데', '크리스마스 잘 보내', '내년엔 꼭 입주한다']).map(t => `<button type="button" data-t="${esc(t)}">${esc(t)}</button>`).join('')}</div></div>
+   <p class="err" id="berr" role="alert"></p><button class="btn wide" id="bgo">${L('벽보 붙이기', 'Post note')}</button>`}`;
+  openSheet(L(`벽보 · ${S.notes.length}장`, `Notice board · ${S.notes.length}`), h);
   document.querySelectorAll('[data-rm]').forEach(b => b.onclick = async () => {
     b.disabled = true;
     const { error } = await sb.rpc('remove_note', { p_note_id: b.dataset.rm, p_reason: '집주인이 뗌' });
     if (error) { toast(errMsg(error)); b.disabled = false; return; }
-    newNote = -1; await reload(); openBoard(lead); toast('벽보를 뗐어요');
+    newNote = -1; await reload(); openBoard(lead); toast(L('벽보를 뗐어요', 'Note removed'));
   });
   if (S.owner) return;
   const bw = $('#bwho'), bt = $('#btext'); bw.oninput = () => B.who = bw.value; bt.oninput = () => { B.text = bt.value; $('#bcount').textContent = bt.value.length + '/40'; };
   document.querySelectorAll('[data-t]').forEach(b => b.onclick = () => { B.text = (B.text ? B.text + ' ' : '') + b.dataset.t; B.text = B.text.slice(0, 40); bt.value = B.text; $('#bcount').textContent = B.text.length + '/40'; });
   $('#bgo').onclick = async () => {
-    const text = B.text.trim(); if (!text) { $('#berr').textContent = '한마디를 적어 주세요.'; bt.focus(); return; }
+    const text = B.text.trim(); if (!text) { $('#berr').textContent = L('한마디를 적어 주세요.', 'Please write something.'); bt.focus(); return; }
     $('#bgo').disabled = true;
     const { error } = await sb.rpc('post_note', { p_slug: S.slug, p_who: B.who.trim(), p_text: text, p_device: DEVICE });
     if (error) { $('#berr').textContent = errMsg(error); $('#bgo').disabled = false; return; }
-    Object.assign(B, { who: '', text: '' }); await reload(); newNote = S.notes.length - 1; openBoard(); toast('벽보를 붙였어요');
+    Object.assign(B, { who: '', text: '' }); await reload(); newNote = S.notes.length - 1; openBoard(); toast(L('벽보를 붙였어요', 'Note posted'));
   };
 }
 function openFactory() {
-  openSheet('루돌프네 양말공장', `<div class="shop" style="background-color:#3A2418"><h3>루돌프네 양말공장</h3><p>선물가게 옆 작은 공장이에요. 루돌프가 뿔에 실을 걸고 밤새 양말을 떠요. 코가 깜빡이면 한 짝 완성!</p><p style="color:var(--candle)">지금은 크리스마스 양말 주문이 밀려서 문이 닫혀 있어요.</p></div><p class="hint">곧 열려요. 창문 너머로 루돌프가 일하는 모습만 볼 수 있어요.</p>`);
+  openSheet(L('루돌프네 양말공장', "Rudolph's Sock Factory"), EN ? `<div class="shop" style="background-color:#3A2418"><h3>Rudolph's Sock Factory</h3><p>A tiny factory next to the gift shop. Rudolph hooks yarn on his antlers and knits socks all night. When his nose blinks, one sock is done!</p><p style="color:var(--candle)">It's closed for now. Too many Christmas stocking orders.</p></div><p class="hint">Opening soon. For now you can only watch Rudolph work through the window.</p>` : `<div class="shop" style="background-color:#3A2418"><h3>루돌프네 양말공장</h3><p>선물가게 옆 작은 공장이에요. 루돌프가 뿔에 실을 걸고 밤새 양말을 떠요. 코가 깜빡이면 한 짝 완성!</p><p style="color:var(--candle)">지금은 크리스마스 양말 주문이 밀려서 문이 닫혀 있어요.</p></div><p class="hint">곧 열려요. 창문 너머로 루돌프가 일하는 모습만 볼 수 있어요.</p>`);
 }
 function openShop() {
-  openSheet('산타의 선물가게', `<div class="shop"><h3>산타의 선물가게</h3><p>맨션 1층 모퉁이 가게예요. 친구에게 익명 선물과 편지를 맡겨 두면, 크리스마스에 열어 보고 누가 보냈는지 단서로 맞혀요.</p>
-    <a class="btn" href="/santa/" data-door="산타의 선물가게">선물가게 들어가기</a></div>
-    <p class="hint">무드나잇의 또 다른 놀이, 산타의 선물가게로 연결돼요.</p>`);
+  openSheet(L('산타의 선물가게', "Santa's Gift Shop"), `<div class="shop"><h3>${L('산타의 선물가게', "Santa's Gift Shop")}</h3><p>${L('맨션 1층 모퉁이 가게예요. 친구에게 익명 선물과 편지를 맡겨 두면, 크리스마스에 열어 보고 누가 보냈는지 단서로 맞혀요.', 'The corner shop on the ground floor. Friends leave anonymous gifts and letters, and on Christmas you open them and guess who sent each one from the clues.')}</p>
+    <a class="btn" href="/santa/${EN ? '?lang=en' : ''}" data-door="${L('산타의 선물가게', "Santa's Gift Shop")}">${L('선물가게 들어가기', 'Go to the gift shop')}</a></div>
+    <p class="hint">${L('무드나잇의 또 다른 놀이, 산타의 선물가게로 연결돼요.', "Takes you to Moodnight's other game, Santa's Gift Shop.")}</p>`);
 }
 
 /* ── 저장 ── */
@@ -422,7 +443,7 @@ async function saveImage() {
   try { await Promise.all(['56px Galmuri14', '30px Galmuri11', '700 30px Galmuri11'].map(f => document.fonts.load(f))); } catch (e) {}
   const W = 1080, H = 1350, c = document.createElement('canvas'); c.width = W; c.height = H; const g = c.getContext('2d'); g.imageSmoothingEnabled = false;
   const n = typeof order === 'function' ? order().length : Object.keys(S.res).length, left = 12 - n;
-  const name = S.name || '', link = (S.slug ? `${location.origin}/mansion/r/${S.slug}` : `${location.origin}/mansion/`).replace(/^https?:\/\//, '');
+  const name = S.name || '', link = (S.slug ? shareUrl() : `${location.origin}/mansion/`).replace(/^https?:\/\//, '');
   g.fillStyle = '#0F1B28'; g.fillRect(0, 0, W, H);
   g.fillStyle = 'rgba(255,255,255,.03)'; for (let x = 0; x < W; x += 6) g.fillRect(x, 0, 1, H); for (let y = 0; y < H; y += 6) g.fillRect(0, y, W, 1);
   // 맨션 그림 (눈송이만, 흐린 빛 번짐은 빼고)
@@ -433,20 +454,22 @@ async function saveImage() {
   g.drawImage(snap, 0, 0, 240, SH, FX, FY, FW, FH);
   const tag = (text, x, y, bg, fg, line, size) => { g.font = `700 ${size}px Galmuri11`; const tw = g.measureText(text).width + 20, h = size + 10, lx = Math.round(x - tw / 2), ly = Math.round(y);
     if (line) { g.fillStyle = line; g.fillRect(lx - 3, ly - 3, tw + 6, h + 6); } g.fillStyle = bg; g.fillRect(lx, ly, tw, h); g.fillStyle = fg; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(text, lx + tw / 2, ly + h / 2 + 1); };
-  tag('산타의 선물가게', FX + FW * .116, FY + FH * .692 * 264 / SH, '#C8553D', '#FFF4DE', '#FFD27A', 19);
-  tag('루돌프네 양말공장', FX + FW * .881, FY + FH * .692 * 264 / SH, '#5A3A2A', '#FFF4DE', '#C8423A', 19);
-  tag('성탄맨션', FX + FW * .5, FY + FH * .79 * 264 / SH, '#F3D9A4', '#3A2418', '#7A4A2A', 18);
+  tag(L('산타의 선물가게', "Santa's Gift Shop"), FX + FW * .116, FY + FH * .692 * 264 / SH, '#C8553D', '#FFF4DE', '#FFD27A', EN ? 16 : 19);
+  tag(L('루돌프네 양말공장', 'Sock Factory'), FX + FW * .881, FY + FH * .692 * 264 / SH, '#5A3A2A', '#FFF4DE', '#C8423A', EN ? 16 : 19);
+  tag(L('성탄맨션', 'Xmas Mansion'), FX + FW * .5, FY + FH * .79 * 264 / SH, '#F3D9A4', '#3A2418', '#7A4A2A', EN ? 16 : 18);
   // 글자
   g.textAlign = 'center'; g.textBaseline = 'middle';
-  g.fillStyle = '#7A2E26'; g.font = '56px Galmuri14'; g.fillText(name ? `${name}의 성탄맨션` : '성탄맨션', W / 2 + 4, 78 + 4);
-  g.fillStyle = '#FFD27A'; g.fillText(name ? `${name}의 성탄맨션` : '성탄맨션', W / 2, 78);
-  g.fillStyle = '#C9D6E3'; g.font = '30px Galmuri11'; g.fillText(`12집 중 ${n}집에 불이 켜졌어요`, W / 2, 146);
-  const msg = left ? `빈 집 ${left}채! 한 칸 골라서 불 켜 줘` : '12집 모두 불이 켜졌어요!';
+  const ttl = name ? MN(name) : L('성탄맨션', 'Christmas Mansion');
+  g.font = '56px Galmuri14'; if (g.measureText(ttl).width > W - 80) g.font = '44px Galmuri14';
+  g.fillStyle = '#7A2E26'; g.fillText(ttl, W / 2 + 4, 78 + 4);
+  g.fillStyle = '#FFD27A'; g.fillText(ttl, W / 2, 78);
+  g.fillStyle = '#C9D6E3'; g.font = '30px Galmuri11'; g.fillText(L(`12집 중 ${n}집에 불이 켜졌어요`, `${n} of 12 windows are lit`), W / 2, 146);
+  const msg = left ? L(`빈 집 ${left}채! 한 칸 골라서 불 켜 줘`, `${left} empty! Pick one & light it up`) : L('12집 모두 불이 켜졌어요!', 'All 12 windows are lit!');
   g.font = '44px Galmuri14'; const mw = g.measureText(msg).width + 56;
   g.fillStyle = '#060C14'; g.fillRect(W / 2 - mw / 2 - 4, 1110 - 4, mw + 8, 76 + 8); g.fillStyle = '#C8553D'; g.fillRect(W / 2 - mw / 2, 1110, mw, 76);
   g.fillStyle = '#7A2E26'; g.fillRect(W / 2 - mw / 2, 1110 + 70, mw, 6);
   g.fillStyle = '#FFF4DE'; g.fillText(msg, W / 2, 1146);
-  g.fillStyle = '#9FB2C6'; g.font = '26px Galmuri11'; g.fillText('빈 집 고르기 · 창문 꾸미기 · 집주인에게 편지 남기기', W / 2, 1236);
+  g.fillStyle = '#9FB2C6'; g.font = '26px Galmuri11'; g.fillText(L('빈 집 고르기 · 창문 꾸미기 · 집주인에게 편지 남기기', 'Pick a unit · Decorate your window · Leave a letter'), W / 2, 1236);
   g.fillStyle = '#FFD27A'; g.font = '26px Galmuri11'; g.fillText(link, W / 2, 1290);
   // 창
   const url = c.toDataURL('image/png');
@@ -454,19 +477,19 @@ async function saveImage() {
   const file = blob && new File([blob], 'moodnight-mansion.png', { type: 'image/png' });
   const canFile = file && navigator.canShare && navigator.canShare({ files: [file] });
   window.mnTrack && mnTrack('share', 'card');
-  openSheet('인스타 공유 이미지', `<img class="shot" alt="맨션 공유 이미지" src="${url}">
-    ${canFile ? '<button class="btn wide" id="cardShare">인스타·카톡으로 공유하기</button>' : ''}
-    <a class="btn ${canFile ? 'ghost ' : ''}wide" id="cardSave" href="${url}" download="moodnight-mansion.png">이미지 저장하기</a>
-    <p class="hint">편지 내용은 이미지에 들어가지 않아요. 휴대폰에서 저장이 안 되면 이미지를 꾹 눌러 저장해 주세요. 인스타 스토리에는 링크 스티커로 <b>${link}</b>를 붙여 주세요.</p>`);
-  if ($('#cardShare')) $('#cardShare').onclick = () => { window.mnTrack && mnTrack('share', 'card_native'); navigator.share({ files: [file], text: `${left ? `내 성탄맨션에 빈 집이 ${left}채 남았어. 하나 골라서 불 켜 줘!` : '내 성탄맨션이 꽉 찼어!'}\n${location.protocol}//${link}` }).catch(() => {}); };
+  openSheet(L('인스타 공유 이미지', 'Image for Instagram'), `<img class="shot" alt="${L('맨션 공유 이미지', 'Mansion share image')}" src="${url}">
+    ${canFile ? `<button class="btn wide" id="cardShare">${L('인스타·카톡으로 공유하기', 'Share to Instagram & more')}</button>` : ''}
+    <a class="btn ${canFile ? 'ghost ' : ''}wide" id="cardSave" href="${url}" download="moodnight-mansion.png">${L('이미지 저장하기', 'Save image')}</a>
+    <p class="hint">${L(`편지 내용은 이미지에 들어가지 않아요. 휴대폰에서 저장이 안 되면 이미지를 꾹 눌러 저장해 주세요. 인스타 스토리에는 링크 스티커로 <b>${link}</b>를 붙여 주세요.`, `Letters are never in the image. If saving doesn't work on your phone, press and hold the image. On Instagram Stories, add <b>${link}</b> as a link sticker.`)}</p>`);
+  if ($('#cardShare')) $('#cardShare').onclick = () => { window.mnTrack && mnTrack('share', 'card_native'); navigator.share({ files: [file], text: `${left ? L(`내 성탄맨션에 빈 집이 ${left}채 남았어. 하나 골라서 불 켜 줘!`, `My Christmas Mansion has ${left} empty units. Pick one and turn on the light!`) : L('내 성탄맨션이 꽉 찼어!', 'My Christmas Mansion is full!')}\n${location.protocol}//${link}` }).catch(() => {}); };
 }
 
 /* ── 공유 ── */
-const shareText = () => { const n = 12 - order().length; return n ? `${S.name}의 성탄맨션에 빈 집이 ${n}개 남았어. 하나 골라서 불 좀 켜 줘!` : `${S.name}의 성탄맨션이 꽉 찼어! 벽보에 한마디 남겨 줘`; };
+const shareText = () => { const n = 12 - order().length; return n ? L(`${S.name}의 성탄맨션에 빈 집이 ${n}개 남았어. 하나 골라서 불 좀 켜 줘!`, `${MN(S.name)} has ${n} empty unit${n === 1 ? '' : 's'}. Move in and turn on a light!`) : L(`${S.name}의 성탄맨션이 꽉 찼어! 벽보에 한마디 남겨 줘`, `${MN(S.name)} is full! Leave a note on the board`); };
 async function copyLink() {
   window.mnTrack && mnTrack("share", "copy");
-  try { await navigator.clipboard.writeText(`${shareText()}\n${shareUrl()}`); toast('링크를 복사했어요'); }
-  catch (e) { const r = document.createRange(); r.selectNodeContents($('#linkTxt')); const s = getSelection(); s.removeAllRanges(); s.addRange(r); toast('링크를 선택했어요. 길게 눌러 복사하세요'); }
+  try { await navigator.clipboard.writeText(`${shareText()}\n${shareUrl()}`); toast(L('링크를 복사했어요', 'Link copied')); }
+  catch (e) { const r = document.createRange(); r.selectNodeContents($('#linkTxt')); const s = getSelection(); s.removeAllRanges(); s.addRange(r); toast(L('링크를 선택했어요. 길게 눌러 복사하세요', 'Link selected. Press and hold to copy')); }
 }
 function kakaoShare() {
   window.mnTrack && mnTrack("share", "kakao");
@@ -483,12 +506,11 @@ function kakaoShare() {
 
 /* ── 로그인과 맨션 만들기 ── */
 function renderLogin() {
-  $('#viewPill').textContent = '내 맨션 만들기';
-  panel(`<div class="who"><b>내 성탄맨션 만들기</b></div>
-    <p class="sub">눈 내리는 밤, 내 이름이 붙은 12집짜리 맨션 한 동이 생겨요.</p>${HOW_HOST}
-    <button class="btn wide kakao" id="loginKakao">카카오로 시작하기</button>
-    <button class="btn ghost wide" id="loginGoogle">구글로 시작하기</button>
-    <p class="fine">맨션을 만드는 사람만 로그인해요. 로그인하면 <a href="/terms.html">이용약관</a>과 <a href="/privacy.html">개인정보처리방침</a>에 동의하는 것으로 봐요. 만 14세 이상만 만들 수 있어요.</p>`);
+  $('#viewPill').textContent = L('내 맨션 만들기', 'Build a mansion');
+  panel(`<div class="who"><b>${L('내 성탄맨션 만들기', 'Build your Christmas Mansion')}</b></div>
+    <p class="sub">${L('눈 내리는 밤, 내 이름이 붙은 12집짜리 맨션 한 동이 생겨요.', 'On a snowy night, you get a 12-unit mansion with your name on it.')}</p>${HOW_HOST}
+    ${EN ? '<button class="btn wide" id="loginGoogle">Continue with Google</button><button class="btn ghost wide" id="loginKakao">Continue with Kakao</button>' : '<button class="btn wide kakao" id="loginKakao">카카오로 시작하기</button><button class="btn ghost wide" id="loginGoogle">구글로 시작하기</button>'}
+    <p class="fine">${L('맨션을 만드는 사람만 로그인해요. 로그인하면 <a href="/terms.html">이용약관</a>과 <a href="/privacy.html">개인정보처리방침</a>에 동의하는 것으로 봐요. 만 14세 이상만 만들 수 있어요.', "Only the mansion owner logs in. Friends don't need an account. By logging in you agree to our <a href=\"/terms.html\">Terms</a> and <a href=\"/privacy.html\">Privacy Policy</a> (in Korean). You must be 14 or older.")}</p>`);
   const back = location.origin + '/mansion/';
   $('#loginKakao').onclick = () => sb.auth.signInWithOAuth({ provider: 'kakao', options: { redirectTo: back, scopes: 'profile_nickname profile_image' } });
   $('#loginGoogle').onclick = () => sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: back } });
@@ -496,22 +518,23 @@ function renderLogin() {
 function renderCreate() {
   const m = session.user.user_metadata || {};
   const raw = (m.name || m.full_name || m.nickname || '').replace(/\s/g, '');
-  const guess = raw.length >= 2 && raw.length <= 3 ? raw : '';
-  $('#viewPill').textContent = '내 맨션 만들기';
-  panel(`<div class="who"><b>맨션 이름 정하기</b></div>
-    <p class="sub">친구들이 링크를 열면 "○○의 성탄맨션"으로 보여요. 친구들이 부르는 이름이나 별명을 2~3글자로 써 주세요.</p>
-    <div class="field"><input type="text" id="mName" maxlength="3" value="${esc(guess)}" placeholder="예: 하린"></div>
+  const raw2 = EN ? ((m.name || m.full_name || m.nickname || '').trim().split(/\s+/)[0] || '') : raw;
+  const guess = nameOk(raw2) ? raw2 : '';
+  $('#viewPill').textContent = L('내 맨션 만들기', 'Build a mansion');
+  panel(`<div class="who"><b>${L('맨션 이름 정하기', 'Name your mansion')}</b></div>
+    <p class="sub">${L('친구들이 링크를 열면 "○○의 성탄맨션"으로 보여요. 친구들이 부르는 이름이나 별명을 2~3글자로 써 주세요.', `Friends will see "___'s Christmas Mansion". Use the name or nickname your friends call you (2–12 characters).`)}</p>
+    <div class="field"><input type="text" id="mName" maxlength="${EN ? 12 : 3}" value="${esc(guess)}" placeholder="${L('예: 하린', 'e.g. Emily')}"></div>
     <p class="err" id="mErr"></p>
-    <button class="btn wide" id="mGo">맨션 짓기</button>
-    <p class="fine"><button class="linkish" id="logout">다른 계정으로 로그인</button></p>`);
+    <button class="btn wide" id="mGo">${L('맨션 짓기', 'Build my mansion')}</button>
+    <p class="fine"><button class="linkish" id="logout">${L('다른 계정으로 로그인', 'Log in with another account')}</button></p>`);
   $('#logout').onclick = logout;
   $('#mGo').onclick = async () => {
-    const name = $('#mName').value.replace(/\s/g, '');
-    if (name.length < 2 || name.length > 3) { $('#mErr').textContent = '이름은 2~3글자로 적어 주세요.'; return; }
+    const name = cleanName($('#mName').value);
+    if (!nameOk(name)) { $('#mErr').textContent = L('이름은 2~3글자로 적어 주세요.', 'Please use 2–12 characters.'); return; }
     $('#mGo').disabled = true;
     const { error } = await sb.from('mansions').insert({ owner_id: session.user.id, display_name: name });
-    if (error && error.code !== '23505') { $('#mErr').textContent = '만들지 못했어요. 잠시 후 다시 시도해 주세요.'; $('#mGo').disabled = false; return; }
-    await loadHost(); stamp('맨션 완공!'); toast('맨션이 생겼어요. 링크를 친구들에게 보내 보세요');
+    if (error && error.code !== '23505') { $('#mErr').textContent = L('만들지 못했어요. 잠시 후 다시 시도해 주세요.', "Couldn't build it. Please try again."); $('#mGo').disabled = false; return; }
+    await loadHost(); stamp(L('맨션 완공!', 'Built!')); toast(L('맨션이 생겼어요. 링크를 친구들에게 보내 보세요', 'Your mansion is ready. Send the link to your friends!'));
   };
 }
 async function logout() { await sb.auth.signOut(); session = null; S = { name: '', slug: null, res: {}, notes: [], owner: false }; render(); renderLogin(); }
@@ -523,7 +546,7 @@ async function loadHost() {
 }
 async function loadGuest() {
   const { data, error } = await sb.rpc('get_mansion', { p_slug: pathSlug, p_device: DEVICE });
-  if (error || !data) { render(); panel(`<div class="who"><b>맨션을 찾을 수 없어요</b></div><p class="sub">링크가 잘못됐거나 맨션이 없어졌어요. 링크를 보낸 친구에게 다시 확인해 주세요.</p><a class="btn wide" href="/mansion/">나도 내 맨션 만들기</a>`); return; }
+  if (error || !data) { render(); panel(`<div class="who"><b>${L('맨션을 찾을 수 없어요', 'Mansion not found')}</b></div><p class="sub">${L('링크가 잘못됐거나 맨션이 없어졌어요. 링크를 보낸 친구에게 다시 확인해 주세요.', 'The link may be wrong, or the mansion was deleted. Check with the friend who sent it.')}</p><a class="btn wide" href="/mansion/${EN ? '?lang=en' : ''}">${L('나도 내 맨션 만들기', 'Build my own mansion')}</a>`); return; }
   if (data.is_owner) { location.replace('/mansion/'); return; }
   apply(data); render();
 }

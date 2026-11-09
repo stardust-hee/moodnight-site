@@ -1,19 +1,5 @@
-/* 산타의 선물가게 언어 (한국어 / English)
- * 고르는 순서: 주소의 ?lang=en|ko → 지난번에 고른 언어(localStorage mn_lang) → 브라우저 언어(한국어면 ko, 아니면 en)
- * app.js에서는 L("한국어", "English")처럼 두 문장을 나란히 써요. */
+/* 산타의 선물가게 영어 데이터 (언어 고르기와 🌐 버튼은 /lang.js) */
 (function () {
-  let lang = null;
-  try { const q = new URLSearchParams(location.search).get("lang"); if (q === "en" || q === "ko") { lang = q; localStorage.setItem("mn_lang", q); } } catch (e) {}
-  if (!lang) try { const s = localStorage.getItem("mn_lang"); if (s === "en" || s === "ko") lang = s; } catch (e) {}
-  if (!lang) lang = /^ko\b/i.test(navigator.language || "") ? "ko" : "en";
-  window.LANG = lang;
-  window.L = (ko, en) => (lang === "en" ? en : ko);
-  window.setLang = l => {
-    try { localStorage.setItem("mn_lang", l); } catch (e) {}
-    const u = new URL(location.href); u.searchParams.delete("lang"); location.replace(u.pathname + u.search + u.hash);
-  };
-  document.documentElement.lang = lang;
-
   /* 선물 이름·흔들 때 소리 (영어) */
   window.GIFT_EN = {
     socks: ["Christmas Fuzzy Socks", "For cold winter nights", "No sound at all. Soft and squishy"],
@@ -50,18 +36,4 @@
   };
   window.TIER_EN = { "소소한 마음": "Little something", "제법 성의": "Thoughtful", "마음 좀 썼어": "Went the extra mile", "통 크게": "Big spender", "산타가 미쳤어요": "Santa went wild" };
 
-  /* 언어 버튼: 화면 위 메뉴 오른쪽 */
-  const mount = () => {
-    const nav = document.querySelector(".site-nav"); if (!nav || nav.querySelector(".lang-btn")) return;
-    const b = document.createElement("button"); b.type = "button"; b.className = "lang-btn";
-    b.textContent = lang === "en" ? "🌐 한국어" : "🌐 English"; b.setAttribute("aria-label", lang === "en" ? "한국어로 보기" : "View in English");
-    b.onclick = () => setLang(lang === "en" ? "ko" : "en");
-    nav.appendChild(b);
-    if (lang === "en") {
-      document.querySelectorAll("[data-en]").forEach(el => { el.textContent = el.dataset.en; });
-      document.title = "Santa's Gift Shop | Moodnight";
-    }
-  };
-  // 이 파일은 body 끝에서 불러서 화면 요소가 이미 있어요. 바로 적용해야 app.js가 쓴 글을 덮지 않아요
-  document.querySelector(".site-nav") ? mount() : document.addEventListener("DOMContentLoaded", mount);
 })();
