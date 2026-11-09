@@ -203,9 +203,16 @@ async function logout() { await sb.auth.signOut(); session = null; room = null; 
 const realList = () => (window.REAL_GIFTS || []).filter(g => /^https:\/\/(link\.coupang\.com|www\.coupang\.com|coupa\.ng)\//.test(g.url || ""));
 const realById = id => realList().find(g => g.id === id);
 const realTiers = () => (window.REAL_GIFT_TIERS || []).filter(t => realList().some(g => g.tier === t));
-/* 보내는 사람이 고르는 선물 6개 (santa/gifts.js의 id). 바꾸려면 여기만 수정 */
-const PICKS = ["socks", "mug", "moodlight", "speaker", "instax", "ps5"];
-const picks = () => PICKS.map(id => realById(id)).filter(Boolean);
+/* 보내는 사람이 고르는 선물 6개: 가격대마다 1개씩 + 1개 더, 들어올 때마다 랜덤. "다른 선물 보기"로 다시 섞기 */
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+let PICKS = [];
+function reshuffle(keep) {
+  const all = realList(), out = keep && realById(keep) ? [keep] : [];
+  for (const t of realTiers()) { if (out.length >= 6) break; const g = shuffle(all.filter(x => x.tier === t && !out.includes(x.id)))[0]; if (g && !out.some(id => realById(id).tier === t)) out.push(g.id); }
+  for (const g of shuffle(all)) { if (out.length >= 6) break; if (!out.includes(g.id)) out.push(g.id); }
+  const order = all.map(g => g.id); PICKS = out.sort((a, b) => order.indexOf(a) - order.indexOf(b));
+}
+const picks = () => { if (!PICKS.length) reshuffle(); return PICKS.map(id => realById(id)).filter(Boolean); };
 let lastItem = null;
 const DISCLOSURE = "이 링크는 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.";
 function buyCard(id) {
@@ -294,6 +301,7 @@ function renderSend() {
     <div class="step">
       <div class="step-h"><i>${st()}</i>상자 속 선물 <small>${host}에게 어울리는 걸로</small></div>
       <div class="items">${picks().map(g => `<button class="item-opt" data-item="${g.id}" aria-pressed="${d.item === g.id}"><b>${g.icon}</b>${esc(g.name)}</button>`).join("")}</div>
+      <button type="button" class="chip more" id="morePicks" style="justify-self:start">다른 선물 보기 ↻</button>
     </div>
     <div class="step">
       <div class="step-h"><i>${st()}</i>메시지</div>
@@ -327,6 +335,7 @@ function renderSend() {
   $("#name").oninput = e => { draft.name = e.target.value; const a = document.querySelector(".auto-hint"); if (a) a.textContent = "단서 3 · " + (draft.name.trim() ? initialHint(draft.name) : "이름을 적으면 초성으로 자동 완성돼요"); };
   document.querySelectorAll("[data-tier]").forEach(b => b.onclick = () => { draft.realTier = b.dataset.tier; renderSend(); });
   $("#moreIdeas").onclick = () => { ideaPage++; renderSend(); };
+  $("#morePicks").onclick = () => { reshuffle(draft.item); renderSend(); };
   $("#autoInitial").onchange = e => { draft.autoInitial = e.target.checked; renderSend(); };
   document.querySelectorAll("[data-idea]").forEach(b => b.onclick = () => {
     const n = [0, 1, 2].slice(0, hintCount()).find(i => !draft.hints[i].trim());
