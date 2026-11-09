@@ -15,6 +15,7 @@
 | `/mansion/r/<코드>` | 친구가 받는 맨션 링크 (로그인 없이 입주, 벽보). `vercel.json` rewrite |
 | `/mansion/demo/` `mansion/demo/index.html` | 성탄맨션 체험판 (도트, 예시 데이터, 저장 안 됨, 공개 링크 없음). 글꼴은 `mansion/fonts/` |
 | `/sansa/` `sansa/index.html` | 무드나잇 산사 (상시 서비스, 한 파일). 스님 인사 → 번뇌 목탁 → 스님 한마디 → 연등·기와. ☰ 메뉴로 어디서든 이동 |
+| `/smash/` `smash/index.html` | 박살방 (상시, 한 파일, 광고 없음). 도트 물건 부수기: 키보드·모니터·머그컵 |
 | `/blog/` | 읽을거리 (애드센스 심사용 글). 현재 2개: manitto, christmas-card |
 | `/privacy.html` `/terms.html` | 개인정보처리방침, 이용약관 (산타 + 성탄맨션 공통) |
 | `/auth-test.html` | 로그인 테스트용 (검색 차단) |
@@ -89,6 +90,15 @@
 - 브라우저 저장: `mn_device`(track.js와 공유), `sansa-mine`(내가 올린 id), `sansa-hidden`(내가 신고한 id)
 - 관리: 직접 숨기기는 SQL `update sansa_items set hidden=true where id=...`. 방문 기록 page `sansa`, act `lantern`/`tile`/`bonnoe`
 - 공유 이미지 `sansa/og.png`, 홈 카드 썸네일 `sansa/preview.webp`
+
+### 박살방 (11/10 공개)
+- 이나님 1차 버전(라임색 SMASH ROOM)을 무드나잇 도트 톤으로 다시 만듦. 글꼴 갈무리(`/mansion/fonts/`), 아래 소개 글은 Pretendard
+- **광고 넣지 않기로 함** (연타 게임이라 실수 클릭 정책 위험). 대신 소개·놀이 방법·만든 이유·FAQ 글을 붙여 사이트 콘텐츠 역할
+- 180×230 저해상도 캔버스를 키워 도트처럼. 직접 만든 간단한 2D 물리(중력, 바닥 튕김, 긴 조각은 눕기)
+- 누른 자리가 깨짐, 꾹 누르면 힘 모으기(최대 3배). 빡친 일 쪽지(16자)는 화면에만, 저장 안 함
+- 물건: 키보드(키캡 튐, 몸체 조각), 모니터(엑셀 화면, 거미줄 금, 유리 파편, 지직, 유리 70조각), 머그컵(MONDAY 머그, 도자기 조각, 커피 웅덩이, 손잡이 이탈)
+- 기록은 내 브라우저 `smash-stats`만. 방문 기록 page `smash`, 박살 낼 때 act `smash_keyboard|monitor|mug`
+- 다음 후보: 상황형 물건(읽씹한 카톡 폰, 월요일 달력, 야근 서류), 결과 카드, 모두의 카운터
 
 ## 출시 일정 (2026-11-06 결정)
 
