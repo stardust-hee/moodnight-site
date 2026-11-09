@@ -60,6 +60,18 @@ td.z{color:#4A5E74}
 .mem .m.me{opacity:.6}.mem img,.mem i{width:38px;height:38px;border-radius:50%;object-fit:cover;flex:none;background:#ffffff1a}
 .mem b{display:block;font-size:14px}.mem small{display:block;opacity:.75;font-size:12px;margin-top:2px;word-break:break-all}
 .mem em{font-style:normal;font-size:11px;padding:1px 5px;border-radius:4px;background:#ffffff24;margin-left:4px}.mem em.new{background:#e8613c;color:#fff}
+.ctabs{position:sticky;top:0;z-index:5;display:flex;gap:2px;align-items:flex-end;overflow-x:auto;scrollbar-width:none;background:var(--edge);padding:8px 8px 0;margin:0 -4px;border-radius:10px 10px 0 0;box-shadow:0 6px 0 var(--night2)}
+.ctabs::-webkit-scrollbar{display:none}
+.ctabs button{flex:none;display:flex;align-items:center;gap:6px;border:0;background:transparent;color:var(--soft);padding:8px 14px 9px;border-radius:9px 9px 0 0;position:relative;white-space:nowrap;font-size:13px}
+.ctabs button:not([aria-selected="true"])+button:not([aria-selected="true"])::before{content:"";position:absolute;left:-1px;top:10px;bottom:10px;width:1px;background:#ffffff26}
+.ctabs button:hover{background:#ffffff10;color:var(--snow)}
+.ctabs button[aria-selected="true"]{background:var(--night2);color:var(--candle)}
+.ctabs button[aria-selected="true"]::after,.ctabs button[aria-selected="true"]::before{content:"";position:absolute;bottom:0;width:10px;height:10px;background:radial-gradient(circle at 0 0,transparent 9.5px,var(--night2) 10px)}
+.ctabs button[aria-selected="true"]::after{right:-10px}
+.ctabs button[aria-selected="true"]::before{left:-10px;top:auto;background:radial-gradient(circle at 100% 0,transparent 9.5px,var(--night2) 10px)}
+.ctabs .ic{font-size:14px;filter:saturate(.9)}
+.ctabs .ct{font-size:11px;padding:0 6px;border-radius:8px;background:var(--ember);color:#fff}
+#dash{display:grid;gap:18px;margin-top:-6px}
 </style>
 </head>
 <body>
@@ -73,6 +85,7 @@ td.z{color:#4A5E74}
     <div class="row"><button class="btn kakao" id="loginKakao">카카오로 로그인</button><button class="btn ghost" id="loginGoogle">구글로 로그인</button></div>
     <p class="err" id="loginErr"></p>
   </div></section>
+  <nav class="ctabs" id="ctabs" hidden role="tablist"></nav>
   <div id="dash" hidden></div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
@@ -146,6 +159,26 @@ function mindHTML() {
     <p class="msg" style="margin:8px 0 0">산사·박살방·트레이 칸은 그날 들어온 사람 수예요. 이 관리자 기기 방문은 빠져요.</p>
   </div></section>`;
 }
+// 크롬 탭처럼: 섹션 제목으로 어느 탭에 둘지 정해요
+const TABS = [["home", "🌙", "전체"], ["members", "👤", "회원"], ["santa", "🎁", "선물가게"], ["mansion", "🏠", "성탄맨션"], ["sansa", "🏮", "산사"], ["smash", "🔨", "박살방"], ["tray", "🍽️", "실버 트레이"], ["report", "🚩", "신고"]];
+const SEC_TAB = [["한눈에", "home"], ["기간별", "home"], ["광고", "home"], ["최근 7일 페이지별", "home"], ["회원", "members"], ["산타의 선물가게", "santa"], ["성탄맨션", "mansion"], ["무드나잇 산사", "sansa"], ["박살방", "smash"], ["Silver Tray", "tray"], ["마음 챙기기", "sansa smash tray"], ["신고", "report"]];
+let tab = (() => { try { const h = location.hash.slice(1); if (TABS.some(t => t[0] === h)) return h; return localStorage.getItem("mn_admin_tab") || "home"; } catch (e) { return "home"; } })();
+if (!TABS.some(t => t[0] === tab)) tab = "home";
+function applyTabs() {
+  const today = new Date().toLocaleDateString("ko-KR", { timeZone: "Asia/Seoul" });
+  const badge = { members: (S.members || []).filter(m => !m.admin && new Date(m.joined).toLocaleDateString("ko-KR", { timeZone: "Asia/Seoul" }) === today).length, report: (S.reports || []).length };
+  $("#ctabs").innerHTML = TABS.map(([k, ic, l]) => `<button role="tab" data-tab="${k}" aria-selected="${tab === k}"><span class="ic">${ic}</span>${l}${badge[k] ? `<span class="ct">${badge[k]}</span>` : ""}</button>`).join("");
+  $("#ctabs").hidden = false;
+  document.querySelectorAll("#dash > section").forEach(sec => {
+    const t = sec.querySelector("h2")?.textContent || ""; const hit = SEC_TAB.find(([k]) => t.startsWith(k));
+    sec.hidden = !(hit ? hit[1].split(" ") : ["home"]).includes(tab);
+  });
+  document.querySelectorAll("#ctabs button").forEach(b => b.onclick = () => {
+    tab = b.dataset.tab; try { localStorage.setItem("mn_admin_tab", tab); history.replaceState(null, "", "#" + tab); } catch (e) {}
+    applyTabs(); window.scrollTo({ top: 0 });
+  });
+  const on = $("#ctabs [aria-selected=true]"); if (on) on.scrollIntoView({ block: "nearest", inline: "nearest" });
+}
 function render() {
   const s = S, mb = s.db_bytes / 1048576, rows = group(s.daily || [], period), max = Math.max(1, ...rows.map(r => r.visitors));
   const cols = [["visitors", "방문자"], ["users", "가입"], ["rooms", "선물가게"], ["gifts", "선물"], ["mansions", "맨션"], ["residents", "입주"], ["shares", "공유"]];
@@ -190,6 +223,7 @@ function render() {
     ${(s.reports || []).map(r => `<div><small>${esc(new Date(r.at).toLocaleString("ko-KR"))} · ${esc(r.svc)} ${esc(r.kind)}</small><p style="margin:2px 0">${esc(r.text) || "(내용 없음)"}</p><small>사유: ${esc(r.reason || "-")}</small></div>`).join("") || '<p class="msg">신고된 게 없어요.</p>'}
   </div></div></section>`;
   document.querySelectorAll("[data-p]").forEach(b => b.onclick = () => { period = b.dataset.p; render(); });
+  applyTabs();
 }
 async function load() {
   // 이 기기는 관리자 기기로 표시해서 방문 숫자에서 빼요 (지난 기록도 지워요)
