@@ -279,6 +279,13 @@ textarea{min-height:110px}
   .items{grid-template-columns:repeat(2,minmax(0,1fr))}
   .brand h1{font-size:1.6rem}
 }
+
+/* 휴대폰: 왼쪽(창문·눈사람)을 덜고 트리와 선물을 크게 */
+.stage{position:absolute;inset:0}
+@media (max-width:600px){
+  .room{aspect-ratio:39/40}
+  .stage{left:-28.2%;right:auto;width:128.2%}
+}
 </style>
 </head>
 <body>
@@ -297,8 +304,8 @@ textarea{min-height:110px}
     <div class="left-col">
     <section class="frame" aria-label="선물가게">
       <div class="room" id="room">
-        <div id="sceneHost" class="scene-host"></div>
-        <div id="gifts"></div>
+        <div class="stage"><div id="sceneHost" class="scene-host"></div>
+        <div id="gifts"></div></div>
         <div class="room-hint" id="roomHint">선물을 눌러서 흔들어 보세요</div>
       </div>
     </section>
