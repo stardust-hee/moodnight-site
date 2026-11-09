@@ -1,0 +1,135 @@
+/* 산타의 선물가게 — 성탄맨션과 같은 32bit 도트 스타일 (index.html 기본 스타일 위에 덮어써요)
+   어두운 겨울밤 바탕, 갈무리 글꼴, 계단식(각진) 테두리와 딱 떨어지는 그림자 */
+@font-face{font-family:"Galmuri11";src:url(/mansion/fonts/Galmuri11.woff2) format("woff2");font-display:swap}
+@font-face{font-family:"Galmuri11";font-weight:700;src:url(/mansion/fonts/Galmuri11-Bold.woff2) format("woff2");font-display:swap}
+@font-face{font-family:"Galmuri14";src:url(/mansion/fonts/Galmuri14.woff2) format("woff2");font-display:swap}
+:root{
+  color-scheme: dark;
+  --night:#0F1B28; --night2:#172738; --night3:#24384C; --edge:#060C14; --snow:#EEF3F8; --snow-soft:#9FB2C6;
+  --amber:#FFA347; --amber-d:#C46A1E; --candle:#FFD27A; --ember:#C8553D; --ember-d:#7A2E26;
+  --paper:var(--night); --cream:var(--night2); --ink:var(--snow); --ink-soft:var(--snow-soft); --line:var(--night3);
+  --red:var(--ember); --green:#3B7A4A; --green-deep:var(--candle); --gold:var(--candle);
+  --font-display:"Galmuri14","Galmuri11","Apple SD Gothic Neo",monospace;
+  --font-body:"Galmuri11","Apple SD Gothic Neo","Malgun Gothic",monospace;
+  --px:0 -3px var(--edge),0 3px var(--edge),-3px 0 var(--edge),3px 0 var(--edge);
+  --px2:0 -2px var(--night3),0 2px var(--night3),-2px 0 var(--night3),2px 0 var(--night3);
+  --pxc:0 -2px var(--candle),0 2px var(--candle),-2px 0 var(--candle),2px 0 var(--candle);
+}
+html,body{background:var(--night);color:var(--snow)}
+body{font-family:var(--font-body);font-size:14px;line-height:1.8;-webkit-font-smoothing:none;
+  background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:6px 6px}
+*{border-radius:0!important}
+:focus-visible{outline:3px dashed var(--candle);outline-offset:3px}
+h2,.brand h1,.step-h,.from,.side-card h3,.real-row b,.preview b,.count strong,.stat b,.cand,.btn,.login,.tabs button,.real-badge,.buy-link,.flow li::before,.result b,.gift .tag{font-family:var(--font-display);font-weight:400}
+
+/* 머리 */
+.site-nav a{color:var(--candle)}
+.brand-mark{background:#5A2620;box-shadow:var(--px),inset 0 -4px 0 rgba(0,0,0,.3)}
+.brand h1{color:var(--candle);text-shadow:3px 3px 0 var(--ember-d);font-size:1.9rem;letter-spacing:0}
+.brand p{color:var(--snow-soft)}
+.dday{background:var(--night2);color:var(--candle);box-shadow:0 -3px var(--amber-d),0 3px var(--amber-d),-3px 0 var(--amber-d),3px 0 var(--amber-d);margin:3px}
+.dday.xmas{color:#FFF4DE;background:var(--ember)}
+
+/* 방 */
+.frame{background:#0C1622;padding:0;margin:3px;box-shadow:var(--px),6px 6px 0 3px rgba(0,0,0,.45)}
+.room{background:#5A2420}
+.room-hint{background:rgba(6,12,20,.82);color:var(--snow);font-size:.8rem;padding:2px 10px}
+.gift .tag{background:var(--candle);color:#2A1608;box-shadow:0 -2px var(--edge),0 2px var(--edge),-2px 0 var(--edge),2px 0 var(--edge)}
+.gift:hover{transform:translate(-50%,-97%)}
+.gift.shake{animation:pxShake .5s steps(5)}
+@keyframes pxShake{0%,100%{rotate:0}25%{rotate:-8deg}50%{rotate:7deg}75%{rotate:-4deg}}
+
+/* 패널: 도트 게임 창 */
+.panel,.side-card{background:var(--night2);margin:3px;box-shadow:var(--px),6px 6px 0 3px rgba(0,0,0,.45)}
+.panel{padding:0 18px 20px}
+.panel::before{content:"선물가게.exe";display:block;margin:0 -18px 18px;padding:4px 10px;background:var(--ember);color:#FFF4DE;font-weight:700;font-size:13px;box-shadow:inset 0 -3px var(--ember-d);
+  background-image:linear-gradient(90deg,transparent calc(100% - 52px),var(--ember) calc(100% - 52px)),repeating-linear-gradient(90deg,transparent 0 6px,rgba(0,0,0,.18) 6px 9px)}
+h2{color:var(--candle);font-size:1.3rem}
+h2::before{content:"▶ ";font-size:.6em;vertical-align:.25em}
+.sub,.fine,.meta,.label,.check{color:var(--snow-soft)}
+.fine a,.linkish{color:var(--candle)}
+.stat,.box,.link-row code,.flow li,.hints li,.radio,.auto-hint,.side-meta span{background:var(--night);border:0;box-shadow:var(--px2);margin:2px}
+.stat b{color:var(--candle)}
+.box{border:0}
+.link-row code{color:var(--candle);font-family:var(--font-body)}
+.count{background:var(--night);box-shadow:0 -3px var(--green),0 3px var(--green),-3px 0 var(--green),3px 0 var(--green);margin:3px}
+.count strong{color:var(--candle)}
+.count.xmas{background:#3A1814;box-shadow:0 -3px var(--ember),0 3px var(--ember),-3px 0 var(--ember),3px 0 var(--ember)}
+
+/* 버튼 */
+.btn,.login{border:0;margin:3px;padding:12px 12px 14px;font-size:1rem;background:var(--amber);color:#2A1608;
+  box-shadow:var(--px),inset 0 -4px 0 var(--amber-d),inset 0 3px 0 rgba(255,255,255,.35),4px 4px 0 3px rgba(0,0,0,.45)}
+.btn:hover{background:#FFB463}
+.btn:active,.login:active{transform:translate(3px,3px);box-shadow:var(--px),inset 0 4px 0 var(--amber-d)}
+.btn.red{background:var(--ember);color:#FFF4DE;box-shadow:var(--px),inset 0 -4px 0 var(--ember-d),inset 0 3px 0 rgba(255,255,255,.2),4px 4px 0 3px rgba(0,0,0,.45)}
+.btn.red:hover{background:#D86650}
+.btn.ghost,.login.google{background:var(--night3);color:var(--snow);border:0;box-shadow:var(--px),inset 0 -4px 0 #172738,inset 0 3px 0 rgba(255,255,255,.08),4px 4px 0 3px rgba(0,0,0,.45)}
+.btn.ghost:hover{background:#2E4660}
+.btn.wide,.login{width:calc(100% - 6px)}
+.login.kakao{background:#FEE500;color:#191600;box-shadow:var(--px),inset 0 -4px 0 #C9B400,inset 0 3px 0 rgba(255,255,255,.4),4px 4px 0 3px rgba(0,0,0,.45)}
+.linkish{text-decoration:underline;text-underline-offset:3px}
+
+/* 보내기 폼 */
+.step-h{color:var(--snow)}
+.step-h i{background:var(--candle);color:#2A1608;font-weight:700}
+.step-h small{color:var(--snow-soft)}
+.wrap-opt,.item-opt,.cand{background:var(--night);border:0;color:var(--snow);box-shadow:var(--px2);margin:2px}
+.wrap-opt{color:var(--snow-soft)}
+.wrap-opt[aria-pressed="true"],.item-opt[aria-pressed="true"]{background:var(--candle);color:#2A1608;box-shadow:0 -2px var(--edge),0 2px var(--edge),-2px 0 var(--edge),2px 0 var(--edge)}
+.wrap-opt .gift.static .spr{image-rendering:pixelated}
+.chip{background:var(--night);border:0;color:var(--snow);box-shadow:var(--px2);margin:2px}
+.chip:hover{color:var(--candle)}
+.chip.on{background:var(--candle);color:#2A1608;box-shadow:0 -2px var(--edge),0 2px var(--edge),-2px 0 var(--edge),2px 0 var(--edge)}
+.chip.more{background:transparent;color:var(--snow-soft);box-shadow:0 -2px var(--night3),0 2px var(--night3),-2px 0 var(--night3),2px 0 var(--night3)}
+textarea,input[type="text"]{width:calc(100% - 6px);margin:3px;background:var(--edge);color:var(--snow);border:0;box-shadow:var(--px2);font-family:var(--font-body)}
+textarea:focus,input[type="text"]:focus{outline:0;box-shadow:var(--pxc)}
+textarea::placeholder,input::placeholder{color:#5F7389}
+.auto-hint{color:var(--snow-soft)}
+.err{color:#FF9C8A}
+
+/* 방 아래 카드 */
+.side-card h3{color:var(--candle)}
+.preview b{color:var(--candle)}
+.flow li::before{color:var(--ember)}
+.flow li b{color:var(--snow)}
+
+/* 창(시트) */
+.overlay{background:rgba(4,8,14,.78)}
+.sheet{background:var(--night2);box-shadow:var(--px),6px 6px 0 3px rgba(0,0,0,.5);animation:rise .25s steps(3)}
+.close{color:var(--snow)}
+.letter{background:#FFF6E6;color:#2A1C14;box-shadow:0 -3px #2A1C14,0 3px #2A1C14,-3px 0 #2A1C14,3px 0 #2A1C14;border-top:0;background-image:repeating-linear-gradient(transparent 0 27px,#EADCC4 27px 28px);margin:3px}
+.letter .item{background:var(--candle);color:#2A1608}
+.from .q{background:#2A1C14;color:#FFF6E6}
+.stamp{border:2px solid var(--ember);color:var(--ember)}
+.hints li.locked{background:transparent;color:var(--snow-soft);box-shadow:0 -2px var(--night3),0 2px var(--night3),-2px 0 var(--night3),2px 0 var(--night3);opacity:.8}
+.hints li em{color:var(--candle)}
+.cand:hover:not(:disabled){box-shadow:var(--pxc)}
+.cand.wrong{background:transparent;color:var(--snow-soft)}
+.cand.right{background:#2A5A3A;color:#E5F6E8}
+.lives{color:var(--ember)}
+.result{background:var(--night);box-shadow:var(--pxc);margin:2px}
+.result b{color:var(--candle)}
+.real-card{background:var(--night);border:0;box-shadow:var(--pxc);margin:3px}
+.real-card.for-real{background:#2A1414;box-shadow:0 -2px var(--ember),0 2px var(--ember),-2px 0 var(--ember),2px 0 var(--ember)}
+.real-row p{color:var(--snow-soft)}
+.real-badge{background:var(--ember)}
+.buy-link{background:var(--candle);color:#2A1608;margin:3px;box-shadow:var(--px),inset 0 -4px 0 #C9962E,4px 4px 0 3px rgba(0,0,0,.45);font-family:var(--font-display)}
+.buy-link small{font-family:var(--font-body)}
+.mod-row{border-top:2px dashed var(--night3)}
+.toast{background:var(--candle);color:#2A1608;font-weight:700;box-shadow:var(--px),4px 4px 0 3px rgba(0,0,0,.5)}
+
+@media (max-width:600px){
+  .frame{padding:0;margin:3px}
+  .panel{padding:0 16px 18px}
+  .panel::before{margin:0 -16px 16px}
+  .brand h1{font-size:1.6rem}
+}
+
+/* 체험판 바 */
+.demo-bar{background:var(--night2);border:0;box-shadow:0 -2px var(--candle),0 2px var(--candle),-2px 0 var(--candle),2px 0 var(--candle);margin:3px auto 18px}
+.demo-bar p{color:var(--snow-soft)}.demo-bar p b{color:var(--candle)}
+.demo-tabs{background:var(--edge);padding:3px}
+.demo-tabs button{font-family:var(--font-display);color:var(--snow-soft);background:var(--night)}
+.demo-tabs button[aria-selected="true"]{background:var(--night3);color:var(--candle);box-shadow:inset 0 -3px var(--candle)}
+.demo-xmas{font-family:var(--font-display);background:var(--green);color:#FFF4DE;box-shadow:var(--px),inset 0 -4px 0 #24502E;margin:3px}
+.demo-xmas[aria-pressed="true"]{background:var(--ember)}

@@ -10,7 +10,7 @@
 <meta property="og:site_name" content="무드나잇">
 <meta property="og:title" content="산타의 선물가게 체험판">
 <meta property="og:description" content="친구가 몰래 맡긴 선물, 누가 보냈는지 맞혀 보세요. 12월 25일에 열려요.">
-<meta property="og:image" content="https://www.moodnight.co.kr/santa/og.png">
+<meta property="og:image" content="https://www.moodnight.co.kr/santa/og.png?v=2">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
@@ -310,6 +310,8 @@ textarea{min-height:110px}
 .demo-xmas[aria-pressed="true"]{background:var(--red)}
 body.is-demo #kakaoShare,body.is-demo #moreShare,body.is-demo #logout,body.is-demo .fine:has(#logout){display:none!important}
 </style>
+<link rel="preload" href="/mansion/fonts/Galmuri11.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/santa/pixel.css">
 </head>
 <body class="is-demo">
 <nav class="site-nav"><a href="/">← 무드나잇</a><a href="/santa/">진짜 선물가게 만들기</a></nav>
@@ -348,7 +350,7 @@ body.is-demo #kakaoShare,body.is-demo #moreShare,body.is-demo #logout,body.is-de
 <div class="overlay" id="overlay" hidden></div>
 <div class="toast" id="toast" role="status"></div>
 
-<script src="/santa/diorama.js"></script>
+<script src="/santa/pixelroom.js"></script>
 <script src="/santa/demo/demo-backend.js"></script>
 <script src="/santa/gifts.js"></script>
 <script src="/santa/app.js"></script>
@@ -367,6 +369,6 @@ body.is-demo #kakaoShare,body.is-demo #moreShare,body.is-demo #logout,body.is-de
   paint();
 })();
 </script>
-<script src="/music/player.js?v=3" defer></script>
+<script src="/music/player.js?v=4" defer></script>
 </body>
 </html>

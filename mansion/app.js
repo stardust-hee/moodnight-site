@@ -386,7 +386,7 @@ function openFactory() {
 }
 function openShop() {
   openSheet('산타의 선물가게', `<div class="shop"><h3>산타의 선물가게</h3><p>맨션 1층 모퉁이 가게예요. 친구에게 익명 선물과 편지를 맡겨 두면, 크리스마스에 열어 보고 누가 보냈는지 단서로 맞혀요.</p>
-    <a class="btn" href="/santa/">선물가게 들어가기</a></div>
+    <a class="btn" href="/santa/" data-door="산타의 선물가게">선물가게 들어가기</a></div>
     <p class="hint">무드나잇의 또 다른 놀이, 산타의 선물가게로 연결돼요.</p>`);
 }
 

@@ -191,7 +191,7 @@ function kakaoShare() {
       content: {
         title: `${room.display_name}의 선물가게에 몰래 선물을 맡겨 주세요`,
         description: "크리스마스에 열어보고, 누가 보냈는지 맞혀 볼게요",
-        imageUrl: "https://www.moodnight.co.kr/santa/og.png",
+        imageUrl: "https://www.moodnight.co.kr/santa/og.png?v=2",
         imageWidth: 1200,
         imageHeight: 630,
         link: { mobileWebUrl: url, webUrl: url }
