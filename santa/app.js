@@ -252,6 +252,7 @@ function renderHost() {
         ? `<div><p>${L("크리스마스가 왔어요", "Christmas is here")}</p><strong>${L("선물 열기", "Open gifts")}</strong></div><p class="count-note">${L("방 안의 선물을 눌러 리본을 풀어 보세요", "Tap a gift in your room to untie the ribbon")}</p>`
         : `<div><p>${L("12월 25일 0시에 열려요", "Opens Dec 25, 00:00 (KST)")}</p><strong>D-${daysLeft()}</strong></div><p class="count-note">${L("그전엔 흔들어서 소리만 들을 수 있어요", "Until then, you can only shake them and listen")}</p>`}
     </div>
+    ${isOpen() ? "" : `<button class="btn ghost wide" id="remindBtn">${L("📅 12월 25일 0시 알림 받기", "📅 Remind me on Dec 25")}</button>`}
     ${visible.length ? `<button class="btn ${isOpen() ? "red" : "ghost"} wide" id="cardBtn">${isOpen() ? L("결과 카드 만들기", "Make my result card") : L("내 선물가게 이미지 만들기", "Make a shareable image")}</button>` : ""}
     <div class="box">
       <span class="label">${L("내 선물가게 링크", "My gift shop link")}</span>
@@ -278,6 +279,7 @@ function renderHost() {
   if ($("#moreShare")) $("#moreShare").onclick = () => { window.mnTrack && mnTrack("share", "more"); navigator.share({ title: L(`${room.display_name}의 선물가게`, `${POSS(room.display_name)} Gift Shop`), text: L("누가 보냈게? 이름 숨기고 몰래 선물이랑 단서 남겨 줘. 크리스마스에 누가 보냈는지 맞혀 볼게!", "Guess who? Leave me a secret gift with a message and clues. I'll try to guess who sent it on Christmas!"), url: roomUrl() }).catch(() => {}); };
   $("#logout").onclick = logout;
   if ($("#cardBtn")) $("#cardBtn").onclick = openCard;
+  if ($("#remindBtn")) $("#remindBtn").onclick = openRemind;
   $("#delRoom").onclick = askDelete;
   // 방 그림 바로 아래 버튼: 선물 목록, 이미지 저장 (방 그림을 꾹 눌러 저장하면 선물 없는 배경만 저장돼서)
   let bar = $("#roomTools");
@@ -342,6 +344,30 @@ function kakaoShare() {
       buttons: [{ title: "몰래 선물하러 가기", link: { mobileWebUrl: url, webUrl: url } }]
     });
   } catch (e) { copyLink(); }
+}
+
+/* ── 크리스마스 알림: 휴대폰 캘린더에 일정 추가 (서버 없이) ──
+ * 12월 25일 0시(한국 시간) 일정 + 하루 전·당일 알림. 일정 안에 내 선물가게 링크가 들어가요 */
+function openRemind() {
+  const url = `${location.origin}/santa/r/${room.slug}${EN ? "?lang=en" : ""}`;
+  const title = L(`🎁 ${room.display_name}의 선물가게 개봉!`, `🎁 Open ${POSS(room.display_name)} gift shop!`);
+  const desc = L(`크리스마스예요! 친구들이 두고 간 선물을 열고 누가 보냈는지 맞혀 보세요.\n${url}`, `It's Christmas! Open the gifts your friends left and guess who sent each one.\n${url}`);
+  const gcal = "https://calendar.google.com/calendar/render?action=TEMPLATE&text=" + encodeURIComponent(title) + "&dates=20261224T150000Z/20261224T153000Z&details=" + encodeURIComponent(desc) + "&location=" + encodeURIComponent(url);
+  const esc2 = v => String(v).replace(/[\\;,]/g, m => "\\" + m).replace(/\n/g, "\\n");
+  const ics = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//moodnight//santa//KO", "CALSCALE:GREGORIAN", "BEGIN:VEVENT",
+    `UID:santa-${room.slug}-2026@moodnight.co.kr`, "DTSTAMP:" + new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d+/, ""),
+    "DTSTART:20261224T150000Z", "DTEND:20261224T153000Z", "SUMMARY:" + esc2(title), "DESCRIPTION:" + esc2(desc), "URL:" + url,
+    "BEGIN:VALARM", "ACTION:DISPLAY", "DESCRIPTION:" + esc2(L("내일 0시에 선물이 열려요", "Your gifts open tomorrow at midnight")), "TRIGGER:-P1D", "END:VALARM",
+    "BEGIN:VALARM", "ACTION:DISPLAY", "DESCRIPTION:" + esc2(title), "TRIGGER:PT0M", "END:VALARM",
+    "END:VEVENT", "END:VCALENDAR"].join("\r\n");
+  const icsUrl = URL.createObjectURL(new Blob([ics], { type: "text/calendar;charset=utf-8" }));
+  $("#overlay").hidden = false;
+  sheet(`<div><h2>${L("크리스마스 알림 받기", "Christmas reminder")}</h2><p class="sub">${L("휴대폰 캘린더에 12월 25일 0시 일정을 넣어 둘게요. 하루 전과 당일 0시에 알림이 울리고, 일정을 누르면 바로 내 선물가게로 와요.", "We'll add a Dec 25, 00:00 (KST) event to your calendar. You'll get a reminder the day before and at midnight, and the event links straight to your gift shop.")}</p></div>
+    <a class="btn red wide" id="remIcs" href="${icsUrl}" download="moodnight-christmas.ics">${L("아이폰 캘린더에 추가", "Add to iPhone calendar")}</a>
+    <a class="btn ghost wide" id="remG" href="${gcal}" target="_blank" rel="noopener">${L("구글 캘린더에 추가 (갤럭시)", "Add to Google Calendar (Android)")}</a>
+    <p class="fine">${L("카카오톡 안에서 열었다면 오른쪽 위 ⋯ 메뉴에서 '다른 브라우저로 열기'를 누른 뒤 추가해 주세요.", "If this doesn't work inside a chat app, open the page in your browser first.")}</p>`);
+  $("#remIcs").onclick = () => { window.mnTrack && mnTrack("act", "remind"); };
+  $("#remG").onclick = () => { window.mnTrack && mnTrack("act", "remind"); };
 }
 
 function askDelete() {
