@@ -110,3 +110,7 @@
 - [ ] 산타의 선물가게 → '산타의 선물가게' 이름 변경 (페이지 제목, OG 이미지, 홈 카드, 약관)
 - [ ] 성탄맨션 공유 미리보기 이미지 `mansion/og.png`
 - [ ] 공개 후: 증축 이벤트(꽉 찬 뒤 벽보가 쌓이면 5층 증축), 루돌프네 양말공장 기능
+
+## 캐롤 (11/9)
+- `music/player.js`: 오른쪽 아래 "♪ 캐롤 켜기" 버튼, 기본 꺼짐, 켜면 6곡 랜덤 연속 재생. 산타·산타 체험판·성탄맨션 체험판에 `<script src="/music/player.js" defer>` 한 줄로 붙임 (맨션 경로에서는 도트 스타일). 성탄맨션 실서비스 페이지에도 같은 한 줄 추가
+- 음원 6곡: AtlasAudio via Pixabay (Pixabay Content License: 상업적 이용 가능, 출처 표시 불필요, 음원 단독 배포 금지). 128kbps로 줄여서 `music/`에 둠. 출처: Pixabay "크리스마스 음악" 검색 (christmas-eve-music 625689, christmas-story 625693, christmas-winter 625694, christmas-advertising 621547, christmas-party 625692, merry-christmas 617590)
