@@ -80,6 +80,13 @@ section + section{border-top:1px solid var(--night-3)}
 .svc .addr{font-size:.85rem;color:var(--cream-soft);font-variant-numeric:tabular-nums}
 
 /* steps */
+.steps[hidden]{display:none}
+.how-tabs{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 22px}
+.how-tabs button{font:inherit;font-size:.95rem;color:var(--cream-soft);background:transparent;border:1px solid var(--night-3);border-radius:999px;padding:8px 16px;cursor:pointer}
+.how-tabs button[aria-selected="true"]{color:var(--night);font-weight:700}
+.how-tabs .santa[aria-selected="true"]{background:var(--berry);border-color:var(--berry);color:#fff}
+.how-tabs .snow[aria-selected="true"]{background:var(--pine);border-color:var(--pine)}
+.how-tabs .sansa[aria-selected="true"]{background:var(--lamp);border-color:var(--lamp)}
 .steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;counter-reset:s}
 @media (max-width:760px){.steps{grid-template-columns:minmax(0,1fr)}}
 .steps li{counter-increment:s;display:grid;gap:8px;padding-top:18px;border-top:2px solid var(--lamp)}
