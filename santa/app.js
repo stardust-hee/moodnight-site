@@ -152,7 +152,9 @@ async function drawCard() {
   const boxes = room.boxes.filter(b => !b.hidden);
   const total = boxes.length, opened = boxes.filter(b => b.opened).length, solved = boxes.filter(b => b.result === "right").length;
   const open = isOpen();
-  try { await Promise.all([document.fonts.load('60px "Jua"'), document.fonts.load('30px "Gowun Dodum"')]); } catch (e) {}
+  // 구글 한글 글꼴은 글자 묶음별로 나눠 받아서, 카드에 쓸 글자를 다 알려 줘야 빠짐없이 받아져요
+  const ALL = `${room.display_name}의 선물가게 2026 크리스마스 선물 개봉 결과 크리스마스까지 D-0123456789 개 중 보낸 친구 명을 맞혔어요 가 열리길 기다려요 도착했어요 누가 보냈는지 단서로 맞히는 놀이 는 12월 25일에 맞혀 볼게요 moodnight.co.kr/santa 완벽한 명탐정 눈치 백단 탐정 새싹 비밀 산타들의 완승`;
+  try { await Promise.all([document.fonts.load('60px "Jua"', ALL), document.fonts.load('30px "Gowun Dodum"', ALL)]); } catch (e) {}
   const kinds = [...new Set(boxes.map(b => b.wrap))];
   const [bg, ...gi] = await Promise.all(["/santa/3d/room-1600.webp?v=1", ...kinds.map(k => `/santa/3d/gift-${k}.webp?v=1`)].map(loadImg));
   const GI = Object.fromEntries(kinds.map((k, i) => [k, gi[i]]));
