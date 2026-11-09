@@ -520,7 +520,7 @@ function renderSend() {
       <div class="step-h"><i>${st()}</i>${L("나를 맞힐 단서", "Clues about you")}</div>
       <p class="sub" style="margin:0">${L("틀릴 때마다 하나씩 열려요. 어려운 단서부터 써 주세요.", "One unlocks with each wrong guess. Start with the hardest.")}</p>
       <div class="chips" aria-label="${L("단서 아이디어", "Clue ideas")}">${[0, 1, 2].map(k => { const i = (ideaPage * 3 + k) % HINT_IDEAS.length; return `<button type="button" class="chip" data-idea="${i}">${esc(HINT_IDEAS[i].replace("___", "○○"))}</button>`; }).join("")}<button type="button" class="chip more" id="moreIdeas">${L("다른 예시 ↻", "More ideas ↻")}</button></div>
-      <div class="hint-in">${[0, 1, 2].map(n => n < hintCount() ? `<input type="text" id="hint${n}" maxlength="40" value="${esc(d.hints[n])}" placeholder="${(EN ? ["Clue 1 (hardest)", "Clue 2", "Clue 3 (easiest)"] : ["단서 1 (제일 어려운 것)", "단서 2", "단서 3 (제일 쉬운 것)"])[n]}">` : `<div class="auto-hint">${L("단서 3", "Clue 3")} · ${d.name.trim() ? esc(initialHint(d.name)) : L("이름을 적으면 초성으로 자동 완성돼요", "Fills in automatically with your first letter")}</div>`).join("")}</div>
+      <div class="hint-in">${[0, 1, 2].map(n => n < hintCount() ? `<input type="text" id="hint${n}" maxlength="40" value="${esc(d.hints[n])}" placeholder="${(EN ? ["Clue revealed 1st (hardest)", "Clue revealed 2nd", "Clue revealed 3rd (easiest)"] : ["첫 번째로 공개될 단서", "두 번째로 공개될 단서", "세 번째로 공개될 단서"])[n]}">` : `<div class="auto-hint">${L("세 번째로 공개될 단서", "Clue revealed 3rd")} · ${d.name.trim() ? esc(initialHint(d.name)) : L("이름을 적으면 초성으로 자동 완성돼요", "Fills in automatically with your first letter")}</div>`).join("")}</div>
       <label class="check" for="autoInitial"><input type="checkbox" id="autoInitial" ${d.autoInitial ? "checked" : ""}> ${L("마지막 단서는 이름 초성으로 자동", "Make the last clue my first initial")}</label>
     </div>
     <div class="step">
@@ -540,7 +540,7 @@ function renderSend() {
   document.querySelectorAll("[data-item]").forEach(b => b.onclick = () => { draft.item = b.dataset.item; renderSend(); renderSide(); });
   $("#msg").oninput = e => { draft.msg = e.target.value; $("#msgCount").textContent = `${draft.msg.length}/200`; };
   [0, 1, 2].forEach(n => { if ($("#hint" + n)) $("#hint" + n).oninput = e => draft.hints[n] = e.target.value; $("#decoy" + n).oninput = e => draft.decoys[n] = e.target.value; });
-  $("#name").oninput = e => { draft.name = e.target.value; const a = document.querySelector(".auto-hint"); if (a) a.textContent = L("단서 3", "Clue 3") + " · " + (draft.name.trim() ? initialHint(draft.name) : L("이름을 적으면 초성으로 자동 완성돼요", "Fills in automatically with your first letter")); };
+  $("#name").oninput = e => { draft.name = e.target.value; const a = document.querySelector(".auto-hint"); if (a) a.textContent = L("세 번째로 공개될 단서", "Clue revealed 3rd") + " · " + (draft.name.trim() ? initialHint(draft.name) : L("이름을 적으면 초성으로 자동 완성돼요", "Fills in automatically with your first letter")); };
   document.querySelectorAll("[data-tier]").forEach(b => b.onclick = () => { draft.realTier = b.dataset.tier; renderSend(); });
   $("#moreIdeas").onclick = () => { ideaPage++; renderSend(); };
   $("#morePicks").onclick = () => { reshuffle(draft.item); renderSend(); };
