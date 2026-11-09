@@ -299,12 +299,13 @@ textarea{min-height:110px}
 .buy-link:active{transform:translateY(2px);box-shadow:0 1px 0 rgba(120,80,20,.35)}
 .real-card.for-real .buy-link{background:var(--red);color:#fff;box-shadow:0 3px 0 rgba(110,20,20,.4)}
 
+.card-shot{display:block;width:100%;height:auto;border-radius:16px;box-shadow:0 8px 24px -10px rgba(80,50,20,.45)}
+a.btn{display:block;text-align:center;text-decoration:none;box-sizing:border-box}
 .prod{display:grid;gap:4px;min-width:0}
 .prod .item-opt{width:100%}
 .prod-link{font-size:.8rem;color:var(--ink-soft);text-align:center;text-decoration:underline;text-underline-offset:3px;padding:2px 0}
 </style>
-<link rel="preload" href="/santa/3d/room-1000.webp?v=1" as="image" media="(max-width:600px)">
-<link rel="preload" href="/santa/3d/room-1600.webp?v=1" as="image" media="(min-width:601px)">
+<link rel="preload" as="image" href="/santa/3d/room-1600.webp?v=1" imagesrcset="/santa/3d/room-1000.webp?v=1 1000w, /santa/3d/room-1600.webp?v=1 1600w" imagesizes="(max-width:600px) 130vw, 720px">
 </head>
 <body>
 <nav class="site-nav"><a href="/">← 무드나잇</a><a href="/mansion/" data-door="성탄맨션">성탄맨션 →</a></nav>

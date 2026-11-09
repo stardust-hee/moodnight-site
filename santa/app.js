@@ -136,6 +136,79 @@ function renderCreate() {
   $("#logout").onclick = logout;
 }
 
+/* ── 공유 카드 (1080×1350, 인스타 4:5) ──
+ * 3D 방 배경 + 받은 선물 상자 + 숫자만 그려요. 메시지, 보낸 사람 이름은 안 들어가요.
+ * 크리스마스 전: "선물 N개가 도착했어요" / 크리스마스 뒤: 맞힌 결과와 칭호 */
+const loadImg = src => new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = src; });
+function cardTitle(total, opened, solved) {
+  if (!opened) return null;
+  if (solved === total) return "완벽한 명탐정";
+  if (solved / total >= .5) return "눈치 백단 탐정";
+  if (solved) return "새싹 탐정";
+  return "비밀 산타들의 완승";
+}
+async function drawCard() {
+  const boxes = room.boxes.filter(b => !b.hidden);
+  const total = boxes.length, opened = boxes.filter(b => b.opened).length, solved = boxes.filter(b => b.result === "right").length;
+  const open = isOpen();
+  try { await Promise.all([document.fonts.load('60px "Jua"'), document.fonts.load('30px "Gowun Dodum"')]); } catch (e) {}
+  const kinds = [...new Set(boxes.map(b => b.wrap))];
+  const [bg, ...gi] = await Promise.all(["/santa/3d/room-1600.webp?v=1", ...kinds.map(k => `/santa/3d/gift-${k}.webp?v=1`)].map(loadImg));
+  const GI = Object.fromEntries(kinds.map((k, i) => [k, gi[i]]));
+  const c = document.createElement("canvas"); c.width = 1080; c.height = 1350; const g = c.getContext("2d");
+  const rr = (x, y, w, h, r) => { g.beginPath(); g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r); g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath(); };
+  const D = '"Jua","Gowun Dodum",sans-serif', B = '"Gowun Dodum","Jua",sans-serif';
+  g.fillStyle = "#F4ECDD"; g.fillRect(0, 0, 1080, 1350);
+  g.textAlign = "center"; g.textBaseline = "alphabetic";
+  g.fillStyle = "#C23A2E"; g.font = `64px ${D}`; g.fillText(`${room.display_name}의 선물가게`, 540, 118);
+  g.fillStyle = "#7A6352"; g.font = `30px ${B}`; g.fillText(open ? "2026 크리스마스 선물 개봉 결과" : `크리스마스까지 D-${daysLeft()}`, 540, 168);
+  // 방: 배경 가로 9%~91%를 잘라 정사각형에 가깝게
+  const RX = 120, RY = 200, RW = 840, sx0 = bg.width * .09, sw = bg.width * .82, RH = Math.round(RW * bg.height / sw), k = RW / sw;
+  g.save(); g.shadowColor = "rgba(80,50,20,.25)"; g.shadowBlur = 30; g.shadowOffsetY = 12; g.fillStyle = "#fff"; rr(RX - 16, RY - 16, RW + 32, RH + 32, 44); g.fill(); g.restore();
+  g.save(); rr(RX, RY, RW, RH, 30); g.clip();
+  g.drawImage(bg, sx0, 0, sw, bg.height, RX, RY, RW, RH);
+  boxes.slice(0, 40).map((b, i) => ({ b, s: slot(i) })).sort((a, z) => a.s.y - z.s.y).forEach(({ b, s }) => {
+    const w = parseFloat(giftW(s.y)) / 100 * bg.width * k, cx = RX + (s.x / 100 * bg.width - sx0) * k, by = RY + s.y / 100 * RH;
+    g.save(); g.fillStyle = "rgba(45,18,6,.35)"; g.filter = "blur(4px)"; g.beginPath(); g.ellipse(cx, by - w * .06, w * .4, w * .07, 0, 0, Math.PI * 2); g.fill(); g.restore();
+    g.drawImage(GI[b.wrap], cx - w / 2, by - w * .97, w, w);
+  });
+  g.restore();
+  // 결과
+  let y = RY + RH + 92;
+  const title = open ? cardTitle(total, opened, solved) : null;
+  if (title) {
+    g.font = `34px ${D}`; const tw = g.measureText(title).width + 56;
+    g.fillStyle = "#2E6E46"; rr(540 - tw / 2, y - 46, tw, 62, 31); g.fill();
+    g.fillStyle = "#FFF8EA"; g.fillText(title, 540, y - 4); y += 74;
+  }
+  g.fillStyle = "#3A2A22"; g.font = `48px ${D}`;
+  g.fillText(open ? (opened ? `선물 ${total}개 중 보낸 친구 ${solved}명을 맞혔어요` : `선물 ${total}개가 열리길 기다려요`) : `선물 ${total}개가 도착했어요`, 540, y);
+  g.fillStyle = "#7A6352"; g.font = `30px ${B}`;
+  g.fillText(open ? "누가 보냈는지 단서로 맞히는 크리스마스 놀이" : "누가 보냈는지는 12월 25일에 맞혀 볼게요", 540, y + 52);
+  g.fillStyle = "#B08A5A"; g.font = `28px ${D}`; g.fillText("moodnight.co.kr/santa", 540, 1312);
+  return { canvas: c, total, solved, open };
+}
+async function openCard() {
+  const btn = $("#cardBtn"); if (btn) btn.disabled = true;
+  let r;
+  try { r = await drawCard(); } catch (e) { toast("이미지를 만들지 못했어요. 잠시 후 다시 시도해 주세요"); if (btn) btn.disabled = false; return; }
+  if (btn) btn.disabled = false;
+  window.mnTrack && mnTrack("share", "card");
+  const url = r.canvas.toDataURL("image/png");
+  const blob = await new Promise(ok => r.canvas.toBlob(ok, "image/png"));
+  const file = blob && new File([blob], `moodnight-santa-${r.open ? "result" : "room"}.png`, { type: "image/png" });
+  const text = r.open ? `내 선물가게에서 선물 ${r.total}개 중 ${r.solved}명을 맞혔어! 너도 해 봐` : `내 선물가게에 선물 ${r.total}개가 도착했어. 너도 몰래 하나 두고 가!`;
+  const link = r.open ? `${location.origin}/santa/` : roomUrl();
+  const canFile = file && navigator.canShare && navigator.canShare({ files: [file] });
+  $("#overlay").hidden = false;
+  sheet(`<div><h2>${r.open ? "결과 카드" : "내 선물가게 이미지"}</h2><p class="sub">메시지와 보낸 사람 이름은 이미지에 들어가지 않아요.</p></div>
+    <img class="card-shot" src="${url}" alt="${esc(room.display_name)}의 선물가게 공유 카드">
+    ${canFile ? `<button class="btn red wide" id="cardShare">인스타·카톡으로 공유하기</button>` : ""}
+    <a class="btn ${canFile ? "ghost" : "red"} wide" id="cardSave" href="${url}" download="${file ? file.name : "moodnight-santa.png"}">이미지 저장하기</a>
+    <p class="fine">휴대폰에서 저장이 안 되면 이미지를 꾹 눌러 저장해 주세요. 인스타 스토리에 올릴 땐 링크 스티커로 <b>${esc(link.replace(/^https?:\/\//, ""))}</b>를 붙여 주세요.</p>`);
+  if ($("#cardShare")) $("#cardShare").onclick = () => { window.mnTrack && mnTrack("share", "card_native"); navigator.share({ files: [file], text: `${text}\n${link}` }).catch(() => {}); };
+}
+
 function renderHost() {
   const boxes = room.boxes;
   const visible = boxes.filter(b => !b.hidden);
@@ -160,6 +233,7 @@ function renderHost() {
         ? `<div><p>크리스마스가 왔어요</p><strong>선물 열기</strong></div><p class="count-note">방 안의 선물을 눌러 리본을 풀어 보세요</p>`
         : `<div><p>12월 25일 0시에 열려요</p><strong>D-${daysLeft()}</strong></div><p class="count-note">그전엔 흔들어서 소리만 들을 수 있어요</p>`}
     </div>
+    ${visible.length ? `<button class="btn ${isOpen() ? "red" : "ghost"} wide" id="cardBtn">${isOpen() ? "결과 카드 만들기" : "내 선물가게 이미지 만들기"}</button>` : ""}
     <div class="box">
       <span class="label">내 선물가게 링크</span>
       <div class="link-row"><code id="linkTxt">${esc(roomUrl().replace(/^https?:\/\//, ""))}</code><button class="btn" id="copyBtn">복사</button></div>
@@ -184,6 +258,7 @@ function renderHost() {
   $("#kakaoShare").onclick = kakaoShare;
   if ($("#moreShare")) $("#moreShare").onclick = () => { window.mnTrack && mnTrack("share", "more"); navigator.share({ title: `${room.display_name}의 선물가게`, text: "몰래 선물을 두고 가 주세요. 크리스마스에 열어볼게요!", url: roomUrl() }).catch(() => {}); };
   $("#logout").onclick = logout;
+  if ($("#cardBtn")) $("#cardBtn").onclick = openCard;
 }
 
 async function copyLink() {
