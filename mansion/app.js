@@ -231,6 +231,7 @@ function render() {
   if (live) {
     const mine = mineUnit(), full = n >= 12;
     $('#moveBtn').textContent = S.owner ? '벽보 보기' : mine ? `내 집 ${mine}호 보기` : full ? '벽보 붙이기' : '빈 집에 입주하기';
+    const bb = $('#boardBtn'); if (bb) { bb.hidden = S.owner || (!mine && full); bb.textContent = `📌 벽보 ${S.notes.length ? `보기·붙이기 (${S.notes.length})` : '붙이기'}`; }
   }
   if (!live) return;
   if (MODE === 'host') renderHost(); else renderGuest();
@@ -254,7 +255,7 @@ function renderHost() {
   $('#viewPill').textContent = '집주인';
   panel(`<div class="who"><b>${esc(S.name)}의 성탄맨션</b><button class="linkish" id="renameBtn">이름 바꾸기</button></div>
     <div id="renameBox" class="field" hidden><label class="lbl2" for="renameIn">친구들이 부르는 이름 <small>2~3글자</small></label><input type="text" id="renameIn" maxlength="3" value="${esc(S.name)}"><p class="err" id="renameErr"></p><div class="ctas"><button class="btn sm" id="renameSave">저장</button><button class="btn ghost sm" id="renameCancel">취소</button></div></div>
-    <p class="sub">집주인은 모든 편지를 읽고, 이상한 입주자는 퇴거시키고, 벽보는 뗄 수 있어요.</p>
+    <p class="sub">불 켜진 창문을 누르면 친구가 남긴 편지를 읽을 수 있어요. 맨션 1층 벽보판에는 입주 못 한 친구들도 한마디 붙여요. 이상한 입주자는 퇴거시키고, 벽보는 뗄 수 있어요.</p>
     ${statsHTML()}
     <div class="share"><p class="h2">친구 불러서 불 밝히기</p>
       <div class="linkrow"><code id="linkTxt">${esc(shareUrl().replace(/^https?:\/\//, ''))}</code><button class="btn sm" id="copyBtn">복사</button></div>
@@ -288,11 +289,25 @@ function renderHost() {
     await reload(); toast('이름을 바꿨어요');
   };
 }
+const HOW_GUEST = n => `<ol class="how">
+  <li data-i="🏠"><b>빈 집에 입주</b>12채 중 빈 집 하나를 골라 닉네임을 정해요. 로그인은 필요 없어요</li>
+  <li data-i="🪟"><b>창문 꾸미기</b>불빛 색, 창가 그림자, 베란다 소품을 골라 내 집에 불을 켜요</li>
+  <li data-i="💌"><b>말풍선 편지</b>${esc(n)}님에게 한마디 남겨요. '${esc(n)}님만 보기'로 비밀 편지도 돼요</li>
+  <li data-i="📌"><b>벽보 붙이기</b>맨션 1층 벽보판에는 입주하지 않아도 누구나 한마디 붙일 수 있어요. 벽보는 모두에게 보여요</li>
+</ol>`;
+const HOW_HOST = `<ol class="how">
+  <li data-i="🔗"><b>링크 공유</b>내 맨션 링크를 단톡방이나 인스타에 올려요</li>
+  <li data-i="🏠"><b>친구 입주</b>친구들이 빈 집을 골라 창문을 꾸미고 불을 켜요. 12집이 다 차면 맨션이 환해져요</li>
+  <li data-i="💌"><b>편지 읽기</b>불 켜진 창문을 누르면 그 친구가 남긴 말풍선 편지를 읽을 수 있어요</li>
+  <li data-i="📌"><b>벽보</b>입주 못 한 친구도 맨션 1층 벽보판에 한마디 붙일 수 있어요</li>
+</ol>`;
+
 function renderGuest() {
   const mine = mineUnit(), n = order().length;
   $('#viewPill').textContent = mine ? `${mine}호 입주자` : '놀러 온 친구';
   panel(`<div class="who"><b>${esc(S.name)}의 성탄맨션</b></div>
-    <p class="sub">${mine ? `${mine}호에 불을 켜 두었어요. 다른 친구들이 들어올수록 맨션이 환해져요.` : n >= 12 ? '맨션이 꽉 찼어요. 들어오지 못한 친구는 벽보에 한마디 남길 수 있어요.' : `빈 집 하나를 골라 입주해 보세요. 로그인은 필요 없어요. 편지는 '${esc(S.name)}님만 보기'로 남길 수도 있어요.`}</p>
+    <p class="sub">${mine ? `${mine}호에 불을 켜 두었어요. 다른 친구들이 들어올수록 맨션이 환해져요.` : n >= 12 ? '맨션이 꽉 찼어요. 들어오지 못한 친구는 벽보에 한마디 남길 수 있어요.' : `${esc(S.name)}님의 맨션 빈 집에 들어와 불을 켜 주세요. 이렇게 놀아요.`}</p>
+    ${mine ? '' : HOW_GUEST(S.name)}
     ${statsHTML()}
     ${listHTML()}
     <a class="btn wide" href="/mansion/">나도 내 맨션 만들기</a>
@@ -470,7 +485,7 @@ function kakaoShare() {
 function renderLogin() {
   $('#viewPill').textContent = '내 맨션 만들기';
   panel(`<div class="who"><b>내 성탄맨션 만들기</b></div>
-    <p class="sub">눈 내리는 밤, 내 이름이 붙은 맨션 한 동이 생겨요. 링크를 받은 친구가 빈 집에 입주해 창문에 불을 켜고, 말풍선으로 한마디를 남겨요. 친구는 로그인 없이 들어와요.</p>
+    <p class="sub">눈 내리는 밤, 내 이름이 붙은 12집짜리 맨션 한 동이 생겨요.</p>${HOW_HOST}
     <button class="btn wide kakao" id="loginKakao">카카오로 시작하기</button>
     <button class="btn ghost wide" id="loginGoogle">구글로 시작하기</button>
     <p class="fine">맨션을 만드는 사람만 로그인해요. 로그인하면 <a href="/terms.html">이용약관</a>과 <a href="/privacy.html">개인정보처리방침</a>에 동의하는 것으로 봐요. 만 14세 이상만 만들 수 있어요.</p>`);
@@ -523,6 +538,7 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#overl
 let tt; function toast(m) { const t = $('#toast'); t.textContent = m; t.hidden = false; clearTimeout(tt); tt = setTimeout(() => t.hidden = true, 2600); }
 $('#moveBtn').onclick = () => { if (S.owner) return openBoard(); const mine = mineUnit(); if (mine) return openUnit(mine); F.unit = null; openMove(); };
 $('#saveBtn').onclick = saveImage;
+if ($('#boardBtn')) $('#boardBtn').onclick = () => openBoard();
 /* 다른 친구가 입주하면 보이게, 화면을 보고 있을 때 30초마다 새로고침 */
 setInterval(() => { if (S.slug && document.visibilityState === 'visible' && $('#overlay').hidden) reload(); }, 30000);
 
