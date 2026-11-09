@@ -1,4 +1,4 @@
-/* 무드나잇 캐롤 버튼: 곡 랜덤 재생 (기본은 꺼짐, 눌러야 재생)
+/* 무드나잇 캐롤 버튼: 곡 랜덤 재생 (기본은 켜짐: 바로 재생을 시도하고, 브라우저가 막으면 화면을 처음 누르는 순간 재생. 끄면 다음에도 꺼진 채로)
  * 음원: Pixabay (Pixabay Content License, 상업적 이용 가능, 출처 표시 불필요)
  *  - snowy-window-lofi: Turning_Pages (455028) / christmas-lofi-chill-beat: Aventure (439850)
  *  - christmas-jazz-holiday: Tunetank (347485) / last-table-by-the-window: OpenMindAudio (628307)
@@ -27,12 +27,25 @@
   let fails = 0;
   audio.addEventListener("playing", () => { fails = 0; });
   audio.addEventListener("error", () => { if (!on) return; if (++fails >= TRACKS.length) { on = false; paint(); return; } idx++; play(); });
+  const KEY = "mn_music";
+  const pref = () => { try { return localStorage.getItem(KEY); } catch (e) { return null; } };
+  const save = v => { try { localStorage.setItem(KEY, v); } catch (e) {} };
+  const start = () => { on = true; paint(); if (!order.length) shuffle(); if (audio.src && !audio.ended) audio.play().catch(() => { on = false; paint(); }); else play(); };
+  // 자동 재생: 브라우저가 소리 있는 자동 재생을 막으면, 화면을 처음 누르거나 키를 누를 때 시작
+  const EVS = ["pointerup", "touchend", "click", "keydown"];
+  const unarm = () => EVS.forEach(e => removeEventListener(e, onFirst, true));
+  function onFirst(e) { unarm(); if (e.target && e.target.closest && e.target.closest(".mn-music")) return; if (!on) start(); }
   btn.onclick = () => {
-    on = !on; paint();
-    if (on) { if (!order.length) shuffle(); if (audio.src && !audio.ended) audio.play().catch(() => { on = false; paint(); }); else play(); }
-    else audio.pause();
+    unarm();
+    if (on) { on = false; paint(); audio.pause(); save("off"); }
+    else { save("on"); start(); }
   };
   paint();
+  if (pref() !== "off") {
+    if (!order.length) shuffle();
+    audio.src = order[idx]; audio.preload = "auto";
+    audio.play().then(() => { on = true; paint(); }).catch(() => { EVS.forEach(e => addEventListener(e, onFirst, true)); });
+  }
   const mount = () => document.body.appendChild(btn);
   document.body ? mount() : document.addEventListener("DOMContentLoaded", mount);
 })();
