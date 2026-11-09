@@ -146,6 +146,7 @@ function renderCreate() {
     $("#createBtn").disabled = true;
     const { error } = await sb.from("rooms").insert({ owner_id: session.user.id, display_name: name });
     if (error && error.code !== "23505") { const e = $("#createErr"); e.textContent = L("만들지 못했어요. 잠시 후 다시 시도해 주세요.", "Couldn't create it. Please try again."); e.hidden = false; $("#createBtn").disabled = false; return; }
+    if (!error) window.mnTrack && mnTrack("create", "santa");
     await loadHost();
     toast(L("선물가게가 생겼어요. 링크를 친구들에게 보내 보세요", "Your gift shop is ready. Send the link to your friends!"));
   };
@@ -540,6 +541,7 @@ async function sendGift() {
     p_real_for_real: false
   });
   if (error) { draftErr = errMsg(error); renderSend(); return; }
+  window.mnTrack && mnTrack("act", "gift");
   sent = true; lastItem = d.item;
   draft = freshDraft();
   await refreshRoom(id);

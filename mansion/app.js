@@ -395,6 +395,7 @@ function openMove() {
     $('#fgo').disabled = true; $('#fgo').textContent = L('이삿짐 옮기는 중…', 'Moving in…');
     const { error } = await sb.rpc('move_in', { p_slug: S.slug, p_unit: F.unit, p_nick: nick, p_light: F.light, p_sil: F.sil, p_item: F.item, p_pose: F.pose, p_msg: F.msg.trim(), p_vis: F.vis, p_device: DEVICE });
     if (error) { err.textContent = errMsg(error); $('#fgo').disabled = false; $('#fgo').textContent = L(`${F.unit}호에 입주하기`, `Move into #${F.unit}`); if (/taken|full/.test(error.message || '')) { await reload(); } return; }
+    window.mnTrack && mnTrack('act', 'movein');
     const no = F.unit; lastNew = no; Object.assign(F, { unit: null, nick: '', msg: '' });
     closeSheet(); await reload(); $('#frame').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' }); stamp(L(`${no}호에 불이 켜졌어요`, `#${no} lights up!`));
   };
@@ -425,6 +426,7 @@ function openBoard(lead) {
     $('#bgo').disabled = true;
     const { error } = await sb.rpc('post_note', { p_slug: S.slug, p_who: B.who.trim(), p_text: text, p_device: DEVICE });
     if (error) { $('#berr').textContent = errMsg(error); $('#bgo').disabled = false; return; }
+    window.mnTrack && mnTrack('act', 'note');
     Object.assign(B, { who: '', text: '' }); await reload(); newNote = S.notes.length - 1; openBoard(); toast(L('벽보를 붙였어요', 'Note posted'));
   };
 }
@@ -534,6 +536,7 @@ function renderCreate() {
     $('#mGo').disabled = true;
     const { error } = await sb.from('mansions').insert({ owner_id: session.user.id, display_name: name });
     if (error && error.code !== '23505') { $('#mErr').textContent = L('만들지 못했어요. 잠시 후 다시 시도해 주세요.', "Couldn't build it. Please try again."); $('#mGo').disabled = false; return; }
+    if (!error) window.mnTrack && mnTrack('create', 'mansion');
     await loadHost(); stamp(L('맨션 완공!', 'Built!')); toast(L('맨션이 생겼어요. 링크를 친구들에게 보내 보세요', 'Your mansion is ready. Send the link to your friends!'));
   };
 }

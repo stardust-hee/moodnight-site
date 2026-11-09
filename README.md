@@ -34,6 +34,9 @@
 - 맨션 인스타 공유 이미지 (11/9): "인스타 공유 이미지" 버튼 → saveImage() 1080×1350 도트 카드(맨션 그림, N집 불 켜짐, "빈 집 N채! 한 칸 골라서 불 켜 줘", 놀이 방법, 링크). 휴대폰은 공유 시트, 아니면 저장. 체험판(mansion/demo)에도 같은 함수 복사
 - 산타 영어판 (11/9): 화면 위 🌐 버튼으로 한국어/English. `santa/i18n.js`가 언어를 고름(?lang=en → localStorage mn_lang → 브라우저 언어), app.js는 `L("한국어", "English")`로 나란히 씀. 선물 이름·소리 영어는 i18n.js `GIFT_EN`. 영어에선 쿠팡 링크·카카오 공유 숨김, 구글 로그인 먼저, 방 링크에 ?lang=en 붙음. 방 이름은 영어 2~12자(DB 체크도 2~12로 넓힘). 서버 오류 문구는 코드(locked 등)로 영어 변환. 일본어는 원어민 검수 없이 보류
 - 맨션 영어판 (11/9): 언어 고르기·🌐 버튼은 공통 `/lang.js`(산타도 이걸 씀, 산타 선물 영어 데이터만 `santa/i18n.js`). 맨션 app.js도 `L()`로 나란히. HTML 고정 글자는 `data-en`, aria는 `data-en-label`, 탭 제목은 `<html data-en-title>`. 간판은 영어에서 GIFT SHOP / SOCK FACTORY / MANSION. 맨션 이름 DB 체크 2~12자. 맨션 체험판(mansion/demo)은 한국어만
+- 관리자 기기 제외 (11/9): 관리자로 로그인한 기기는 `admin_devices`에 표시돼 방문 기록이 안 남고 지난 기록도 지워짐 (mark_admin_device)
+- 광고 추적 (11/9): 링크에 `?ref=이름`(영문·숫자·_- 20자) → track.js가 방문 detail에 남김. 만들기·참여는 mnTrack("create", "santa"|"mansion"), mnTrack("act", "gift"|"movein"|"note"). 관리실 "광고.exe"(admin_ads)에 ref별 방문자·만든 방·참여 수
+- 영어 미리보기 (11/9): /santa/en, /mansion/en, 방 링크 ?lang=en → index.en.html (tools/make_en_pages.py로 생성, 원본 html 고치면 다시 돌리기)
 - 보관 기간 (11/17 시행, 11/10 공지): 시즌 뒤에도 보관, 주인 삭제·탈퇴·2년 미접속 때 파기. 주인 직접 삭제 `delete_my_room()`, `delete_my_mansion()`. rooms·mansions에 `season`(기본 2026) 열 추가 — 내년 보관함용. 홈 공지 띠는 12/1에 자동으로 사라짐
 - 맨션↔산타 이동: `door.js` 도트 문 전환 (링크에 `data-door="간판 글자"`)
 - 성탄맨션: 32bit 도트 겨울밤 (화면·버튼·창·글꼴까지 전부 도트). 색감 레퍼런스는 눈 내리는 유럽 밤거리 사진: 짙은 청록 밤 + 호박빛 창문 + 흐릿한 불빛 망울. 키워드 "고즈넉함". 글꼴 갈무리(Galmuri11/14, OFL) `mansion/fonts/`

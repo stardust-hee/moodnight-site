@@ -123,6 +123,11 @@ function render() {
     <div class="tbl"><table><thead><tr><th>${period === "day" ? "날짜" : "기간"}</th>${cols.map(c => `<th>${c[1]}</th>`).join("")}</tr></thead>
       <tbody>${rows.slice().reverse().map(r => `<tr><td>${esc(r.label)}</td>${cols.map(([k]) => `<td class="${r[k] ? "" : "z"}">${n(r[k])}</td>`).join("")}</tr>`).join("")}</tbody></table></div>
   </div></section>
+  <section class="win"><h2>광고.exe</h2><div class="body">
+    <p class="msg" style="margin:0 0 8px">광고 링크 끝에 <b>?ref=이름</b>을 붙이면 여기에 따로 모여요. 예: moodnight.co.kr/santa/?ref=ig_story</p>
+    ${(S.ads || []).length ? `<div class="tbl"><table><thead><tr><th>ref</th><th>방문자</th><th>선물가게 만듦</th><th>맨션 만듦</th><th>선물·입주·벽보</th></tr></thead>
+      <tbody>${S.ads.map(a => `<tr><td>${esc(a.ref)}</td><td>${n(a.visitors)}</td><td>${n(a.santa_rooms)} (${pct(a.santa_rooms, a.visitors)})</td><td>${n(a.mansions)} (${pct(a.mansions, a.visitors)})</td><td>${n(a.actions)}</td></tr>`).join("")}</tbody></table></div>` : '<p class="msg">아직 광고로 들어온 방문이 없어요.</p>'}
+  </div></section>
   <section class="win"><h2>최근 7일 페이지별 방문.exe</h2><div class="body"><div class="grid">
     ${Object.keys(PAGES).filter(k => (s.pages || {})[k]).map(k => card(PAGES[k], n(s.pages[k]))).join("") || '<p class="msg">아직 기록이 없어요. 방문 기록은 11월 9일부터 쌓여요.</p>'}
   </div></div></section>
@@ -137,6 +142,7 @@ async function load() {
   if (dev) { try { await sb.rpc("mark_admin_device", { p_device: dev }); } catch (e) {} }
   const { data, error } = await sb.rpc("admin_stats");
   if (error) { $("#dash").hidden = true; $("#loginBox").hidden = false; $("#loginErr").textContent = (error.message || "").includes("forbidden") ? "이 계정은 관리자가 아니에요. 다른 계정으로 로그인해 주세요." : "불러오지 못했어요. 잠시 후 다시 시도해 주세요."; $("#logout").hidden = false; return; }
+  try { const r = await sb.rpc("admin_ads"); data.ads = r.data || []; } catch (e) { data.ads = []; }
   S = data; $("#loginBox").hidden = true; $("#dash").hidden = false; $("#reload").hidden = false; $("#logout").hidden = false;
   $("#who").textContent = `${new Date().toLocaleString("ko-KR")} 기준`;
   render();
