@@ -9,12 +9,12 @@
   --lamp:#F2C46B;       /* 강조 (전등빛) */
   --berry:#E0574A;      /* 산타 */
   --pine:#5FB487;       /* 눈망진창 */
-  --font-display:"Jua","Gowun Dodum","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
-  --font-body:"Gowun Dodum","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --font-display:"Jua","Pretendard Variable","Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --font-body:"Pretendard Variable","Pretendard",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
 }
 *{box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{margin:0;background:var(--night);color:var(--cream);font-family:var(--font-body);font-size:16px;line-height:1.75;-webkit-font-smoothing:antialiased;word-break:keep-all;overflow-wrap:break-word}
+html{scroll-behavior:smooth;font-size:17px}
+body{margin:0;background:var(--night);color:var(--cream);font-family:var(--font-body);font-size:17.5px;line-height:1.75;-webkit-font-smoothing:antialiased;word-break:keep-all;overflow-wrap:break-word}
 a{color:var(--lamp)}
 img,svg{max-width:100%}
 :focus-visible{outline:3px solid var(--lamp);outline-offset:3px;border-radius:6px}
