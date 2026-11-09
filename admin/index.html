@@ -79,7 +79,7 @@ const $ = s => document.querySelector(s);
 const n = x => Number(x || 0).toLocaleString("ko-KR");
 const pct = (a, b) => b ? Math.round(a / b * 100) + "%" : "-";
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-const PAGES = { home: "홈", santa: "선물가게(주인)", santa_r: "선물가게 링크", mansion: "맨션(주인)", mansion_r: "맨션 링크", blog: "읽을거리", other: "기타" };
+const PAGES = { home: "홈", santa: "선물가게(주인)", santa_r: "선물가게 링크", mansion: "맨션(주인)", mansion_r: "맨션 링크", sansa: "산사", smash: "박살방", tray: "실버 트레이", blog: "읽을거리", other: "기타" };
 let S = null, period = "day";
 
 function card(label, v, sub) { return `<div class="card"><span>${label}</span><b>${v}</b>${sub ? `<small>${sub}</small>` : ""}</div>`; }
@@ -92,6 +92,37 @@ function group(daily, mode) {
     out.unshift({ label: `${chunk[0].d}~${chunk[chunk.length - 1].d}`, visitors: sum("visitors"), users: sum("users"), rooms: sum("rooms"), gifts: sum("gifts"), mansions: sum("mansions"), residents: sum("residents"), shares: sum("shares") });
   }
   return out;
+}
+const COLOR_KO = { red: "빨강", yellow: "노랑", green: "초록", blue: "파랑", purple: "보라", white: "하양" };
+function mindHTML() {
+  const m = S.mind; if (!m) return `<section class="win"><h2>마음 챙기기.exe</h2><div class="body"><p class="msg">마음 챙기기 기록을 불러오지 못했어요.</p></div></section>`;
+  const v = k => (m.visits || {})[k] || { all: 0, today: 0, week: 0, people: 0 };
+  const a = k => (m.acts || {})[k] || 0;
+  const vis = k => card("방문", n(v(k).all), `오늘 ${n(v(k).today)} · 7일 ${n(v(k).week)} · ${n(v(k).people)}명`);
+  const smashTotal = a("smash:act:smash_keyboard") + a("smash:act:smash_monitor") + a("smash:act:smash_mug");
+  const colors = Object.entries(m.lantern_colors || {}).sort((x, y) => y[1] - x[1]).map(([c, k]) => `${COLOR_KO[c] || c} ${n(k)}`).join(" · ") || "아직 없어요";
+  const d = (m.daily || []).slice().reverse();
+  return `
+  <section class="win"><h2>무드나잇 산사.exe</h2><div class="body"><div class="grid">
+    ${vis("sansa")}
+    ${card("비운 번뇌", n(m.bonnoe_total), `오늘 ${n(m.bonnoe_today)}`)}
+    ${card("연등", n(m.lanterns), colors)}
+    ${card("기와 소원", n(m.tiles), `오늘 연등·기와 ${n(m.sansa_today)} · 숨김 ${n(m.sansa_hidden)}`)}
+  </div></div></section>
+  <section class="win"><h2>박살방.exe</h2><div class="body"><div class="grid">
+    ${vis("smash")}
+    ${card("박살 낸 물건", n(smashTotal), `키보드 ${n(a("smash:act:smash_keyboard"))} · 모니터 ${n(a("smash:act:smash_monitor"))} · 머그컵 ${n(a("smash:act:smash_mug"))}`)}
+  </div></div></section>
+  <section class="win"><h2>Silver Tray Studio.exe</h2><div class="body"><div class="grid">
+    ${vis("tray")}
+    ${card("이미지 저장", n(a("tray:act:tray_save")))}
+    ${card("공유", n(a("tray:share:tray")))}
+  </div></div></section>
+  <section class="win"><h2>마음 챙기기 최근 14일.exe</h2><div class="body">
+    <div class="tbl"><table><thead><tr><th>날짜</th><th>산사</th><th>연등·기와</th><th>박살방</th><th>박살</th><th>트레이</th><th>저장</th></tr></thead>
+      <tbody>${d.map(r => `<tr><td>${esc(r.d)}</td>${["sansa", "items", "smash", "smashed", "tray", "saves"].map(k => `<td class="${r[k] ? "" : "z"}">${n(r[k])}</td>`).join("")}</tr>`).join("")}</tbody></table></div>
+    <p class="msg" style="margin:8px 0 0">산사·박살방·트레이 칸은 그날 들어온 사람 수예요. 이 관리자 기기 방문은 빠져요.</p>
+  </div></section>`;
 }
 function render() {
   const s = S, mb = s.db_bytes / 1048576, rows = group(s.daily || [], period), max = Math.max(1, ...rows.map(r => r.visitors));
@@ -116,6 +147,7 @@ function render() {
     ${card("입주자", n(s.residents), `맨션당 ${s.mansions ? (s.residents / s.mansions).toFixed(1) : 0}집`)}
     ${card("벽보", n(s.notes), `퇴거·차단 ${n(s.bans)}`)}
   </div></div></section>
+  ${mindHTML()}
   <section class="win"><h2>기간별.exe</h2><div class="body">
     <div class="tabs" role="tablist">${[["day", "일간"], ["week", "주간"], ["month", "월간"]].map(([k, l]) => `<button role="tab" data-p="${k}" aria-selected="${period === k}">${l}</button>`).join("")}</div>
     <div class="chart" aria-label="방문자 막대그래프">${rows.map(r => `<div style="height:${Math.max(2, r.visitors / max * 100)}%" data-t="${esc(r.label)} · ${r.visitors}명"></div>`).join("")}</div>
@@ -143,6 +175,8 @@ async function load() {
   const { data, error } = await sb.rpc("admin_stats");
   if (error) { $("#dash").hidden = true; $("#loginBox").hidden = false; $("#loginErr").textContent = (error.message || "").includes("forbidden") ? "이 계정은 관리자가 아니에요. 다른 계정으로 로그인해 주세요." : "불러오지 못했어요. 잠시 후 다시 시도해 주세요."; $("#logout").hidden = false; return; }
   try { const r = await sb.rpc("admin_ads"); data.ads = r.data || []; } catch (e) { data.ads = []; }
+  try { const r = await sb.rpc("admin_mind_stats"); data.mind = r.error ? null : r.data; } catch (e) { data.mind = null; }
+  if (data.mind && data.mind.reports) data.reports = (data.reports || []).concat(data.mind.reports).sort((x, y) => String(y.at).localeCompare(String(x.at)));
   S = data; $("#loginBox").hidden = true; $("#dash").hidden = false; $("#reload").hidden = false; $("#logout").hidden = false;
   $("#who").textContent = `${new Date().toLocaleString("ko-KR")} 기준`;
   render();
