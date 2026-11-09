@@ -189,7 +189,7 @@ body{margin:0}
 </style>
 
 
-<div class="demo-bar"><a href="/santa/">← 진짜 선물방 만들기</a><span>체험판입니다. 예시 데이터로 움직이며, 새로고침하면 처음 상태로 돌아가요.</span></div>
+<div class="demo-bar"><a href="/santa/">← 진짜 선물가게 만들기</a><span>체험판입니다. 예시 데이터로 움직이며, 새로고침하면 처음 상태로 돌아가요.</span></div>
 <div class="app">
   <header class="top">
     <div class="brand">
@@ -202,7 +202,7 @@ body{margin:0}
   </header>
 
   <div class="main">
-    <section class="frame" aria-label="선물방">
+    <section class="frame" aria-label="선물가게">
       <div class="room" id="room">
         <svg class="scene" viewBox="0 0 500 400" preserveAspectRatio="none" aria-hidden="true">
           <defs>
@@ -393,7 +393,7 @@ function renderHost(){
   const opened=gifts.filter(g=>g.opened).length;
   $("#panelBody").innerHTML=`
   <div style="display:grid;gap:16px">
-    <div><h2>${HOST}의 선물방</h2><p class="sub">누가 보냈는지는 크리스마스에 직접 맞혀야 알 수 있어요.</p></div>
+    <div><h2>${HOST}의 선물가게</h2><p class="sub">누가 보냈는지는 크리스마스에 직접 맞혀야 알 수 있어요.</p></div>
     <div class="stats">
       <div class="stat"><b>${gifts.length}</b><span>받은 선물</span></div>
       <div class="stat"><b>${opened}</b><span>열어본 선물</span></div>
@@ -405,7 +405,7 @@ function renderHost(){
         : `<div><p>12월 25일 0시에 열려요</p><strong>D-${daysLeft()}</strong></div><p style="max-width:12em;text-align:right">그전엔 흔들어서 단서만 들을 수 있어요</p>`}
     </div>
     <div class="box">
-      <span class="label">내 선물방 링크</span>
+      <span class="label">내 선물가게 링크</span>
       <div class="link-row"><code id="linkTxt">santa.moodnight.co.kr/r/harin-7q2x</code><button class="btn" id="copyBtn">복사</button></div>
       <span class="sub" style="margin:0">카톡·인스타 스토리에 올리면 친구들이 몰래 선물을 두고 가요.</span>
     </div>

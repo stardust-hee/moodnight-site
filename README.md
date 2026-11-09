@@ -97,6 +97,7 @@
 ## 남은 할 일
 
 - [x] 테스트방(`251d5a02d3`) 선물 삭제, unlock_override null (11/9). 방 이름은 이나님이 화면의 "이름 바꾸기"로 직접 설정
+- 11/9: 화면 표기 "○○의 선물방" → "○○의 선물가게". 이름은 2~3글자 (화면 + DB check, 기존 행은 NOT VALID)
 - 방 주인은 `rooms.display_name`만 수정 가능 (컬럼 권한, 11/9). unlock_override는 SQL로만
 - [ ] 카카오 애드핏: 제휴 문의 접수 완료(11/6), 인증코드 대기 → 가입 → 매체(Web, www.moodnight.co.kr)·광고단위 생성 → 승인 후 `santa/app.js` renderSent의 `ad-slot` 자리에 광고 코드
 - [ ] 애드센스: 읽을거리 6개 이상 올린 뒤 신청 (11/16 이후 예정)

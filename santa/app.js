@@ -47,7 +47,7 @@ function renderTop() {
   const el = $("#dday");
   el.textContent = isOpen() ? "Merry Christmas" : `개봉까지 D-${daysLeft()}`;
   el.classList.toggle("xmas", isOpen());
-  $("#title").textContent = room ? `${room.display_name}의 선물방` : "산타의 선물가게";
+  $("#title").textContent = room ? `${room.display_name}의 선물가게` : "산타의 선물가게";
 }
 
 function renderGifts(newId) {
@@ -69,7 +69,7 @@ function renderGifts(newId) {
     wrap.appendChild(b);
   });
   let hint = "선물을 눌러서 흔들어 보세요";
-  if (!room) hint = "로그인하면 나만의 선물방이 생겨요";
+  if (!room) hint = "로그인하면 나만의 선물가게가 생겨요";
   else if (!boxes.length) hint = MODE === "host" ? "아직 선물이 없어요. 링크를 공유해 보세요" : "첫 번째 선물을 두고 가 주세요";
   else if (isOpen() && MODE === "host") hint = "선물을 눌러서 열어 보세요";
   $("#roomHint").textContent = hint;
@@ -86,10 +86,10 @@ function panel(html) { $("#panelBody").innerHTML = html; }
 function renderLogin() {
   panel(`
   <div class="stack">
-    <div><h2>나만의 선물방 만들기</h2><p class="sub">선물방 링크를 친구들에게 보내면, 친구들이 로그인 없이 몰래 선물과 메시지를 두고 가요. 12월 25일에 열어 보고 누가 보냈는지 맞혀 보세요.</p></div>
+    <div><h2>나만의 선물가게 만들기</h2><p class="sub">선물가게 링크를 친구들에게 보내면, 친구들이 로그인 없이 몰래 선물과 메시지를 두고 가요. 12월 25일에 열어 보고 누가 보냈는지 맞혀 보세요.</p></div>
     <button class="login kakao" id="loginKakao">카카오로 시작하기</button>
     <button class="login google" id="loginGoogle">구글로 시작하기</button>
-    <p class="fine">선물방을 만드는 사람만 로그인해요. 로그인하면 <a href="/terms.html">이용약관</a>과 <a href="/privacy.html">개인정보처리방침</a>에 동의하는 것으로 봐요.</p>
+    <p class="fine">선물가게를 만드는 사람만 로그인해요. 로그인하면 <a href="/terms.html">이용약관</a>과 <a href="/privacy.html">개인정보처리방침</a>에 동의하는 것으로 봐요.</p>
     <a class="btn ghost wide" href="/santa/demo/">먼저 체험판 해보기</a>
   </div>`);
   const back = location.origin + "/santa/";
@@ -99,23 +99,24 @@ function renderLogin() {
 
 function renderCreate() {
   const m = session.user.user_metadata || {};
-  const guess = (m.name || m.full_name || m.nickname || "").slice(0, 20);
+  const raw = (m.name || m.full_name || m.nickname || "").replace(/\s/g, "");
+  const guess = raw.length >= 2 && raw.length <= 3 ? raw : "";
   panel(`
   <div class="stack">
-    <div><h2>선물방 이름 정하기</h2><p class="sub">친구들이 링크를 열면 "○○의 선물방"으로 보여요. 친구들이 부르는 이름이나 별명을 써 주세요.</p></div>
-    <input type="text" id="roomName" maxlength="20" value="${esc(guess)}" placeholder="예: 하린">
+    <div><h2>선물가게 이름 정하기</h2><p class="sub">친구들이 링크를 열면 "○○의 선물가게"로 보여요. 친구들이 부르는 이름이나 별명을 2~3글자로 써 주세요.</p></div>
+    <input type="text" id="roomName" maxlength="3" value="${esc(guess)}" placeholder="예: 하린">
     <p class="err" id="createErr" hidden></p>
-    <button class="btn red wide" id="createBtn">선물방 만들기</button>
+    <button class="btn red wide" id="createBtn">선물가게 만들기</button>
     <button class="linkish" id="logout">다른 계정으로 로그인</button>
   </div>`);
   $("#createBtn").onclick = async () => {
-    const name = $("#roomName").value.trim();
-    if (!name) { const e = $("#createErr"); e.textContent = "이름을 적어 주세요."; e.hidden = false; return; }
+    const name = $("#roomName").value.replace(/\s/g, "");
+    if (name.length < 2 || name.length > 3) { const e = $("#createErr"); e.textContent = "이름은 2~3글자로 적어 주세요."; e.hidden = false; return; }
     $("#createBtn").disabled = true;
     const { error } = await sb.from("rooms").insert({ owner_id: session.user.id, display_name: name });
     if (error && error.code !== "23505") { const e = $("#createErr"); e.textContent = "만들지 못했어요. 잠시 후 다시 시도해 주세요."; e.hidden = false; $("#createBtn").disabled = false; return; }
     await loadHost();
-    toast("선물방이 생겼어요. 링크를 친구들에게 보내 보세요");
+    toast("선물가게가 생겼어요. 링크를 친구들에게 보내 보세요");
   };
   $("#logout").onclick = logout;
 }
@@ -127,10 +128,10 @@ function renderHost() {
   const solved = visible.filter(b => b.result === "right").length;
   panel(`
   <div class="stack">
-    <div id="nameView"><h2>${esc(room.display_name)}의 선물방</h2><p class="sub">누가 보냈는지는 크리스마스에 직접 맞혀야 알 수 있어요. <button class="linkish" id="renameBtn">이름 바꾸기</button></p></div>
+    <div id="nameView"><h2>${esc(room.display_name)}의 선물가게</h2><p class="sub">누가 보냈는지는 크리스마스에 직접 맞혀야 알 수 있어요. <button class="linkish" id="renameBtn">이름 바꾸기</button></p></div>
     <div id="nameEdit" class="stack" style="gap:10px" hidden>
-      <span class="label">친구들이 부르는 이름이나 별명</span>
-      <input type="text" id="renameIn" maxlength="20" value="${esc(room.display_name)}">
+      <span class="label">친구들이 부르는 이름이나 별명 (2~3글자)</span>
+      <input type="text" id="renameIn" maxlength="3" value="${esc(room.display_name)}">
       <p class="err" id="renameErr" hidden></p>
       <div class="link-row"><button class="btn red" id="renameSave">저장</button><button class="btn ghost" id="renameCancel">취소</button></div>
     </div>
@@ -145,19 +146,19 @@ function renderHost() {
         : `<div><p>12월 25일 0시에 열려요</p><strong>D-${daysLeft()}</strong></div><p class="count-note">그전엔 흔들어서 소리만 들을 수 있어요</p>`}
     </div>
     <div class="box">
-      <span class="label">내 선물방 링크</span>
+      <span class="label">내 선물가게 링크</span>
       <div class="link-row"><code id="linkTxt">${esc(roomUrl().replace(/^https?:\/\//, ""))}</code><button class="btn" id="copyBtn">복사</button></div>
       <button class="login kakao" id="kakaoShare">카카오톡으로 링크 보내기</button>
       ${navigator.share ? `<button class="btn ghost wide" id="moreShare">다른 앱으로 공유</button>` : ""}
       <span class="sub" style="margin:0">선물이 <b>3개만</b> 모여도 추리가 재밌어져요. 단톡방 하나에 올리는 걸로 충분해요. 인스타 스토리에는 링크를 복사해서 링크 스티커로 붙여 주세요.</span>
     </div>
-    <p class="fine">다음에 들어올 때도 처음 로그인한 방법으로 로그인해야 이 선물방이 보여요. <button class="linkish" id="logout">로그아웃</button></p>
+    <p class="fine">다음에 들어올 때도 처음 로그인한 방법으로 로그인해야 이 선물가게가 보여요. <button class="linkish" id="logout">로그아웃</button></p>
   </div>`);
   $("#renameBtn").onclick = () => { $("#nameView").hidden = true; $("#nameEdit").hidden = false; $("#renameIn").focus(); };
   $("#renameCancel").onclick = () => { $("#nameEdit").hidden = true; $("#nameView").hidden = false; };
   $("#renameSave").onclick = async () => {
-    const name = $("#renameIn").value.trim(), e = $("#renameErr");
-    if (!name) { e.textContent = "이름을 적어 주세요."; e.hidden = false; return; }
+    const name = $("#renameIn").value.replace(/\s/g, ""), e = $("#renameErr");
+    if (name.length < 2 || name.length > 3) { e.textContent = "이름은 2~3글자로 적어 주세요."; e.hidden = false; return; }
     $("#renameSave").disabled = true;
     const { error } = await sb.from("rooms").update({ display_name: name }).eq("owner_id", session.user.id);
     if (error) { e.textContent = "바꾸지 못했어요. 잠시 후 다시 시도해 주세요."; e.hidden = false; $("#renameSave").disabled = false; return; }
@@ -166,7 +167,7 @@ function renderHost() {
   };
   $("#copyBtn").onclick = () => copyLink();
   $("#kakaoShare").onclick = kakaoShare;
-  if ($("#moreShare")) $("#moreShare").onclick = () => navigator.share({ title: `${room.display_name}의 선물방`, text: "몰래 선물을 두고 가 주세요. 크리스마스에 열어볼게요!", url: roomUrl() }).catch(() => {});
+  if ($("#moreShare")) $("#moreShare").onclick = () => navigator.share({ title: `${room.display_name}의 선물가게`, text: "몰래 선물을 두고 가 주세요. 크리스마스에 열어볼게요!", url: roomUrl() }).catch(() => {});
   $("#logout").onclick = logout;
 }
 
@@ -181,7 +182,7 @@ function kakaoShare() {
     Kakao.Share.sendDefault({
       objectType: "feed",
       content: {
-        title: `${room.display_name}의 선물방에 몰래 선물을 맡겨 주세요`,
+        title: `${room.display_name}의 선물가게에 몰래 선물을 맡겨 주세요`,
         description: "크리스마스에 열어보고, 누가 보냈는지 맞혀 볼게요",
         imageUrl: "https://www.moodnight.co.kr/santa/og.png",
         imageWidth: 1200,
@@ -222,7 +223,7 @@ function renderSide() {
   const n = room ? room.boxes.filter(b => !b.hidden).length : 0;
   const meta = room ? `<div class="side-meta"><span>이 방의 선물 ${n}개</span><span>${isOpen() ? "개봉 중" : `12월 25일 0시 개봉 · D-${daysLeft()}`}</span></div>` : "";
   const flow = `<ol class="flow">
-      <li><b>링크 공유</b>내 선물방 링크를 카톡이나 인스타에 올려요</li>
+      <li><b>링크 공유</b>내 선물가게 링크를 카톡이나 인스타에 올려요</li>
       <li><b>몰래 선물</b>친구들이 선물과 메시지, 단서를 두고 가요</li>
       <li><b>열고 맞히기</b>12월 25일에 열고 누가 보냈는지 맞혀요</li>
     </ol>`;
@@ -264,7 +265,7 @@ let ideaPage = 0;
 function renderSend() {
   if (sent) return renderSent();
   if (isOpen()) {
-    panel(`<div class="stack"><div><h2>선물 보내기가 마감됐어요</h2><p class="sub">${esc(room.display_name)}님은 이미 선물을 열어 보고 있어요. 내년에는 나만의 선물방도 만들어 보세요.</p></div><a class="btn red wide" href="/santa/">나도 선물방 만들기</a></div>`);
+    panel(`<div class="stack"><div><h2>선물 보내기가 마감됐어요</h2><p class="sub">${esc(room.display_name)}님은 이미 선물을 열어 보고 있어요. 내년에는 나만의 선물가게도 만들어 보세요.</p></div><a class="btn red wide" href="/santa/">나도 선물가게 만들기</a></div>`);
     return;
   }
   const d = draft, host = esc(room.display_name);
@@ -371,7 +372,7 @@ function renderSent() {
   <div class="stack">
     <div class="sent-mark" aria-hidden="true"><span class="gift static w-gold">${giftHTML()}</span></div>
     <div><h2>선물을 몰래 두고 왔어요</h2><p class="sub">12월 25일에 ${host}님이 선물을 열고 누가 보냈는지 맞혀 볼 거예요. 그때까지 들키지 않게 조심하세요.</p></div>
-    <a class="btn red wide" href="/santa/">나도 선물방 만들기</a>
+    <a class="btn red wide" href="/santa/">나도 선물가게 만들기</a>
     <button class="btn ghost wide" id="again">선물 하나 더 보내기</button>
     <!-- 광고 자리: 애드핏/애드센스 승인 후 이 아래에 광고 코드를 넣어요 -->
     <div class="ad-slot" id="adSent" hidden></div>
@@ -478,11 +479,11 @@ async function loadGuest() {
   const { data, error } = await sb.rpc("get_room", { p_slug: pathSlug });
   if (error || !data) {
     renderTop(); renderGifts();
-    panel(`<div class="stack"><div><h2>선물방을 찾을 수 없어요</h2><p class="sub">링크가 잘못됐거나 선물방이 삭제됐어요. 링크를 보낸 친구에게 다시 확인해 주세요.</p></div><a class="btn red wide" href="/santa/">나도 선물방 만들기</a></div>`);
+    panel(`<div class="stack"><div><h2>선물가게를 찾을 수 없어요</h2><p class="sub">링크가 잘못됐거나 선물가게가 삭제됐어요. 링크를 보낸 친구에게 다시 확인해 주세요.</p></div><a class="btn red wide" href="/santa/">나도 선물가게 만들기</a></div>`);
     return;
   }
   if (data.is_owner) { location.replace("/santa/"); return; }
-  room = data; document.title = `${room.display_name}의 선물방 | 산타의 선물가게`;
+  room = data; document.title = `${room.display_name}의 선물가게 | 산타의 선물가게`;
   renderTop(); renderGifts(); renderSend();
 }
 
