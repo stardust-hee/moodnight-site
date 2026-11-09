@@ -265,5 +265,25 @@
 })();
 </script>
 <script src="/track.js" defer></script>
+<script>
+/* 관리자(이나님)로 로그인돼 있을 때만 메뉴에 '관리실' 링크를 보여 줘요. 로그인 기록이 없으면 아무것도 안 불러와요 */
+(function () {
+  let has = false; try { has = !!localStorage.getItem("sb-gbmlkyfguktjtroczqfw-auth-token"); } catch (e) {}
+  if (!has) return;
+  const s = document.createElement("script");
+  s.src = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js";
+  s.onload = async () => {
+    try {
+      const sb = supabase.createClient("https://gbmlkyfguktjtroczqfw.supabase.co", "sb_publishable_RO92ntdlSM5_Urctc5FD9w_4OHcZQzf");
+      const { data: { session } } = await sb.auth.getSession(); if (!session) return;
+      const { data } = await sb.rpc("is_admin"); if (data !== true) return;
+      const nav = document.querySelector(".site-head .nav"); if (!nav || nav.querySelector("[data-admin]")) return;
+      const a = document.createElement("a"); a.href = "/admin/"; a.textContent = "관리실"; a.dataset.admin = "1"; a.style.color = "var(--lamp)";
+      nav.appendChild(a);
+    } catch (e) {}
+  };
+  document.head.appendChild(s);
+})();
+</script>
 </body>
 </html>
