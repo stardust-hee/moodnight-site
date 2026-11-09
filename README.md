@@ -115,3 +115,7 @@
 - `music/player.js`: 오른쪽 아래 "♪ 캐롤 켜기" 버튼, 기본 꺼짐, 켜면 랜덤 연속 재생 (같은 곡 연속 안 나옴). 산타·산타 체험판·성탄맨션 체험판에 `<script src="/music/player.js" defer>` 한 줄로 붙임 (맨션 경로에서는 도트 스타일). 성탄맨션 실서비스 페이지에도 같은 한 줄 추가
 - 음원 (11/9, 잔잔한 lo-fi·재즈 4곡): Pixabay "snowy window lofi" by Turning_Pages (455028), "christmas lofi chill beat" by Aventure (439850), "christmas jazz christmas holiday" by Tunetank (347485), "the last table by the window (special christmas mix)" by OpenMindAudio (628307). Pixabay Content License: 상업적 이용 가능, 출처 표시 불필요, 음원 단독 배포 금지. 128kbps로 줄여서 `music/`에 둠. 처음 넣었던 AtlasAudio 6곡은 너무 웅장해서 뺌
 - 공유마당 정부 캐럴(2019, 문체부·저작권위원회 14곡)도 후보. 곡별 이용 조건 확인 후 출처 표시하고 쓰기
+
+## 영어 버전 (11/9 결정)
+- 이름: **Who's My Santa?** (페이지 제목·설명에는 "Secret Santa"를 넣어 검색 챙기기)
+- 계획: 한국어 12/1 공개 후 12/5쯤 `/en/santa/`. 구글 로그인만, 카톡 대신 링크 복사·기본 공유, 쿠팡 대신 아마존 제휴(가입 필요) 또는 링크 없이, 약관·개인정보처리방침 영어판
