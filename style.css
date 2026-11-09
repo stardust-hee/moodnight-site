@@ -68,6 +68,7 @@ section + section{border-top:1px solid var(--night-3)}
 .badge{font-size:.78rem;border-radius:999px;padding:3px 10px;border:1px solid currentColor}
 .svc.santa .badge,.svc.santa h3{color:var(--berry)}
 .svc.snow .badge,.svc.snow h3{color:var(--pine)}
+.svc.sansa .badge,.svc.sansa h3{color:var(--lamp)}
 .svc p{color:var(--cream-soft)}
 .svc ul{margin:0;padding-left:1.1em;color:var(--cream-soft)}
 .svc-shot{position:relative;display:block;border-radius:14px;overflow:hidden;border:1px solid var(--night-3);aspect-ratio:4/3;background:var(--night)}

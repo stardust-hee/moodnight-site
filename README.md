@@ -14,6 +14,7 @@
 | `/mansion/` `mansion/index.html` + `mansion/app.js` | 성탄맨션 실제 서비스 (맨션 주인 화면: 로그인, 만들기, 공유, 퇴거, 벽보 떼기) |
 | `/mansion/r/<코드>` | 친구가 받는 맨션 링크 (로그인 없이 입주, 벽보). `vercel.json` rewrite |
 | `/mansion/demo/` `mansion/demo/index.html` | 성탄맨션 체험판 (도트, 예시 데이터, 저장 안 됨, 공개 링크 없음). 글꼴은 `mansion/fonts/` |
+| `/sansa/` `sansa/index.html` | 무드나잇 산사 (상시 서비스, 한 파일). 스님 인사 → 번뇌 목탁 → 스님 한마디 → 연등·기와. ☰ 메뉴로 어디서든 이동 |
 | `/blog/` | 읽을거리 (애드센스 심사용 글). 현재 2개: manitto, christmas-card |
 | `/privacy.html` `/terms.html` | 개인정보처리방침, 이용약관 (산타 + 성탄맨션 공통) |
 | `/auth-test.html` | 로그인 테스트용 (검색 차단) |
@@ -77,6 +78,17 @@
 - 보기(후보): 이 방에 선물 보낸 **다른 친구 이름 우선**, 모자라면 가짜 후보로 채움. 보기가 정답 하나뿐이면 직접 입력(성 붙이고 뺀 차이는 정답 인정)
 - `hide_gift`, `report_gift` 방 주인
 - 개봉 시각: `unlock_at()` = 2026-12-25 00:00 KST
+
+### 무드나잇 산사 (11/10 공개)
+- 시즌과 상관없는 상시 콘텐츠. 로그인 없음. 화면은 도트 밤 절(처마·풍경·달·별), 글꼴 Gowun Batang + 기와 글씨 Nanum Brush Script. 소리는 전부 Web Audio 합성(목탁, 풍경, 종)
+- 흐름: 산문 들어가기 → 스님 인사(시간대별) + 선택지 → 번뇌 적기 → 목탁(글자 수에 따라 8~20번, 글자가 흩어짐) → 스님 한마디(LINES 18개 랜덤) → 연등 / 기와
+- 연등 색 뜻: 빨강 복과 보호, 노랑 지혜와 평온, 초록 건강과 치유, 파랑 평화와 깨달음, 보라 성장과 수행, 흰색 "그리운 사람에게"(영가등에서 따옴, 문구·버튼이 바뀜). 분홍은 예전 호환용으로만 남김
+- 기와: 청·녹·적·흑 4색 수키와 + 암키와 골을 줄마다 겹친 물결 지붕(SVG 도트). 36장 = 지붕 한 채, 다 차면 다음 기와부터 새 지붕
+- 테이블: `sansa_items`(kind lantern/tile, color, text, device, hidden), `sansa_reports`, `sansa_bonnoe`(날짜별 번뇌 개수만, 글은 저장 안 함). 모두 RLS, 함수로만 접근
+- 함수: `sansa_list(kind)` 연등 최근 60개 / 기와는 지금 짓는 지붕만, `sansa_add(kind,color,text,device)` 한 기기 하루 10개·전체 분당 60개, `sansa_report(id,device)` 서로 다른 기기 2곳이 신고하면 hidden, `sansa_bonnoe_add()`, `sansa_stats()`
+- 브라우저 저장: `mn_device`(track.js와 공유), `sansa-mine`(내가 올린 id), `sansa-hidden`(내가 신고한 id)
+- 관리: 직접 숨기기는 SQL `update sansa_items set hidden=true where id=...`. 방문 기록 page `sansa`, act `lantern`/`tile`/`bonnoe`
+- 공유 이미지 `sansa/og.png`, 홈 카드 썸네일 `sansa/preview.webp`
 
 ## 출시 일정 (2026-11-06 결정)
 
