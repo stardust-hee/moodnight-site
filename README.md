@@ -112,5 +112,6 @@
 - [ ] 공개 후: 증축 이벤트(꽉 찬 뒤 벽보가 쌓이면 5층 증축), 루돌프네 양말공장 기능
 
 ## 캐롤 (11/9)
-- `music/player.js`: 오른쪽 아래 "♪ 캐롤 켜기" 버튼, 기본 꺼짐, 켜면 6곡 랜덤 연속 재생. 산타·산타 체험판·성탄맨션 체험판에 `<script src="/music/player.js" defer>` 한 줄로 붙임 (맨션 경로에서는 도트 스타일). 성탄맨션 실서비스 페이지에도 같은 한 줄 추가
-- 음원 6곡: AtlasAudio via Pixabay (Pixabay Content License: 상업적 이용 가능, 출처 표시 불필요, 음원 단독 배포 금지). 128kbps로 줄여서 `music/`에 둠. 출처: Pixabay "크리스마스 음악" 검색 (christmas-eve-music 625689, christmas-story 625693, christmas-winter 625694, christmas-advertising 621547, christmas-party 625692, merry-christmas 617590)
+- `music/player.js`: 오른쪽 아래 "♪ 캐롤 켜기" 버튼, 기본 꺼짐, 켜면 랜덤 연속 재생 (같은 곡 연속 안 나옴). 산타·산타 체험판·성탄맨션 체험판에 `<script src="/music/player.js" defer>` 한 줄로 붙임 (맨션 경로에서는 도트 스타일). 성탄맨션 실서비스 페이지에도 같은 한 줄 추가
+- 음원 (11/9 교체, 잔잔한 lo-fi 2곡): Pixabay "snowy window lofi" by Turning_Pages (455028), "christmas lofi chill beat" by Aventure (439850). Pixabay Content License: 상업적 이용 가능, 출처 표시 불필요, 음원 단독 배포 금지. 128kbps로 줄여서 `music/`에 둠. 처음 넣었던 AtlasAudio 6곡은 너무 웅장해서 뺌
+- 공유마당 정부 캐럴(2019, 문체부·저작권위원회 14곡)도 후보. 곡별 이용 조건 확인 후 출처 표시하고 쓰기

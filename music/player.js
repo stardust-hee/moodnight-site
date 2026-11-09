@@ -1,11 +1,12 @@
-/* 무드나잇 캐롤 버튼: 6곡 랜덤 재생 (기본은 꺼짐, 눌러야 재생)
- * 음원: AtlasAudio via Pixabay (Pixabay Content License, 상업적 이용 가능, 출처 표시 불필요)
+/* 무드나잇 캐롤 버튼: 곡 랜덤 재생 (기본은 꺼짐, 눌러야 재생)
+ * 음원: Pixabay (Pixabay Content License, 상업적 이용 가능, 출처 표시 불필요)
+ *  - snowy-window-lofi: Turning_Pages (455028) / christmas-lofi-chill-beat: Aventure (439850)
  * 사용: <script src="/music/player.js" defer></script> */
 (function () {
-  const TRACKS = ["christmas-eve-music", "christmas-story", "christmas-winter", "christmas-advertising", "christmas-party", "merry-christmas"]
+  const TRACKS = ["snowy-window-lofi", "christmas-lofi-chill-beat"]
     .map(n => `/music/${n}.mp3`);
   let order = [], idx = 0, on = false;
-  const shuffle = () => { order = TRACKS.slice().sort(() => Math.random() - 0.5); idx = 0; };
+  const shuffle = () => { const last = order[order.length - 1]; order = TRACKS.slice().sort(() => Math.random() - 0.5); if (order.length > 1 && order[0] === last) order.push(order.shift()); idx = 0; };
   const audio = new Audio(); audio.preload = "none"; audio.volume = 0.45;
 
   const css = document.createElement("style");
