@@ -103,7 +103,12 @@ function panel(html) { $("#panelBody").innerHTML = html; }
 function renderLogin() {
   panel(`
   <div class="stack">
-    <div><h2>나만의 선물가게 만들기</h2><p class="sub">선물가게 링크를 친구들에게 보내면, 친구들이 로그인 없이 몰래 선물과 메시지를 두고 가요. 12월 25일에 열어 보고 누가 보냈는지 맞혀 보세요.</p></div>
+    <div><h2>나만의 선물가게 만들기</h2>
+      <ol class="how">
+        <li data-i="🔗"><b>링크 공유</b>내 선물가게 링크를 단톡방이나 인스타에 올려요</li>
+        <li data-i="🎁"><b>몰래 선물</b>친구들이 이름을 숨기고 가상 선물, 메시지, 단서를 두고 가요</li>
+        <li data-i="🔍"><b>25일에 맞히기</b>크리스마스에 선물을 열고, 단서로 누가 보냈는지 맞혀요</li>
+      </ol></div>
     <button class="login kakao" id="loginKakao">카카오로 시작하기</button>
     <button class="login google" id="loginGoogle">구글로 시작하기</button>
     <p class="fine">선물가게를 만드는 사람만 로그인해요. 로그인하면 <a href="/terms.html">이용약관</a>과 <a href="/privacy.html">개인정보처리방침</a>에 동의하는 것으로 봐요.</p>
@@ -317,7 +322,7 @@ function kakaoShare() {
       objectType: "feed",
       content: {
         title: `${room.display_name}의 선물가게에 몰래 선물을 맡겨 주세요`,
-        description: "크리스마스에 열어보고, 누가 보냈는지 맞혀 볼게요",
+        description: "이름 숨기고 메시지랑 단서 남겨 줘. 크리스마스에 누가 보냈는지 맞혀 볼게! (로그인 없이 1분)",
         imageUrl: "https://www.moodnight.co.kr/santa/og.png?v=5",
         imageWidth: 1200,
         imageHeight: 630,
@@ -440,13 +445,19 @@ function renderSend() {
   let stepNo = 0; const st = () => ++stepNo;
   panel(`
   <div class="stack" style="gap:28px">
-    <div><h2>${host}에게 몰래 선물하기</h2><p class="sub">이름은 숨겨져요. ${host}님이 크리스마스에 단서를 보고 당신을 맞혀야 해요. 로그인은 필요 없어요.</p></div>
+    <div><h2>${host}에게 몰래 선물하기</h2>
+      <ol class="how">
+        <li data-i="🎁"><b>몰래 두고 가기</b>가상 선물 상자에 메시지를 담고, 나를 맞힐 단서 3개를 남겨요</li>
+        <li data-i="🎄"><b>12월 25일 개봉</b>크리스마스 0시에 ${host}님이 선물을 열어요</li>
+        <li data-i="🔍"><b>누구게?</b>${host}님이 단서를 보고 보낸 사람을 맞혀요. 틀릴 때마다 단서가 하나씩 더 열려요</li>
+      </ol>
+      <p class="sub how-note">이름은 맞히기 전까지 숨겨져요 · 무료 · 로그인 없이 1분</p></div>
     <div class="step">
       <div class="step-h"><i>${st()}</i>포장지 고르기</div>
       <div class="wraps">${WRAPS.map(w => `<button class="wrap-opt" data-wrap="${w.id}" aria-pressed="${d.wrap === w.id}"><span class="gift static w-${w.id}">${giftHTML()}</span>${w.name}</button>`).join("")}</div>
     </div>
     <div class="step">
-      <div class="step-h"><i>${st()}</i>상자 속 선물 <small>${host}에게 어울리는 걸로</small></div>
+      <div class="step-h"><i>${st()}</i>상자 속 선물 <small>진짜 사는 게 아니라 마음만 담는 가상 선물이에요</small></div>
       <div class="items">${picks().map(g => `<button class="item-opt" data-item="${g.id}" aria-pressed="${d.item === g.id}"><b>${g.icon}</b>${esc(g.name)}</button>`).join("")}</div>
       <button type="button" class="chip more" id="morePicks" style="justify-self:start">다른 선물 보기 ↻</button>
     </div>
