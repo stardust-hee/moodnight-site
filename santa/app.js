@@ -19,8 +19,8 @@ const ITEMS = [
   { id: "ticket", icon: "🎟", name: "영화 데이트권", shake: "얇고 가벼워요. 거의 비어 있는 것 같아요" }
 ];
 /* 선물 놓을 자리: 트리 아래 러그 위, 앞으로 갈수록 넓게 (방 그림 기준 %, 상자 아래 가운데) */
-const SLOTS = [[66,79],[54,78],[78,78],[60,85],[72,85],[48,84],[84,84],[64,92],[52,92],[76,92],[40,90],[88,91],
-  [34,97],[46,98],[58,99],[70,99],[82,98]];
+const SLOTS = [[42,86],[75,86],[58,95],[30,90],[87,90],[46,97],[70,97],[34,99],[82,99],[58,100],[52,87],[64,87],[38,92],[78,92],
+  [95,95],[20,95],[26,99]];
 const slot = i => { const [x, y] = SLOTS[i % SLOTS.length]; const k = Math.floor(i / SLOTS.length); return { x: x + (k % 2 ? 3 : -3) * k, y: y - k * 1.5 }; };
 
 const $ = s => document.querySelector(s);
@@ -191,7 +191,7 @@ function kakaoShare() {
       content: {
         title: `${room.display_name}의 선물가게에 몰래 선물을 맡겨 주세요`,
         description: "크리스마스에 열어보고, 누가 보냈는지 맞혀 볼게요",
-        imageUrl: "https://www.moodnight.co.kr/santa/og.png?v=2",
+        imageUrl: "https://www.moodnight.co.kr/santa/og.png?v=3",
         imageWidth: 1200,
         imageHeight: 630,
         link: { mobileWebUrl: url, webUrl: url }
