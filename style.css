@@ -185,3 +185,11 @@ section + section{border-top:1px solid var(--night-3)}
 .notice-bar .wrap{padding-top:10px;padding-bottom:10px}
 .notice-bar b{color:var(--lamp);margin-right:6px}
 .notice-bar a{color:var(--lamp);white-space:nowrap}
+
+/* 마음 챙기기 (무드나잇 산사): 한 장짜리 넓은 카드 */
+#mind .services{grid-template-columns:minmax(0,1fr)}
+@media (min-width:761px){
+  #mind .svc{grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:28px}
+  #mind .svc > *{grid-column:2}
+  #mind .svc-shot{grid-column:1;grid-row:1 / span 6;align-self:start}
+}
