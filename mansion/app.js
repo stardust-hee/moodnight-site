@@ -475,7 +475,7 @@ function kakaoShare() {
     Kakao.Share.sendDefault({
       objectType: 'feed',
       content: { title: n ? `${S.name}의 성탄맨션에 빈 집이 ${n}개 남았어요` : `${S.name}의 성탄맨션이 꽉 찼어요`, description: n ? '하나 골라서 입주하고 창문에 불을 켜 주세요' : '들어오지 못한 친구는 벽보에 한마디 남겨요',
-        imageUrl: 'https://www.moodnight.co.kr/mansion/og.png', imageWidth: 1200, imageHeight: 630, link: { mobileWebUrl: url, webUrl: url } },
+        imageUrl: 'https://www.moodnight.co.kr/mansion/og.png?v=2', imageWidth: 1200, imageHeight: 630, link: { mobileWebUrl: url, webUrl: url } },
       buttons: [{ title: n ? '입주하러 가기' : '벽보 붙이러 가기', link: { mobileWebUrl: url, webUrl: url } }]
     });
   } catch (e) { copyLink(); }
