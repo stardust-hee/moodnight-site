@@ -1,0 +1,30 @@
+<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="theme-color" content="#faf8f5"><meta name="description" content="실버 트레이 위에 나만의 작은 취향을 담아보세요. 사진처럼 꾸미고 이미지로 저장하는 감성 웹앱."><title>Silver Tray Studio — 나만의 트레이 꾸미기 | 무드나잇</title><base href="/tray/"><meta property="og:type" content="website"><meta property="og:site_name" content="무드나잇"><meta property="og:title" content="Silver Tray Studio · 나만의 트레이 꾸미기"><meta property="og:description" content="은빛 트레이 위에 향수, 시계, 반지, 필름 사진을 올려 나만의 스틸 라이프를 꾸미고 이미지로 저장해요."><meta property="og:image" content="https://www.moodnight.co.kr/tray/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image"><link rel="canonical" href="https://www.moodnight.co.kr/tray/"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="stylesheet" href="style.css"></head><body>
+<div class="layout">
+<aside class="left-pane">
+ <div class="brand"><span>THE LITTLE STUDIO</span>Silver<br>Tray Studio<i style="font-size:24px;padding-left:5px">✳</i></div>
+ <p class="brand-desc">조금씩 모아둔 나의 취향을<br>은빛 트레이 위에 담아보세요.</p>
+ <div class="side-section-title">트레이 선택 <small>CHOOSE YOUR TRAY</small></div>
+ <div class="tray-stack" id="desktopTrays"></div>
+ <div class="side-divider"></div>
+ <div class="side-section-title">오늘의 무드 <small>MOOD BOARD</small></div>
+ <p class="style-name">the quiet things.</p>
+ <p class="side-info">조용하고 단정한 오브제부터<br>오래 간직한 작은 물건들까지.</p>
+ <div class="side-tags"><span class="side-tag"># vintage silver</span><span class="side-tag"># flat lay</span><span class="side-tag"># still life</span></div>
+ <div class="left-bottom"><div class="tiny-tip"><b>✳ STYLING TIP</b>소품을 누른 뒤 원하는 곳으로 드래그하세요.<br>크기와 각도도 자유롭게 조절할 수 있어요.</div><div class="footer-note">© LITTLE STUDIO · made for your small joys<br><a href="/" style="color:inherit">← 무드나잇</a></div></div>
+</aside>
+<main class="main-area">
+ <div class="main-header"><div class="main-title"><b>나만의 트레이 꾸미기</b><small>Artboard 01 · Your everyday still life</small></div><div class="mobile-brand">Silver Tray Studio ✳</div><div class="header-actions"><button class="icon-btn" id="undoTop" title="실행 취소" aria-label="실행 취소">↶</button><button class="icon-btn" id="redoTop" title="다시 실행" aria-label="다시 실행">↷</button><button class="icon-btn" id="headerShare" title="공유 링크">↗</button><button class="pill-btn" id="headerSave"><span>↓</span> 이미지 저장</button></div></div>
+ <div class="workspace-wrap"><div class="art-frame"><div id="stage" class="stage"><span class="stage-guide">a little still life <small>✳</small></span><img id="trayBase" class="tray-base" src="assets/tray1.png" alt="선택한 실버 트레이" draggable="false"><div id="stickerLayer"></div><div class="empty-stage hidden" id="emptyStage">오른쪽 소품을 눌러 트레이를 꾸며보세요.</div></div></div></div>
+ <div class="workspace-bottom"><div class="workspace-caption">a collection of little things, made by you ♡</div><div class="edit-rail"><button class="tool-btn" id="duplicateBtn" title="선택 소품 복제">▣ <span>복제</span></button><button class="tool-btn" id="flipBtn" title="좌우 반전">⇆ <span>반전</span></button><button class="tool-btn" id="forwardBtn" title="선택 소품 앞으로">↑ <span>앞으로</span></button><button class="tool-btn" id="backwardBtn" title="선택 소품 뒤로">↓ <span>뒤로</span></button><button class="tool-btn danger" id="deleteBtn" title="선택 소품 삭제">✕ <span>삭제</span></button><button class="tool-btn" id="clearBtn" title="모든 소품 비우기">↻ <span>비우기</span></button></div></div>
+</main>
+<aside class="right-pane">
+ <div class="right-header"><h2>소품 보관함 <span style="font-weight:400;color:#a39288">✳</span></h2><small>18 little things</small></div>
+ <div class="mobile-tray-pick" id="mobileTrays"></div><div class="mobile-props-panel">소품을 골라보세요 <span style="font-weight:400;color:#afa198">· 탭해서 추가</span></div>
+ <div class="cat-list" id="categories"></div><div class="props-list" id="propsList"></div>
+ <div class="props-bottom"><div class="property-title"><span id="selectedName">선택한 소품 없음</span><small>Tap · Drag · Adjust</small></div>
+ <div class="property-row"><label for="sizeRange">크기</label><input type="range" id="sizeRange" min="7" max="38" value="17" step="1" disabled><output id="sizeValue">—</output></div>
+ <div class="property-row"><label for="rotateRange">회전</label><input type="range" id="rotateRange" min="-180" max="180" value="0" step="1" disabled><output id="rotateValue">—</output></div>
+ <label class="upload-label">＋ 나만의 사진 / 소품 넣기 <input type="file" id="uploadInput" accept="image/png,image/jpeg,image/webp"></label>
+ <div class="bottom-save"><button id="shareBtn" class="pill-btn outline">↗ 링크 공유</button><button id="saveBtn" class="pill-btn">↓ 이미지 저장</button></div></div>
+</aside>
+</div><div id="toast" class="toast" role="status" aria-live="polite"></div><script src="app.js"></script><script src="/track.js?v=5" defer></script></body></html>

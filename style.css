@@ -70,6 +70,7 @@ section + section{border-top:1px solid var(--night-3)}
 .svc.snow .badge,.svc.snow h3{color:var(--pine)}
 .svc.sansa .badge,.svc.sansa h3{color:var(--lamp)}
 .svc.smash .badge,.svc.smash h3{color:#dbfc65}
+.svc.tray .badge,.svc.tray h3{color:#d8cfc4}
 .svc p{color:var(--cream-soft)}
 .svc ul{margin:0;padding-left:1.1em;color:var(--cream-soft)}
 .svc-shot{position:relative;display:block;border-radius:14px;overflow:hidden;border:1px solid var(--night-3);aspect-ratio:4/3;background:var(--night)}
@@ -89,6 +90,7 @@ section + section{border-top:1px solid var(--night-3)}
 .how-tabs .snow[aria-selected="true"]{background:var(--pine);border-color:var(--pine)}
 .how-tabs .sansa[aria-selected="true"]{background:var(--lamp);border-color:var(--lamp)}
 .how-tabs .smash[aria-selected="true"]{background:#dbfc65;border-color:#dbfc65}
+.how-tabs .tray[aria-selected="true"]{background:#d8cfc4;border-color:#d8cfc4}
 .steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;counter-reset:s}
 @media (max-width:760px){.steps{grid-template-columns:minmax(0,1fr)}}
 .steps li{counter-increment:s;display:grid;gap:8px;padding-top:18px;border-top:2px solid var(--lamp)}
