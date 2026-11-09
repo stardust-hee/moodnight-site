@@ -97,7 +97,15 @@ function renderGifts(newId) {
   if (!room) hint = L("로그인하면 나만의 선물가게가 생겨요", "Log in to get your own gift shop");
   else if (!boxes.length) hint = MODE === "host" ? L("아직 선물이 없어요. 링크를 공유해 보세요", "No gifts yet. Share your link!") : L("첫 번째 선물을 두고 가 주세요", "Be the first to leave a gift");
   else if (isOpen() && MODE === "host") hint = L("선물을 눌러서 열어 보세요", "Tap a gift to open it");
+  else if (MODE !== "host" && !isOpen() && !sent) hint = L("👇 아래에서 선물을 포장해 두고 가 주세요", "👇 Wrap a gift below and leave it here");
   $("#roomHint").textContent = hint;
+  // 친구 화면: 방 바로 아래 큰 버튼 (누르면 선물 포장하는 곳으로 내려가요)
+  let cta = $("#guestCta");
+  if (room && MODE !== "host" && !isOpen() && !sent) {
+    if (!cta) { cta = document.createElement("div"); cta.id = "guestCta"; cta.className = "room-tools one"; $("#room").after(cta); }
+    cta.innerHTML = `<button class="btn red wide" id="ctaBtn">${L(`🎁 ${esc(room.display_name)}에게 몰래 선물 두고 가기`, `🎁 Leave ${esc(room.display_name)} a secret gift`)}</button>`;
+    $("#ctaBtn").onclick = () => { const t = document.querySelector(".panel"); if (t) t.scrollIntoView({ behavior: "smooth", block: "start" }); };
+  } else if (cta) cta.remove();
 }
 
 function onGift(g, el) {
@@ -519,11 +527,11 @@ function renderSend() {
       <div class="step-h"><i>${st()}</i>${L("내 이름", "Your name")} <small>${L("정답으로만 쓰여요", "Only used as the answer")}</small></div>
       <input type="text" id="name" maxlength="10" value="${esc(d.name)}" placeholder="${L(`${host}님이 부르는 이름`, `What ${host} calls you`)}">
     </div>
-    <div class="step">
-      <div class="step-h"><i>${st()}</i>${L("헷갈리게 할 친구 이름", "Decoy names")} <small>${L("선택", "Optional")}</small></div>
+    <details class="step opt" ${d.decoys.some(x => x) ? "open" : ""}>
+      <summary class="step-h"><i>+</i>${L("헷갈리게 할 친구 이름", "Decoy names")} <small>${L("선택 · 안 써도 돼요", "Optional · you can skip this")}</small></summary>
       <p class="sub" style="margin:0">${L("보기는 이 방에 선물을 보낸 다른 친구들 이름으로 자동으로 만들어져요. 선물이 적은 방에서는 여기 적은 이름이 보기로 쓰여요.", "Answer choices are made from other senders' names. If there aren't many gifts yet, these names fill in the choices.")}</p>
       <div class="decoys">${[0, 1, 2].map(n => `<input type="text" id="decoy${n}" maxlength="10" value="${esc(d.decoys[n])}" placeholder="${(EN ? ["e.g. Jake", "e.g. Mia", "e.g. Sam"] : ["예: 재훈", "예: 뽀삐", "예: 이나"])[n]}">`).join("")}</div>
-    </div>
+    </details>
     ${draftErr ? `<p class="err">${esc(draftErr)}</p>` : ""}
     <button class="btn red wide" id="sendBtn">${L("선물 몰래 두고 오기", "Leave my secret gift")}</button>
     <p class="fine">${L(`욕설이나 상처 주는 메시지는 신고되면 삭제돼요. <a href="/terms.html">이용약관</a>`, `Hurtful messages are removed when reported. <a href="/terms.html">Terms</a>`)}</p>
