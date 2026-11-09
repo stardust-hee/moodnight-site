@@ -254,7 +254,7 @@ function renderSend() {
   let stepNo = 0; const st = () => ++stepNo;
   const tiers = realTiers(); const tier = d.realTier && tiers.includes(d.realTier) ? d.realTier : tiers[0];
   panel(`
-  <div class="stack" style="gap:18px">
+  <div class="stack" style="gap:28px">
     <div><h2>${host}에게 몰래 선물하기</h2><p class="sub">이름은 숨겨져요. ${host}님이 크리스마스에 단서를 보고 당신을 맞혀야 해요. 로그인은 필요 없어요.</p></div>
     <div class="step">
       <div class="step-h"><i>${st()}</i>포장지 고르기</div>
