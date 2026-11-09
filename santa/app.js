@@ -174,16 +174,18 @@ function renderHost() {
   };
   $("#copyBtn").onclick = () => copyLink();
   $("#kakaoShare").onclick = kakaoShare;
-  if ($("#moreShare")) $("#moreShare").onclick = () => navigator.share({ title: `${room.display_name}의 선물가게`, text: "몰래 선물을 두고 가 주세요. 크리스마스에 열어볼게요!", url: roomUrl() }).catch(() => {});
+  if ($("#moreShare")) $("#moreShare").onclick = () => { window.mnTrack && mnTrack("share", "more"); navigator.share({ title: `${room.display_name}의 선물가게`, text: "몰래 선물을 두고 가 주세요. 크리스마스에 열어볼게요!", url: roomUrl() }).catch(() => {}); };
   $("#logout").onclick = logout;
 }
 
 async function copyLink() {
+  window.mnTrack && mnTrack("share", "copy");
   try { await navigator.clipboard.writeText(roomUrl()); toast("링크를 복사했어요"); }
   catch (e) { const r = document.createRange(); r.selectNodeContents($("#linkTxt")); const s = getSelection(); s.removeAllRanges(); s.addRange(r); toast("링크를 선택했어요. 길게 눌러 복사하세요"); }
 }
 
 function kakaoShare() {
+  window.mnTrack && mnTrack("share", "kakao");
   const url = roomUrl();
   try {
     Kakao.Share.sendDefault({

@@ -414,10 +414,12 @@ async function saveImage() {
 /* ── 공유 ── */
 const shareText = () => { const n = 12 - order().length; return n ? `${S.name}의 성탄맨션에 빈 집이 ${n}개 남았어. 하나 골라서 불 좀 켜 줘!` : `${S.name}의 성탄맨션이 꽉 찼어! 벽보에 한마디 남겨 줘`; };
 async function copyLink() {
+  window.mnTrack && mnTrack("share", "copy");
   try { await navigator.clipboard.writeText(`${shareText()}\n${shareUrl()}`); toast('링크를 복사했어요'); }
   catch (e) { const r = document.createRange(); r.selectNodeContents($('#linkTxt')); const s = getSelection(); s.removeAllRanges(); s.addRange(r); toast('링크를 선택했어요. 길게 눌러 복사하세요'); }
 }
 function kakaoShare() {
+  window.mnTrack && mnTrack("share", "kakao");
   const url = shareUrl(), n = 12 - order().length;
   try {
     Kakao.Share.sendDefault({

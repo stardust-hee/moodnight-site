@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>관리실 | 무드나잇</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23151A2E'/%3E%3Cpath d='M21 7a9 9 0 1 0 5 15A10 10 0 0 1 21 7z' fill='%23F2C46B'/%3E%3C/svg%3E">
+<link rel="preload" href="/mansion/fonts/Galmuri11.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+@font-face{font-family:"Galmuri11";src:url(/mansion/fonts/Galmuri11.woff2) format("woff2");font-display:swap}
+@font-face{font-family:"Galmuri11";font-weight:700;src:url(/mansion/fonts/Galmuri11-Bold.woff2) format("woff2");font-display:swap}
+@font-face{font-family:"Galmuri14";src:url(/mansion/fonts/Galmuri14.woff2) format("woff2");font-display:swap}
+:root{color-scheme:dark;--night:#0F1B28;--night2:#172738;--night3:#24384C;--edge:#060C14;--snow:#EEF3F8;--soft:#9FB2C6;--amber:#FFA347;--amber-d:#C46A1E;--candle:#FFD27A;--ember:#C8553D;--ember-d:#7A2E26;--pine:#5FB487;
+  --px:0 -3px var(--edge),0 3px var(--edge),-3px 0 var(--edge),3px 0 var(--edge);--px2:0 -2px var(--night3),0 2px var(--night3),-2px 0 var(--night3),2px 0 var(--night3)}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{background:var(--night);color:var(--snow)}
+body{margin:0;font-family:"Galmuri11","Apple SD Gothic Neo",monospace;font-size:13px;line-height:1.7;-webkit-font-smoothing:none;word-break:keep-all;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 48px;
+  background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:6px 6px}
+button{font:inherit;color:inherit;cursor:pointer}
+.app{max-width:960px;margin:0 auto;display:grid;gap:18px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+h1{font-family:"Galmuri14",monospace;font-weight:400;font-size:26px;margin:0;color:var(--candle);text-shadow:3px 3px 0 var(--ember-d)}
+.top p{margin:0;color:var(--soft)}
+.win{background:var(--night2);margin:3px;box-shadow:var(--px),6px 6px 0 3px rgba(0,0,0,.45)}
+.win>h2{margin:0;padding:4px 10px;background:var(--ember);color:#FFF4DE;font-size:13px;font-weight:700;box-shadow:inset 0 -3px var(--ember-d)}
+.win>.body{padding:14px;display:grid;gap:12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.card{background:var(--night);padding:10px 12px;box-shadow:var(--px2);margin:2px;min-width:0}
+.card span{display:block;color:var(--soft)}
+.card b{display:block;font-family:"Galmuri14",monospace;font-weight:400;font-size:26px;color:var(--candle);line-height:1.3;font-variant-numeric:tabular-nums}
+.card small{color:var(--soft)}
+.bar{height:12px;background:var(--edge);box-shadow:var(--px2);margin:4px 2px}
+.bar i{display:block;height:100%;background:var(--pine)}
+.row{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.btn{border:0;margin:3px;padding:8px 14px 10px;font-weight:700;background:var(--amber);color:#2A1608;box-shadow:var(--px),inset 0 -4px 0 var(--amber-d),3px 3px 0 2px rgba(0,0,0,.45)}
+.btn.ghost{background:var(--night3);color:var(--snow);box-shadow:var(--px),inset 0 -4px 0 #172738,3px 3px 0 2px rgba(0,0,0,.45)}
+.btn.kakao{background:#FEE500;color:#191600;box-shadow:var(--px),inset 0 -4px 0 #C9B400}
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;background:var(--edge);padding:3px}
+.tabs button{border:0;background:var(--night);padding:7px;color:var(--soft)}
+.tabs button[aria-selected="true"]{background:var(--night3);color:var(--candle);box-shadow:inset 0 -3px var(--candle)}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:560px;font-variant-numeric:tabular-nums}
+th,td{padding:6px 8px;text-align:right;border-bottom:1px solid var(--night3);white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+th{color:var(--soft);font-weight:400}
+td.z{color:#4A5E74}
+.chart{display:flex;align-items:flex-end;gap:3px;height:120px;padding:6px 2px 0;border-bottom:2px solid var(--night3)}
+.chart div{flex:1;min-width:0;background:var(--candle);position:relative}
+.chart div:hover::after{content:attr(data-t);position:absolute;bottom:100%;left:50%;transform:translateX(-50%);background:var(--edge);padding:1px 6px;white-space:nowrap;font-size:11px}
+.legend{display:flex;justify-content:space-between;color:var(--soft);font-size:11px}
+.rep{display:grid;gap:8px}
+.rep div{background:var(--night);padding:8px 10px;box-shadow:var(--px2);margin:2px}
+.rep small{color:var(--soft)}
+.msg{color:var(--soft)}
+.err{color:#FF9C8A}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div><h1>무드나잇 관리실</h1><p id="who">불러오는 중…</p></div>
+    <div><button class="btn ghost" id="reload" hidden>새로고침</button><button class="btn ghost" id="logout" hidden>로그아웃</button></div>
+  </header>
+  <section class="win" id="loginBox" hidden><h2>로그인.exe</h2><div class="body">
+    <p class="msg">관리자 계정(이나님 카카오·구글)으로 로그인해야 볼 수 있어요.</p>
+    <div class="row"><button class="btn kakao" id="loginKakao">카카오로 로그인</button><button class="btn ghost" id="loginGoogle">구글로 로그인</button></div>
+    <p class="err" id="loginErr"></p>
+  </div></section>
+  <div id="dash" hidden></div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script>
+(() => {
+const sb = supabase.createClient("https://gbmlkyfguktjtroczqfw.supabase.co", "sb_publishable_RO92ntdlSM5_Urctc5FD9w_4OHcZQzf");
+const $ = s => document.querySelector(s);
+const n = x => Number(x || 0).toLocaleString("ko-KR");
+const pct = (a, b) => b ? Math.round(a / b * 100) + "%" : "-";
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const PAGES = { home: "홈", santa: "선물가게(주인)", santa_r: "선물가게 링크", mansion: "맨션(주인)", mansion_r: "맨션 링크", blog: "읽을거리", other: "기타" };
+let S = null, period = "day";
+
+function card(label, v, sub) { return `<div class="card"><span>${label}</span><b>${v}</b>${sub ? `<small>${sub}</small>` : ""}</div>`; }
+function group(daily, mode) {
+  if (mode === "day") return daily.slice(-14).map(d => ({ ...d, label: d.d }));
+  const out = [], size = mode === "week" ? 7 : 30, list = daily.slice();
+  for (let end = list.length; end > 0 && out.length < (mode === "week" ? 8 : 2); end -= size) {
+    const chunk = list.slice(Math.max(0, end - size), end); if (!chunk.length) break;
+    const sum = k => chunk.reduce((a, d) => a + (d[k] || 0), 0);
+    out.unshift({ label: `${chunk[0].d}~${chunk[chunk.length - 1].d}`, visitors: sum("visitors"), users: sum("users"), rooms: sum("rooms"), gifts: sum("gifts"), mansions: sum("mansions"), residents: sum("residents"), shares: sum("shares") });
+  }
+  return out;
+}
+function render() {
+  const s = S, mb = s.db_bytes / 1048576, rows = group(s.daily || [], period), max = Math.max(1, ...rows.map(r => r.visitors));
+  const cols = [["visitors", "방문자"], ["users", "가입"], ["rooms", "선물가게"], ["gifts", "선물"], ["mansions", "맨션"], ["residents", "입주"], ["shares", "공유"]];
+  $("#dash").innerHTML = `
+  <section class="win"><h2>한눈에.exe</h2><div class="body">
+    <div class="card"><div class="row"><span>데이터베이스 사용량</span><span>${mb.toFixed(1)} MB / 500 MB · ${(mb / 5).toFixed(1)}%</span></div><div class="bar"><i style="width:${Math.min(100, mb / 5)}%"></i></div></div>
+    <div class="grid">
+      ${card("전체 회원", n(s.users), `카카오 ${n(s.users_kakao)} · 구글 ${n(s.users_google)}`)}
+      ${card("오늘 방문자", n(s.today_visitors), `방문 ${n(s.today_visits)}번`)}
+      ${card("7일 방문자", n(s.week_visitors), `2일 이상 온 사람 ${n(s.week_returning)}명 (${pct(s.week_returning, s.week_visitors)})`)}
+      ${card("공유 버튼", n(s.shares), `링크로 들어온 방문 ${n(s.link_visits)}번`)}
+    </div>
+  </div></section>
+  <section class="win"><h2>산타의 선물가게.exe</h2><div class="body"><div class="grid">
+    ${card("선물가게", n(s.rooms))}
+    ${card("맡겨진 선물", n(s.gifts), `가게당 ${s.rooms ? (s.gifts / s.rooms).toFixed(1) : 0}개 · 숨김 ${n(s.gifts_hidden)}`)}
+    ${card("열어본 선물", n(s.gifts_opened), `맞힌 선물 ${n(s.gifts_right)} (${pct(s.gifts_right, s.gifts_opened)})`)}
+  </div></div></section>
+  <section class="win"><h2>성탄맨션.exe</h2><div class="body"><div class="grid">
+    ${card("맨션", n(s.mansions))}
+    ${card("입주자", n(s.residents), `맨션당 ${s.mansions ? (s.residents / s.mansions).toFixed(1) : 0}집`)}
+    ${card("벽보", n(s.notes), `퇴거·차단 ${n(s.bans)}`)}
+  </div></div></section>
+  <section class="win"><h2>기간별.exe</h2><div class="body">
+    <div class="tabs" role="tablist">${[["day", "일간"], ["week", "주간"], ["month", "월간"]].map(([k, l]) => `<button role="tab" data-p="${k}" aria-selected="${period === k}">${l}</button>`).join("")}</div>
+    <div class="chart" aria-label="방문자 막대그래프">${rows.map(r => `<div style="height:${Math.max(2, r.visitors / max * 100)}%" data-t="${esc(r.label)} · ${r.visitors}명"></div>`).join("")}</div>
+    <div class="legend"><span>${esc(rows[0] ? rows[0].label : "")}</span><span>방문자</span><span>${esc(rows.length ? rows[rows.length - 1].label : "")}</span></div>
+    <div class="tbl"><table><thead><tr><th>${period === "day" ? "날짜" : "기간"}</th>${cols.map(c => `<th>${c[1]}</th>`).join("")}</tr></thead>
+      <tbody>${rows.slice().reverse().map(r => `<tr><td>${esc(r.label)}</td>${cols.map(([k]) => `<td class="${r[k] ? "" : "z"}">${n(r[k])}</td>`).join("")}</tr>`).join("")}</tbody></table></div>
+  </div></section>
+  <section class="win"><h2>최근 7일 페이지별 방문.exe</h2><div class="body"><div class="grid">
+    ${Object.keys(PAGES).filter(k => (s.pages || {})[k]).map(k => card(PAGES[k], n(s.pages[k]))).join("") || '<p class="msg">아직 기록이 없어요. 방문 기록은 11월 9일부터 쌓여요.</p>'}
+  </div></div></section>
+  <section class="win"><h2>신고·숨김 기록.exe</h2><div class="body"><div class="rep">
+    ${(s.reports || []).map(r => `<div><small>${esc(new Date(r.at).toLocaleString("ko-KR"))} · ${esc(r.svc)} ${esc(r.kind)}</small><p style="margin:2px 0">${esc(r.text) || "(내용 없음)"}</p><small>사유: ${esc(r.reason || "-")}</small></div>`).join("") || '<p class="msg">신고된 게 없어요.</p>'}
+  </div></div></section>`;
+  document.querySelectorAll("[data-p]").forEach(b => b.onclick = () => { period = b.dataset.p; render(); });
+}
+async function load() {
+  const { data, error } = await sb.rpc("admin_stats");
+  if (error) { $("#dash").hidden = true; $("#loginBox").hidden = false; $("#loginErr").textContent = (error.message || "").includes("forbidden") ? "이 계정은 관리자가 아니에요. 다른 계정으로 로그인해 주세요." : "불러오지 못했어요. 잠시 후 다시 시도해 주세요."; $("#logout").hidden = false; return; }
+  S = data; $("#loginBox").hidden = true; $("#dash").hidden = false; $("#reload").hidden = false; $("#logout").hidden = false;
+  $("#who").textContent = `${new Date().toLocaleString("ko-KR")} 기준`;
+  render();
+}
+(async () => {
+  const { data } = await sb.auth.getSession();
+  if (location.hash.includes("access_token")) history.replaceState(null, "", "/admin/");
+  if (!data.session) { $("#who").textContent = "로그인이 필요해요"; $("#loginBox").hidden = false; }
+  else load();
+})();
+sb.auth.onAuthStateChange((evt, s) => { if (evt === "SIGNED_IN" && s && !S) load(); });
+const back = location.origin + "/admin/";
+$("#loginKakao").onclick = () => sb.auth.signInWithOAuth({ provider: "kakao", options: { redirectTo: back, scopes: "profile_nickname profile_image" } });
+$("#loginGoogle").onclick = () => sb.auth.signInWithOAuth({ provider: "google", options: { redirectTo: back } });
+$("#reload").onclick = load;
+$("#logout").onclick = async () => { await sb.auth.signOut(); location.reload(); };
+})();
+</script>
+</body>
+</html>
