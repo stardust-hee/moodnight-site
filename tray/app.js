@@ -10,9 +10,10 @@ const props=[
  ['keyring','빈티지 키링','소품'],['letter','봉인 편지','사진'],['flowers','안개꽃','라이프'],
  ['pearls','진주 팔찌','소품'],['bow','새틴 리본','라이프'],['note','손글씨 메모','사진']
 ].map(([id,label,cat])=>({id,label,cat,src:A+id+'.webp'}));
-const trays=[{id:1,name:'사각 트레이',desc:'simple & classic',src:A+'tray1.png'},
-{id:2,name:'로코코 트레이',desc:'ornate & romantic',src:A+'tray2.png'},
-{id:3,name:'빈티지 트레이',desc:'soft & antique',src:A+'tray3.png'}];
+const trays=[{id:1,name:'사각 트레이',desc:'simple & classic',src:A+'tray1.webp'},
+{id:2,name:'로코코 트레이',desc:'ornate & romantic',src:A+'tray2.webp'},
+{id:3,name:'빈티지 트레이',desc:'soft & antique',src:A+'tray3.webp'},
+{id:4,name:'하트 트레이',desc:'sweet & lovely',src:A+'tray4.webp'}];
 const cats=['전체','뷰티','소품','사진','라이프'];
 const $=id=>document.getElementById(id);
 const stage=$('stage'),layer=$('stickerLayer'),toast=$('toast');
@@ -30,7 +31,7 @@ function initialItems(){return [
  {uid:++uid,id:'heart',x:51,y:54,size:13,rotation:7,flip:1}
 ]}
 function cleanItem(v){return {uid:v.uid||++uid,id:v.id,x:clamp(Number(v.x)||50,-15,115),y:clamp(Number(v.y)||50,-15,115),size:clamp(Number(v.size)||16,7,38),rotation:clamp(Number(v.rotation)||0,-180,180),flip:v.flip===-1?-1:1,customSrc:typeof v.customSrc==='string'&&v.customSrc.startsWith('data:image/')?v.customSrc:undefined};}
-function cleanState(s){if(!s||typeof s!=='object')return null;return {tray:[1,2,3].includes(+s.tray)?+s.tray:1,items:Array.isArray(s.items)?s.items.slice(0,80).filter(v=>v&&typeof v.id==='string'&&(props.some(p=>p.id===v.id)||v.id==='custom')).map(cleanItem):[]};}
+function cleanState(s){if(!s||typeof s!=='object')return null;return {tray:[1,2,3,4].includes(+s.tray)?+s.tray:1,items:Array.isArray(s.items)?s.items.slice(0,80).filter(v=>v&&typeof v.id==='string'&&(props.some(p=>p.id===v.id)||v.id==='custom')).map(cleanItem):[]};}
 function readHash(){try{const v=location.hash.match(/^#tray=([A-Za-z0-9_-]+)$/)?.[1];if(!v)return null;const str=decodeURIComponent(Array.from(atob(v.replace(/-/g,'+').replace(/_/g,'/')),(x)=>'%'+x.charCodeAt(0).toString(16).padStart(2,'0')).join(''));return cleanState(JSON.parse(str));}catch(e){return null;}}
 function init(){let saved=readHash();if(saved){try{window.history.replaceState(null,'',location.pathname+location.search)}catch(e){}try{localStorage.setItem('silver-tray-v1',JSON.stringify(saved))}catch(e){}}if(!saved)try{saved=cleanState(JSON.parse(localStorage.getItem('silver-tray-v1')))}catch(e){};state=saved||{tray:3,items:initialItems()};uid=Math.max(1000,...state.items.map(x=>x.uid||0))+1;history=[snapshot()];histPos=0;drawTrays();drawCats();drawProps();drawAll();attach();}
 function snapshot(){return JSON.stringify(state)}

@@ -22,3 +22,6 @@
 @media(max-width:400px){.mobile-tray-pick .tray-option{padding:4px 5px}.mobile-tray-pick .tray-thumb{width:34px;height:42px}}
 /* 소품 20종: PC 오른쪽 목록이 넘치면 칸이 눌리지 않고 스크롤되게 */
 @media(min-width:861px){.props-list{grid-auto-rows:max-content}.props-list .prop-item{aspect-ratio:1;height:auto}}
+/* 트레이 4종: 폰에서는 그림 위, 이름 아래로 세워서 이름이 잘리지 않게 */
+@media(max-width:860px){.mobile-tray-pick .tray-option{flex-direction:column;justify-content:center;align-items:center;height:74px;gap:3px;padding:5px 3px}.mobile-tray-pick .tray-thumb{width:48px;height:40px}.mobile-tray-pick .tray-meta{align-items:center}.mobile-tray-pick .tray-meta b{overflow:visible;text-overflow:clip}}
+@media(max-width:400px){.mobile-tray-pick .tray-thumb{width:44px;height:38px}}
