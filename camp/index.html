@@ -64,7 +64,23 @@
   .hint small{display:block;font-size:11px;color:var(--dim);font-weight:500;margin-top:3px}
   .proto{position:fixed;left:12px;top:calc(62px + env(safe-area-inset-top));z-index:4;font-size:12px;color:#5d6e54;text-decoration:none;background:#fbf6eacc;padding:4px 10px;border-radius:999px}
   .vol{position:fixed;right:12px;top:calc(60px + env(safe-area-inset-top));z-index:9;background:var(--cream);border-radius:16px;padding:14px;box-shadow:0 10px 30px #0003;display:grid;gap:10px;width:230px}
-  .vol[hidden],.intro[hidden]{display:none}
+  .board{position:fixed;inset:0;z-index:15;background:#2a33244d;display:grid;place-items:center;padding:14px}
+  .bframe{width:min(100%,560px);max-height:calc(100dvh - 28px);display:flex;flex-direction:column;background:#6f8f60;border-radius:18px;padding:10px;box-shadow:inset 0 -6px 0 #58744c,0 16px 40px #0004;border:3px solid #58744c}
+  .bhead{display:flex;align-items:center;gap:8px;color:#fbf6ea;padding:4px 6px 10px}.bhead b{font-family:Jua,sans-serif;font-weight:400;font-size:20px}.bhead span{font-size:12px;opacity:.85}
+  .bx{margin-left:auto;border:0;background:#fbf6ea33;color:#fff;width:32px;height:32px;border-radius:50%;font-size:15px}
+  .cork{flex:1;overflow:auto;min-height:220px;background:#c9a06a radial-gradient(#b48a55 1px,transparent 1.5px) 0 0/9px 9px;border-radius:8px;box-shadow:inset 0 2px 8px #0003;padding:14px;display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:14px;align-content:start;align-items:start}
+  .note{position:relative;padding:16px 10px 8px;border-radius:3px;box-shadow:0 3px 6px #0003;font-size:13px;line-height:1.45;word-break:break-all;color:#4a3f35}
+  .note::before{content:"";position:absolute;top:5px;left:50%;width:11px;height:11px;margin-left:-5px;border-radius:50%;background:var(--pin,#e0607e);box-shadow:0 1px 2px #0005}
+  .note img{width:100%;border-radius:2px;margin-bottom:6px;display:block}.note small{display:flex;justify-content:space-between;gap:4px;margin-top:6px;color:#8a7f72;font-size:10.5px}
+  .note .na{border:0;background:none;color:#8a7f72;font:inherit;font-size:10.5px;text-decoration:underline;padding:0}
+  .p-cream{background:#fbf6ea}.p-mint{background:#d8eedc}.p-pink{background:#fbe0e6}.p-sky{background:#dcecf7}
+  .bempty{grid-column:1/-1;text-align:center;color:#5a4636;padding:40px 10px;font-size:14px}
+  .bcomp{background:#fbf6ea;border-radius:12px;padding:12px;margin-top:10px;display:grid;gap:8px}
+  .bcomp textarea{width:100%;border:1.5px solid var(--line);border-radius:10px;padding:10px;font:inherit;font-size:16px;resize:none}
+  .papers{display:flex;gap:8px}.papers button{width:30px;height:30px;border-radius:6px;border:2px solid #0001}.papers button.sel{border-color:var(--ink)}
+  .bphoto{font-size:13px;display:flex;gap:6px;align-items:center}#bPrev{width:120px;border-radius:6px}
+  .bfoot{margin-top:10px}
+  .board[hidden],.bcomp[hidden],.bfoot[hidden],.vol[hidden],.intro[hidden]{display:none}
   .vol label{display:grid;gap:4px;font-size:13px}.vol input{width:100%;accent-color:var(--sage-d)}.vol .btn{padding:9px}
   .intro{position:fixed;inset:0;z-index:20;display:grid;place-items:center;background:#eef3e6aa;backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);transition:opacity .5s}
   .intro.hide{opacity:0;pointer-events:none}
@@ -100,6 +116,18 @@
 
 <div class="sheet"><div class="card" id="card"></div></div>
 <div class="toast" id="toast"></div>
+<div class="board" id="board" hidden><div class="bframe">
+  <div class="bhead"><b>📌 캠핑장 게시판</b><span id="bCamp"></span><button class="bx" id="bClose" aria-label="닫기">✕</button></div>
+  <div class="cork" id="cork"></div>
+  <div class="bcomp" id="bComp" hidden>
+    <textarea id="bText" maxlength="80" rows="3" placeholder="캠핑장 이웃들에게 한마디 (80자까지)"></textarea>
+    <div class="papers"></div>
+    <label class="bphoto"><input type="checkbox" id="bPhoto"> 📷 지금 캠핑장 사진도 같이 붙이기</label>
+    <img id="bPrev" alt="" hidden>
+    <div class="row"><button class="btn ghost" id="bCancel">취소</button><button class="btn" id="bPost">📌 붙이기</button></div>
+  </div>
+  <div class="row bfoot" id="bFoot"><button class="btn" id="bWrite">✏️ 쪽지 붙이기</button></div>
+</div></div>
 <div class="vol" id="vol" hidden>
   <label>🎵 음악 <input type="range" id="vMusic" min="0" max="100"></label>
   <label>🔥 모닥불 <input type="range" id="vFire" min="0" max="100"></label>
@@ -111,7 +139,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script src="/track.js?v=5" defer></script>
 <script type="module">
-const fires=[];
+const fires=[]; let boardHit=null;
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
@@ -229,6 +257,18 @@ for(let i=0;i<12;i++){ const a=-Math.PI/2+i*(Math.PI*2/12)+0.12; SITES.push({no:
   const board=mesh(new THREE.BoxGeometry(2.6,.9,.14),PAL.woodL); board.position.y=1.45; sign.add(p1,p2,board);
   const tex=textTexture('MY LITTLE CAMP',512,160,'#6b4a2f',58); const face=new THREE.Mesh(new THREE.PlaneGeometry(2.4,.75),new THREE.MeshBasicMaterial({map:tex,transparent:true})); face.position.set(0,1.45,.08); sign.add(face);
   sign.position.set(CENTER.x-1.6,Y0,CENTER.z-2.3); sign.rotation.y=Math.PI/4; world.add(sign);
+  { // 동물의 숲 느낌 초록 나무 게시판
+    const bd=new THREE.Group(), G=0x6f8f60, Gd=0x58744c;
+    [-1.05,1.05].forEach(x=>{ const l=mesh(new THREE.BoxGeometry(.16,2.1,.16),Gd); l.position.set(x,1.05,0); bd.add(l); });
+    const fr=mesh(new THREE.BoxGeometry(2.3,1.45,.16),G); fr.position.y=1.5; bd.add(fr);
+    const cork=mesh(new THREE.BoxGeometry(2.0,1.15,.05),0xc9a06a); cork.position.set(0,1.5,.08); bd.add(cork);
+    const roof=mesh(new THREE.BoxGeometry(2.6,.12,.55),Gd); roof.position.set(0,2.32,.06); roof.rotation.x=-.25; bd.add(roof);
+    [[-.55,1.72,0xfbf6ea,.08],[.05,1.62,0xd8eedc,-.06],[.6,1.75,0xfbe0e6,.1],[-.35,1.25,0xdcecf7,-.05],[.4,1.22,0xfbf6ea,.07]].forEach(([x,y,c,r])=>{
+      const n=new THREE.Mesh(new THREE.PlaneGeometry(.42,.36),M(c)); n.position.set(x,y,.115); n.rotation.z=r; bd.add(n);
+      const pin=new THREE.Mesh(new THREE.SphereGeometry(.035,6,4),M([0xe0607e,0x5aa0d8,0xf0c040][Math.abs(Math.round(x*10))%3])); pin.position.set(x,y+.14,.13); bd.add(pin); });
+    bd.position.set(CENTER.x-3.5,Y0,CENTER.z-.2); bd.rotation.y=Math.PI/4; world.add(bd);
+    boardHit=new THREE.Mesh(new THREE.BoxGeometry(2.6,2.6,1.2),new THREE.MeshBasicMaterial({visible:false})); boardHit.position.y=1.3; bd.add(boardHit);
+  }
   const fire=makeProp('campfire'); fire.scale.setScalar(1.6); fire.position.set(CENTER.x+1,Y0,CENTER.z+.6); world.add(fire);
   for(let k=0;k<4;k++){ const a=k/4*Math.PI*2+.4; const log=mesh(new THREE.CylinderGeometry(.32,.32,1.6,7),PAL.wood); log.rotation.z=Math.PI/2; log.rotation.y=a; log.position.set(CENTER.x+1+Math.cos(a)*2.4,Y0+.32,CENTER.z+.6+Math.sin(a)*2.4); world.add(log); }
 }
@@ -377,41 +417,45 @@ function buildAll(){ hitMeshes.length=0; SITES.forEach(buildSite); updateCount()
 function updateCount(){ const n=SITES.filter(s=>isTaken(s.no)).length; $('count').innerHTML=`⛺ <b>${n}</b> / 12자리`; }
 
 /* ================= 텐트 안 ================= */
-let inRoot=null, inItems=null, inOwner=null;
+let inRoot=null, inItems=null, inOwner=null, inOwnerType=null;
+// 동물의 숲처럼 정면에서 들어가 보는 방: 네모난 바닥 + 텐트 모양 뒷벽 + 낮게 자른 옆벽 + 입구 매트
+const ROOM={W:3.4,D:6.2,cut:1.45};
+function profile(type){ const W=ROOM.W;
+  if(type==='aframe') return {H:4.5,f:y=>W*(1-y/4.5)};
+  if(type==='dome') return {H:3.9,f:y=>W*Math.sqrt(Math.max(0,1-(y/3.9)**2))};
+  return {H:4.7,f:y=>y<1.7?W:W*(1-(y-1.7)/3.0)}; }
 function buildInside(data, editable){
   if(inRoot) inside.remove(inRoot);
-  inRoot=new THREE.Group(); inside.add(inRoot); inOwner=editable;
-  // 나무 바닥
-  const base=mesh(new THREE.CylinderGeometry(4.3,4.5,.5,24),PAL.soil); base.position.y=-.25; inRoot.add(base);
-  for(let i=-4;i<=4;i++){ const w=Math.sqrt(Math.max(0,4.1**2-(i*.95)**2))*2; if(w<.5) continue; const plank=mesh(new THREE.BoxGeometry(.9,.08,w),i%2?PAL.woodL:0xb88d62); plank.position.set(i*.95,.04,0); plank.castShadow=false; inRoot.add(plank); }
-  // 텐트 뒷벽 (단면)
-  const shell=makeTent(data.type,data.color,true);
-  if(data.type==='bell'){ shell.clear();
-    const mat=new THREE.MeshStandardMaterial({color:data.color,flatShading:true,roughness:.95,side:THREE.DoubleSide});
-    const w=new THREE.Mesh(new THREE.CylinderGeometry(4.2,4.2,2.2,20,1,true,Math.PI*3/4,Math.PI),mat); w.position.y=1.1; w.receiveShadow=true;
-    const r=new THREE.Mesh(new THREE.ConeGeometry(4.5,3,20,1,true,Math.PI*3/4,Math.PI),mat); r.position.y=3.7; r.receiveShadow=true; shell.add(w,r);
-  } else if(data.type==='dome'){ shell.clear();
-    const mat=new THREE.MeshStandardMaterial({color:data.color,flatShading:true,roughness:.95,side:THREE.DoubleSide});
-    const d=new THREE.Mesh(new THREE.SphereGeometry(4.2,16,8,Math.PI*3/4+Math.PI/2,Math.PI,0,Math.PI/2),mat); d.receiveShadow=true; shell.add(d);
-  } else { shell.clear();
-    const mat=new THREE.MeshStandardMaterial({color:data.color,flatShading:true,roughness:.95,side:THREE.DoubleSide});
-    // 능선이 앞뒤(z)로 뻗은 A형: 카메라(+x,+z) 반대편인 뒷면 삼각벽 + 왼쪽 경사면만 남김
-    const W=3.7,H=4.4,Z=3.3;
-    const back=new THREE.Shape(); back.moveTo(-W,0); back.lineTo(W,0); back.lineTo(0,H); back.lineTo(-W,0);
-    const bw=new THREE.Mesh(new THREE.ShapeGeometry(back),mat); bw.position.z=-Z; bw.receiveShadow=true;
-    const g=new THREE.BufferGeometry(); g.setAttribute('position',new THREE.Float32BufferAttribute([-W,0,-Z, 0,H,-Z, 0,H,Z, -W,0,-Z, 0,H,Z, -W,0,Z],3)); g.computeVertexNormals();
-    const roof=new THREE.Mesh(g,mat); roof.receiveShadow=true;
-    const pole=mesh(new THREE.CylinderGeometry(.06,.06,H,6),PAL.wood); pole.position.set(0,H/2,-Z+.05);
-    shell.add(bw,roof,pole);
-  }
-  inRoot.add(shell);
-  // 꼬마전구 줄
-  const bulbs=new THREE.Group(); if(data.type==='aframe'){ for(let i=0;i<12;i++){ const t=i/11; const b=new THREE.Mesh(new THREE.SphereGeometry(.07,6,4),new THREE.MeshStandardMaterial({color:0xfff2c4,emissive:0xffd27a,emissiveIntensity:1.6})); b.position.set(-1.1,3.05-Math.sin(t*Math.PI)*.3,-3.1+t*6.2); bulbs.add(b);} } else for(let i=0;i<14;i++){ const a=Math.PI*3/4+Math.PI/2*0+ (i/13)*Math.PI; const r=3.7; const b=new THREE.Mesh(new THREE.SphereGeometry(.07,6,4),new THREE.MeshStandardMaterial({color:0xfff2c4,emissive:0xffd27a,emissiveIntensity:1.6}));
-    b.position.set(Math.sin(a)*r,2.6-Math.sin(i/13*Math.PI)*.35,Math.cos(a)*r); bulbs.add(b);} inRoot.add(bulbs);
+  inRoot=new THREE.Group(); inside.add(inRoot); inOwner=editable; inOwnerType=data.type;
+  const {W,D,cut}=ROOM, {H,f}=profile(data.type), Z=D/2;
+  const base=mesh(new THREE.BoxGeometry(2*W+.4,.5,D+.3),PAL.soil); base.position.y=-.25; inRoot.add(base);
+  for(let i=-3;i<=3;i++){ const plank=mesh(new THREE.BoxGeometry(.97,.08,D),i%2?PAL.woodL:0xb88d62); plank.position.set(i*.97,.04,0); plank.castShadow=false; inRoot.add(plank); }
+  const mat=new THREE.MeshStandardMaterial({color:data.color,flatShading:true,roughness:.95,side:THREE.DoubleSide});
+  const dark=new THREE.MeshStandardMaterial({color:new THREE.Color(data.color).multiplyScalar(.82),flatShading:true,roughness:.95,side:THREE.DoubleSide});
+  // 뒷벽: 텐트 단면 모양 그대로
+  const N=24, pts=[]; for(let i=0;i<=N;i++){ const y=H*i/N; pts.push([f(y),y]); }
+  const sh=new THREE.Shape(); sh.moveTo(-W,0); sh.lineTo(W,0); pts.forEach(([x,y])=>sh.lineTo(x,y)); pts.slice().reverse().forEach(([x,y])=>sh.lineTo(-x,y));
+  const back=new THREE.Mesh(new THREE.ShapeGeometry(sh),mat); back.position.z=-Z+.01; back.receiveShadow=true; inRoot.add(back);
+  // 옆벽: 같은 단면을 cut 높이까지만 앞쪽으로 늘려요
+  const sideGeo=sgn=>{ const v=[], M=8; for(let i=0;i<M;i++){ const y0=cut*i/M, y1=cut*(i+1)/M, x0=sgn*f(y0), x1=sgn*f(y1);
+      v.push(x0,y0,-Z, x1,y1,-Z, x1,y1,Z,  x0,y0,-Z, x1,y1,Z, x0,y0,Z); }
+    const g=new THREE.BufferGeometry(); g.setAttribute('position',new THREE.Float32BufferAttribute(v,3)); g.computeVertexNormals(); return g; };
+  [-1,1].forEach(sg=>{ const w=new THREE.Mesh(sideGeo(sg),dark); w.receiveShadow=true; inRoot.add(w);
+    const trim=mesh(new THREE.BoxGeometry(.12,.1,D),PAL.wood); trim.position.set(sg*f(cut),cut,0); inRoot.add(trim); });
+  // 뒷벽 테두리 나무 프레임
+  for(let i=0;i<N;i++){ [-1,1].forEach(sg=>{ const A=new THREE.Vector3(sg*pts[i][0],pts[i][1],-Z+.05), B=new THREE.Vector3(sg*pts[i+1][0],pts[i+1][1],-Z+.05);
+    const len=A.distanceTo(B); if(len<.01) return; const m=mesh(new THREE.CylinderGeometry(.06,.06,len,5),PAL.wood); m.position.copy(A).add(B).multiplyScalar(.5); m.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),B.sub(A).normalize()); inRoot.add(m); }); }
+  // 입구 매트
+  const mat2=mesh(new THREE.BoxGeometry(1.7,.05,1.5),0xc9b48e); mat2.position.set(0,-.02,Z+.75); mat2.castShadow=false; inRoot.add(mat2);
+  // 꼬마전구: 뒷벽을 가로질러 늘어지게
+  const bulbs=new THREE.Group(), by=Math.min(H-.9,2.9), bw=f(by)*.92;
+  for(let i=0;i<13;i++){ const t=i/12; const b=new THREE.Mesh(new THREE.SphereGeometry(.07,6,4),new THREE.MeshStandardMaterial({color:0xfff2c4,emissive:0xffd27a,emissiveIntensity:1.6}));
+    b.position.set(-bw+2*bw*t,by-Math.sin(t*Math.PI)*.45,-Z+.15); bulbs.add(b); } inRoot.add(bulbs);
   inItems=new THREE.Group(); inRoot.add(inItems);
-  (data.in||[]).forEach(([t,x,z,r])=>{ const p=makeProp(t); p.position.set(x,.08,z); p.rotation.y=r||0; p.userData.item=true; inItems.add(p); });
-  const warm=new THREE.PointLight(0xffd29a,18,9,1.6); warm.position.set(0,2.4,0); inRoot.add(warm);
+  (data.in||[]).forEach(([t,x,z,r])=>{ const p=makeProp(t); const c=clampRoom(x,z); p.position.set(c[0],.08,c[1]); p.rotation.y=r||0; p.userData.item=true; inItems.add(p); });
+  const warm=new THREE.PointLight(0xffd29a,18,10,1.6); warm.position.set(0,2.6,.4); inRoot.add(warm);
 }
+function clampRoom(x,z){ const mx=ROOM.W-.55, mz=ROOM.D/2-.5; return [Math.max(-mx,Math.min(mx,x)),Math.max(-mz,Math.min(mz,z))]; }
 
 /* ================= UI ================= */
 const card=$('card'); let mode='world', curSite=null, visitData=null;
@@ -421,7 +465,7 @@ const tentIcon={bell:'<svg viewBox="0 0 52 38"><path d="M6 34h40l-4-14H10z" fill
   aframe:'<svg viewBox="0 0 52 38"><path d="M6 34L26 4l20 30z" fill="#e8d8b8"/><path d="M20 34l6-12 6 12z" fill="#5a4636"/></svg>',
   dome:'<svg viewBox="0 0 52 38"><path d="M6 34a20 22 0 0 1 40 0z" fill="#e8d8b8"/><path d="M20 34a6 9 0 0 1 12 0z" fill="#5a4636"/></svg>'};
 
-function campNav(){ return `<div class="campnav"><button id="cPrev" ${campNo<=1?'disabled':''}>‹</button><span>${campNo}번 캠핑장${campCount>1?` · 전체 ${campCount}곳`:''}</span><button id="cNext" ${campNo>=campCount?'disabled':''}>›</button></div>`; }
+function campNav(){ return `<div class="campnav"><button id="cPrev" ${campNo<=1?'disabled':''}>‹</button><span>${campNo}번 캠핑장${campCount>1?` · 전체 ${campCount}곳`:''}</span><button id="cNext" ${campNo>=campCount?'disabled':''}>›</button><button id="oBoard" style="width:auto;padding:0 12px">📌 게시판</button></div>`; }
 async function switchCamp(no){ select(null); if(!(await loadCamp(no))) return; buildAll(); focusWorld(); showWorldCard(); }
 function showWorldCard(){
   mode='world'; hideTool();
@@ -432,7 +476,7 @@ function showWorldCard(){
   setTimeout(()=>{ const b=$('goMine'); if(b) b.onclick=()=>enterOutside(me.site);
     const h=$('goHome'); if(h) h.onclick=()=>switchCamp(myLoc.camp);
     const sh=$('share'); if(sh) sh.onclick=shareCamp;
-    const p=$('cPrev'), n=$('cNext'); if(p) p.onclick=()=>switchCamp(campNo-1); if(n) n.onclick=()=>switchCamp(campNo+1); },140);
+    const ob=$('oBoard'); if(ob) ob.onclick=()=>Board.open(); const p=$('cPrev'), n=$('cNext'); if(p) p.onclick=()=>switchCamp(campNo-1); if(n) n.onclick=()=>switchCamp(campNo+1); },140);
 }
 async function shareCamp(){ const url=`${location.origin}/camp/?c=${campNo}${me?`&s=${me.site}`:''}`; track('share','camp');
   try{ if(navigator.share){ await navigator.share({title:'MY LITTLE CAMP',text:'내 텐트 구경 와 ⛺',url}); return; } }catch(e){ return; }
@@ -489,7 +533,7 @@ function enterInside(data,editable){
     <div class="palette">${IN_ITEMS.map(([k,n,e])=>`<button class="pi" data-k="${k}"><span>${e}</span>${n}</button>`).join('')}</div>
     <div class="row"><button class="btn ghost" id="goOut">밖으로 나가기</button></div>`);
   else setCard(`<h3>${data.name}님의 텐트 안</h3><p class="sub">구경 중이에요. 마음에 들면 내 텐트도 꾸며 보세요</p><div class="row"><button class="btn ghost" id="goOut">밖으로 나가기</button></div>`);
-  setTimeout(()=>{ card.querySelectorAll('.pi').forEach(b=>b.onclick=()=>addItem(b.dataset.k)); $('goOut').onclick=()=>{ select(null); scene=world; if(editable) enterOutside(curSite); else { visitOutside(visitData); } }; },140);
+  setTimeout(()=>{ card.querySelectorAll('.pi').forEach(b=>b.onclick=()=>addItem(b.dataset.k)); $('goOut').onclick=()=>{ select(null); scene=world; worldCam(); if(editable) enterOutside(curSite); else { visitOutside(visitData); } }; },140);
 }
 function visitOutside(no){
   mode='visit'; visitData=no; const d=NEIGHBORS[no], s=SITES[no-1]; focus(s.x,s.z,2.1);
@@ -501,11 +545,11 @@ function visitOutside(no){
 /* ================= 소품 놓기·끌기 ================= */
 let selected=null;
 function editGroup(){ return mode==='outside'?siteObjs[curSite].outGroup : mode==='inside'?inItems : null; }
-function areaInfo(){ if(mode==='outside') return {R:2.75,core:1.95}; return {R:3.6,core:0}; }
+function areaInfo(){ if(mode==='outside') return {R:2.75,core:1.95}; return {R:inOwnerType==='aframe'?3.0:3.6,core:0}; }
 function addItem(k){
   const g=editGroup(); if(!g) return; const p=makeProp(k); p.userData.item=true;
   if(mode==='outside'){ const a=Math.PI/4+rnd(-.9,.9); p.position.set(Math.sin(a)*2.35,.1,Math.cos(a)*2.35); }
-  else { p.position.set(rnd(-1.2,1.6),.08,rnd(-.2,1.8)); }
+  else { p.position.set(rnd(-1.6,1.6),.08,rnd(-1.6,1.4)); }
   p.rotation.y=rnd(-.5,.5); g.add(p); pop(p); persist(); select(p); setTimeout(()=>ensureVisible(p),60);
 }
 function pop(o){ o.scale.setScalar(.01); o.userData.grow=0; }
@@ -549,6 +593,7 @@ cv.addEventListener('pointermove',e=>{
   const g=editGroup(); const root=mode==='outside'?siteObjs[curSite].root:inRoot;
   const y=mode==='outside'?Y0+.1:.08; const p=groundPoint(e,y); if(!p) return;
   const local=root.worldToLocal(p.clone()); const {R,core}=areaInfo();
+  if(mode!=='outside'){ const c=clampRoom(local.x,local.z); dragging.position.x=c[0]; dragging.position.z=c[1]; return; }
   let len=Math.hypot(local.x,local.z); if(len>R){ local.x*=R/len; local.z*=R/len; len=R; }
   if(core && len<core){ const k=core/Math.max(len,.001); local.x*=k; local.z*=k; }
   dragging.position.x=local.x; dragging.position.z=local.z;
@@ -562,7 +607,8 @@ cv.addEventListener('pointerup',e=>{
 function tap(e){
   if(mode==='inside'||mode==='visitIn'){ select(null); return; }
   if(mode==='outside' && selected){ select(null); }
-  setNdc(e); const hits=ray.intersectObjects(hitMeshes,false); if(!hits.length) return;
+  setNdc(e); if(mode!=='outside'&&boardHit&&ray.intersectObject(boardHit,false).length){ Board.open(); return; }
+  const hits=ray.intersectObjects(hitMeshes,false); if(!hits.length) return;
   const no=hits[0].object.userData.site;
   if(me && me.site===no){ if(mode!=='outside') enterOutside(no); return; }
   if(NEIGHBORS[no]){ select(null); visitOutside(no); return; }
@@ -588,7 +634,9 @@ function ensureVisible(o){
   if(sy>limit||sy<90||sx<30||sx>innerWidth-30){ const to=bandTarget(p.x,p.y,p.z,camera.zoom,innerHeight-r.top+70); tween={from:controls.target.clone(),to,z0:camera.zoom,z1:camera.zoom,t:0}; }
 }
 function focusWorld(){ tween={from:controls.target.clone(),to:new THREE.Vector3(CENTER.x,0,CENTER.z),z0:camera.zoom,z1:1,t:0}; }
-function focusInside(){ controls.target.set(0,.8,0); camera.position.copy(camDir).multiplyScalar(60); camera.zoom=innerWidth<700?2.25:2.4; camera.updateProjectionMatrix(); controls.update(); const T=bandTarget(0,.3,.4,camera.zoom,sheetGuess()); camera.position.add(T.clone().sub(controls.target)); controls.target.copy(T); tween=null; }
+const inDir=new THREE.Vector3(0,.95,1).normalize();
+function worldCam(){ controls.minAzimuthAngle=Math.PI/4-0.6; controls.maxAzimuthAngle=Math.PI/4+0.6; camera.position.copy(controls.target).addScaledVector(camDir,60); controls.update(); }
+function focusInside(){ controls.minAzimuthAngle=-0.45; controls.maxAzimuthAngle=0.45; controls.target.set(0,.8,0); camera.position.copy(inDir).multiplyScalar(60); camera.zoom=innerWidth<700?2.0:Math.min(2.0,innerHeight/470); camera.updateProjectionMatrix(); controls.update(); const T=bandTarget(0,1.2,.6,camera.zoom,sheetGuess()); camera.position.add(T.clone().sub(controls.target)); controls.target.copy(T); tween=null; }
 
 /* ================= 그리기 ================= */
 const clock=new THREE.Clock();
@@ -607,6 +655,33 @@ function loop(){
 /* ================= 시작 ================= */
 resize(); controls.target.set(CENTER.x,0,CENTER.z); camera.zoom=1; camera.updateProjectionMatrix();
 loop();
+/* ================= 게시판 ================= */
+const Board=(()=>{
+  const PAPERS=['cream','mint','pink','sky'], PINS=['#e0607e','#5aa0d8','#f0c040','#7bbf6a']; let paper='cream', photo=null, notes=[];
+  const esc=t=>String(t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const when=t=>{ const d=new Date(t), m=(Date.now()-d)/6e4; return m<60?`${Math.max(1,Math.round(m))}분 전`:m<1440?`${Math.round(m/60)}시간 전`:`${d.getMonth()+1}/${d.getDate()}`; };
+  function capture(){ try{ renderer.render(scene,camera); const w=360, h=270, c=document.createElement('canvas'); c.width=w; c.height=h; let sw=cv.width, sh=sw*3/4; if(sh>cv.height){ sh=cv.height; sw=sh*4/3; } c.getContext('2d').drawImage(cv,(cv.width-sw)/2,(cv.height-sh)*.42,sw,sh,0,0,w,h); return c.toDataURL('image/jpeg',.72); }catch(e){ return null; } }
+  function render(){ const el=$('cork');
+    el.innerHTML=notes.length?notes.map((n,i)=>`<div class="note p-${esc(n.paper)}" style="--pin:${PINS[i%4]};transform:rotate(${((i*37)%7-3)*.7}deg)">${n.photo?`<img src="${esc(n.photo)}" alt="캠핑장 사진" loading="lazy">`:''}${esc(n.body)}<small><span>${esc(n.name)} · ${when(n.at)}</span>${n.mine?`<button class="na" data-del="${n.id}">떼기</button>`:`<button class="na" data-rep="${n.id}">신고</button>`}</small></div>`).join('')
+      :'<div class="bempty">아직 붙은 쪽지가 없어요<br>첫 쪽지를 붙여 보세요 📌</div>';
+    el.querySelectorAll('[data-del]').forEach(b=>b.onclick=async()=>{ if(!confirm('이 쪽지를 뗄까요?')) return; await sb.rpc('camp_note_delete',{p_id:b.dataset.del}); load(); });
+    el.querySelectorAll('[data-rep]').forEach(b=>b.onclick=async()=>{ if(!user){ toast('로그인하고 신고할 수 있어요'); return; } if(!confirm('이 쪽지를 신고할까요? 신고가 쌓이면 가려져요')) return; const {error}=await sb.rpc('camp_note_report',{p_id:b.dataset.rep}); toast(error?errMsg(error):'신고했어요'); load(); }); }
+  async function load(){ const {data,error}=await sb.rpc('camp_notes_list',{p_camp:campNo}); if(error){ toast('게시판을 불러오지 못했어요'); return; } notes=data||[]; render(); }
+  function open(){ photo=capture(); $('bCamp').textContent=`${campNo}번 캠핑장`; $('bComp').hidden=true; $('bFoot').hidden=false; $('board').hidden=false; $('cork').innerHTML='<div class="bempty">불러오는 중…</div>'; load(); track('act','camp_board'); }
+  function compose(){ if(!user){ $('board').hidden=true; loginCard(null); return; }
+    $('bComp').hidden=false; $('bFoot').hidden=true; $('bText').value=''; $('bPhoto').checked=false; $('bPrev').hidden=true;
+    $('bComp').querySelector('.papers').innerHTML=PAPERS.map(p=>`<button class="p-${p}${p===paper?' sel':''}" data-p="${p}" aria-label="${p}"></button>`).join('');
+    $('bComp').querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{ paper=b.dataset.p; $('bComp').querySelectorAll('[data-p]').forEach(x=>x.classList.toggle('sel',x===b)); });
+    setTimeout(()=>$('bText').focus(),50); }
+  $('bPhoto').onchange=()=>{ const on=$('bPhoto').checked&&photo; $('bPrev').hidden=!on; if(on) $('bPrev').src=photo; };
+  $('bWrite').onclick=compose; $('bCancel').onclick=()=>{ $('bComp').hidden=true; $('bFoot').hidden=false; };
+  $('bClose').onclick=()=>{ $('board').hidden=true; }; $('board').onclick=e=>{ if(e.target.id==='board') $('board').hidden=true; };
+  $('bPost').onclick=async()=>{ const body=$('bText').value.trim(); if(!body){ toast('쪽지 내용을 적어 주세요'); return; }
+    const btn=$('bPost'); btn.disabled=true;
+    const {data,error}=await sb.rpc('camp_note_add',{p_camp:campNo,p_body:body,p_photo:$('bPhoto').checked&&photo?photo:null,p_paper:paper,p_name:(user.user_metadata&&(user.user_metadata.name||user.user_metadata.full_name))||''});
+    btn.disabled=false; if(error){ toast(errMsg(error)); return; } notes=data||[]; render(); $('bComp').hidden=true; $('bFoot').hidden=false; toast('쪽지를 붙였어요 📌'); track('act','camp_note'); };
+  return {open};
+})();
 /* ================= 소리 =================
    '캠핑 시작하기'를 눌러야 재생돼요(브라우저 자동재생 제한).
    음악: 캠핑장=Campfire, 꾸미기·텐트 안=Mellow Moments (HTMLAudio → Web Audio 게인으로 크로스페이드)
