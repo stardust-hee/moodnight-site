@@ -63,6 +63,13 @@
   .hint{text-align:center;font-size:13px;color:var(--ink);font-weight:600}
   .hint small{display:block;font-size:11px;color:var(--dim);font-weight:500;margin-top:3px}
   .proto{position:fixed;left:12px;top:calc(62px + env(safe-area-inset-top));z-index:4;font-size:12px;color:#5d6e54;text-decoration:none;background:#fbf6eacc;padding:4px 10px;border-radius:999px}
+  .vol{position:fixed;right:12px;top:calc(60px + env(safe-area-inset-top));z-index:9;background:var(--cream);border-radius:16px;padding:14px;box-shadow:0 10px 30px #0003;display:grid;gap:10px;width:230px}
+  .vol[hidden],.intro[hidden]{display:none}
+  .vol label{display:grid;gap:4px;font-size:13px}.vol input{width:100%;accent-color:var(--sage-d)}.vol .btn{padding:9px}
+  .intro{position:fixed;inset:0;z-index:20;display:grid;place-items:center;background:#eef3e6aa;backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);transition:opacity .5s}
+  .intro.hide{opacity:0;pointer-events:none}
+  .intro-box{background:var(--cream);border-radius:22px;padding:26px 24px;text-align:center;box-shadow:0 14px 40px #0002;display:grid;gap:10px;width:min(86vw,320px)}
+  .intro-box b{font-family:Jua,sans-serif;font-size:24px;font-weight:400}.intro-box p{color:var(--dim);font-size:14px}.intro-box small{color:var(--dim);font-size:11px}
   .snd{border:0;font:inherit;cursor:pointer;min-width:40px;justify-content:center}
   .field{width:100%;padding:11px 13px;border:1.5px solid var(--line);border-radius:12px;font:inherit;font-size:16px;background:#fff;color:var(--ink);margin:6px 0 10px}
   .btn.kakao{background:#FEE500;color:#191600;box-shadow:0 3px 0 #c9b400}
@@ -93,6 +100,12 @@
 
 <div class="sheet"><div class="card" id="card"></div></div>
 <div class="toast" id="toast"></div>
+<div class="vol" id="vol" hidden>
+  <label>🎵 음악 <input type="range" id="vMusic" min="0" max="100"></label>
+  <label>🔥 모닥불 <input type="range" id="vFire" min="0" max="100"></label>
+  <button class="btn ghost" id="vMute">소리 끄기</button>
+</div>
+<div class="intro" id="intro"><div class="intro-box"><b>⛺ MY LITTLE CAMP</b><p>호숫가 숲속 캠핑장에 내 텐트를 치고 꾸며요</p><button class="btn" id="startCamp">캠핑 시작하기</button><small>소리가 나와요 · 오른쪽 위 🔊에서 조절할 수 있어요</small></div></div>
 <a class="proto" href="/">← 무드나잇</a>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
@@ -594,26 +607,54 @@ function loop(){
 /* ================= 시작 ================= */
 resize(); controls.target.set(CENTER.x,0,CENTER.z); camera.zoom=1; camera.updateProjectionMatrix();
 loop();
-/* ================= 배경음악 =================
-   첫 터치 때부터 재생(브라우저 자동재생 제한). 캠핑장=Campfire, 꾸미기·텐트 안=Mellow Moments, 모닥불 소리는 은은하게 깔아요 */
+/* ================= 소리 =================
+   '캠핑 시작하기'를 눌러야 재생돼요(브라우저 자동재생 제한).
+   음악: 캠핑장=Campfire, 꾸미기·텐트 안=Mellow Moments (HTMLAudio → Web Audio 게인으로 크로스페이드)
+   모닥불: 디코딩한 버퍼를 이음매 크로스페이드로 다시 만들어 AudioBufferSource.loop로 끊김 없이 반복.
+           보이는 모닥불 중 가까운 4개에 목소리를 하나씩 붙이고, 카메라가 보는 지점과의 거리·줌으로 크기, 화면 좌우 위치로 팬을 정해요 */
 const Sound=(()=>{
-  let ctx=null, started=false, on=true, cur=null; const tr={};
-  try{ on=localStorage.getItem('mlc-sound')!=='off'; }catch(e){}
-  const SRC={campfire:['bgm/campfire.mp3',.22],mellow:['bgm/mellow.mp3',.22],fire:['bgm/bonfire.mp3',.10]};
-  function mk(k){ const a=new Audio(SRC[k][0]); a.loop=true; a.preload='auto'; a.crossOrigin='anonymous';
-    const g=ctx.createGain(); g.gain.value=0; ctx.createMediaElementSource(a).connect(g).connect(ctx.destination); tr[k]={a,g,v:SRC[k][1]}; }
-  function fade(k,to,sec){ const t=tr[k]; if(!t) return; const now=ctx.currentTime; t.g.gain.cancelScheduledValues(now); t.g.gain.setValueAtTime(t.g.gain.value,now); t.g.gain.linearRampToValueAtTime(to,now+sec);
-    if(to>0){ t.a.play().catch(()=>{}); } else { clearTimeout(t.st); t.st=setTimeout(()=>{ if(t.g.gain.value<0.001) t.a.pause(); },sec*1000+100); } }
-  function want(){ return (mode==='outside'||mode==='inside'||mode==='visitIn')?'mellow':'campfire'; }
-  function apply(){ if(!started) return; const w=on?want():null;
-    ['campfire','mellow'].forEach(k=>fade(k,k===w?tr[k].v:0,1.6)); fade('fire',on?tr.fire.v:0,1.2); cur=w; }
-  function icon(){ $('snd').textContent=on?'🔊':'🔇'; }
-  function start(){ if(started) return; try{ ctx=new (window.AudioContext||window.webkitAudioContext)(); ['campfire','mellow','fire'].forEach(mk); started=true; ctx.resume&&ctx.resume(); apply(); }catch(e){} }
-  addEventListener('pointerdown',()=>{ if(on) start(); },{once:false,passive:true});
-  $('snd').onclick=e=>{ e.stopPropagation(); on=!on; try{ localStorage.setItem('mlc-sound',on?'on':'off'); }catch(_){} icon(); if(on) start(); apply(); };
-  document.addEventListener('visibilitychange',()=>{ if(!started) return; if(document.hidden) ctx.suspend(); else { ctx.resume(); } });
-  setInterval(()=>{ if(started&&on&&want()!==cur) apply(); },400);
-  icon(); return {start,apply};
+  let ctx=null, started=false, cur=null, fireBuf=null, master, musicBus, fireBus; const tr={}, voices=[];
+  const cfg={on:true,music:70,fire:80}; try{ Object.assign(cfg,JSON.parse(localStorage.getItem('mlc-audio')||'{}')); }catch(e){}
+  const store=()=>{ try{ localStorage.setItem('mlc-audio',JSON.stringify(cfg)); }catch(e){} };
+  const SRC={campfire:'bgm/campfire.mp3',mellow:'bgm/mellow.mp3'}, MUSIC_MAX=.3, FIRE_MAX=.9;
+  function mk(k){ const a=new Audio(SRC[k]); a.loop=true; a.preload='auto';
+    const g=ctx.createGain(); g.gain.value=0; ctx.createMediaElementSource(a).connect(g).connect(musicBus); tr[k]={a,g}; }
+  function fade(k,to,sec){ const t=tr[k]; const now=ctx.currentTime; t.g.gain.cancelScheduledValues(now); t.g.gain.setValueAtTime(t.g.gain.value,now); t.g.gain.linearRampToValueAtTime(to,now+sec);
+    if(to>0) t.a.play().catch(()=>{}); else { clearTimeout(t.st); t.st=setTimeout(()=>{ if(t.g.gain.value<0.001) t.a.pause(); },sec*1000+150); } }
+  const want=()=>(mode==='outside'||mode==='inside'||mode==='visitIn')?'mellow':'campfire';
+  function applyMusic(){ if(!started) return; const w=cfg.on?want():null; ['campfire','mellow'].forEach(k=>fade(k,k===w?1:0,1.6)); cur=w; }
+  function applyBus(){ if(!started) return; const n=ctx.currentTime;
+    master.gain.setTargetAtTime(cfg.on?1:0,n,.15); musicBus.gain.setTargetAtTime(MUSIC_MAX*(cfg.music/100)**1.5,n,.1); fireBus.gain.setTargetAtTime(FIRE_MAX*(cfg.fire/100)**1.5,n,.1); }
+  // 이음매: 끝 F샘플을 처음 F샘플에 동일전력 크로스페이드로 겹치고, 인코더가 넣은 앞뒤 무음은 잘라요
+  function seamless(buf){ const d=buf.getChannelData(0); let a=0,b=d.length-1; while(a<b&&Math.abs(d[a])<1e-4) a++; while(b>a&&Math.abs(d[b])<1e-4) b--;
+    const n=b-a+1, F=Math.min(Math.floor(buf.sampleRate*1.5),Math.floor(n/4)), L=n-F, out=ctx.createBuffer(1,L,buf.sampleRate), o=out.getChannelData(0);
+    for(let i=0;i<L;i++) o[i]=d[a+i]; for(let i=0;i<F;i++){ const x=i/F; o[i]=d[a+i]*Math.sin(x*Math.PI/2)+d[a+L+i]*Math.cos(x*Math.PI/2); } return out; }
+  async function loadFire(){ try{ const r=await fetch('bgm/fire-loop.mp3'); fireBuf=seamless(await ctx.decodeAudioData(await r.arrayBuffer()));
+    for(let i=0;i<4;i++){ const src=ctx.createBufferSource(); src.buffer=fireBuf; src.loop=true; const g=ctx.createGain(); g.gain.value=0;
+      const pan=ctx.createStereoPanner?ctx.createStereoPanner():null; src.connect(g); if(pan){ g.connect(pan).connect(fireBus); } else g.connect(fireBus);
+      src.playbackRate.value=1+(i-1.5)*.03; src.start(0,(i*fireBuf.duration/4)%fireBuf.duration); voices.push({g,pan}); } }catch(e){} }
+  const tmp=new THREE.Vector3();
+  function inScene(o){ let p=o; while(p.parent) p=p.parent; return p===scene; }
+  function updateFires(){ if(!voices.length) return; const lis=controls.target, z=Math.sqrt(camera.zoom); const list=[];
+    for(let i=0;i<fires.length;i+=2){ const f=fires[i]; if(!inScene(f)) continue; f.getWorldPosition(tmp);
+      const big=f.parent&&f.parent.scale.x>1.5; const d=Math.hypot(tmp.x-lis.x,tmp.z-lis.z)*(1.6/(z+.6));
+      const g=Math.max(0,1-Math.max(0,d-(big?2.5:1.2))/(big?16:10))**2*(big?1:.75); if(g<=0) continue;
+      const v=tmp.clone().project(camera); list.push({g,pan:Math.max(-.8,Math.min(.8,v.x*.8))}); }
+    list.sort((a,b)=>b.g-a.g); const n=ctx.currentTime;
+    voices.forEach((vc,i)=>{ const it=list[i]; vc.g.gain.setTargetAtTime(it?it.g:0,n,.25); if(vc.pan) vc.pan.pan.setTargetAtTime(it?it.pan:0,n,.25); }); }
+  function start(){ if(started) return; try{ ctx=new (window.AudioContext||window.webkitAudioContext)();
+    master=ctx.createGain(); master.connect(ctx.destination); musicBus=ctx.createGain(); fireBus=ctx.createGain(); musicBus.connect(master); fireBus.connect(master);
+    ['campfire','mellow'].forEach(mk); started=true; ctx.resume&&ctx.resume(); applyBus(); applyMusic(); loadFire(); }catch(e){} }
+  function ui(){ $('snd').textContent=cfg.on?'🔊':'🔇'; $('vMusic').value=cfg.music; $('vFire').value=cfg.fire; $('vMute').textContent=cfg.on?'소리 끄기':'소리 켜기'; }
+  $('snd').onclick=e=>{ e.stopPropagation(); $('vol').hidden=!$('vol').hidden; };
+  $('vMusic').oninput=e=>{ cfg.music=+e.target.value; store(); applyBus(); };
+  $('vFire').oninput=e=>{ cfg.fire=+e.target.value; store(); applyBus(); };
+  $('vMute').onclick=()=>{ cfg.on=!cfg.on; store(); ui(); if(cfg.on) start(); applyBus(); applyMusic(); };
+  addEventListener('pointerdown',e=>{ if(!$('vol').hidden&&!e.target.closest('#vol,#snd')) $('vol').hidden=true; },true);
+  $('startCamp').onclick=()=>{ $('intro').classList.add('hide'); setTimeout(()=>$('intro').hidden=true,550); if(cfg.on) start(); };
+  document.addEventListener('visibilitychange',()=>{ if(!started) return; if(document.hidden) ctx.suspend(); else ctx.resume(); });
+  setInterval(()=>{ if(!started) return; if(cfg.on&&want()!==cur) applyMusic(); updateFires(); },120);
+  ui(); return {start};
 })();
 (async()=>{
   const q=new URLSearchParams(location.search); const qc=parseInt(q.get('c'))||null, qs=parseInt(q.get('s'))||null;
