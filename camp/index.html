@@ -63,6 +63,7 @@
   .hint{text-align:center;font-size:13px;color:var(--ink);font-weight:600}
   .hint small{display:block;font-size:11px;color:var(--dim);font-weight:500;margin-top:3px}
   .proto{position:fixed;left:12px;top:calc(62px + env(safe-area-inset-top));z-index:4;font-size:12px;color:#5d6e54;text-decoration:none;background:#fbf6eacc;padding:4px 10px;border-radius:999px}
+  .snd{border:0;font:inherit;cursor:pointer;min-width:40px;justify-content:center}
   .field{width:100%;padding:11px 13px;border:1.5px solid var(--line);border-radius:12px;font:inherit;font-size:16px;background:#fff;color:var(--ink);margin:6px 0 10px}
   .btn.kakao{background:#FEE500;color:#191600;box-shadow:0 3px 0 #c9b400}
   .link{background:none;border:0;color:var(--dim);font:inherit;font-size:12px;text-decoration:underline;margin-top:8px;cursor:pointer}
@@ -80,7 +81,7 @@
 
 <div class="top">
   <div class="logo">⛺ MY LITTLE CAMP<small>숲속 호숫가</small></div>
-  <div class="chip" id="count">12자리 중 <b>0</b>자리 사용 중</div>
+  <div style="display:flex;gap:6px"><button class="chip snd" id="snd" aria-label="소리 켜기/끄기">🔇</button><div class="chip" id="count">12자리 중 <b>0</b>자리 사용 중</div></div>
 </div>
 
 <div class="tool" id="tool">
@@ -593,6 +594,27 @@ function loop(){
 /* ================= 시작 ================= */
 resize(); controls.target.set(CENTER.x,0,CENTER.z); camera.zoom=1; camera.updateProjectionMatrix();
 loop();
+/* ================= 배경음악 =================
+   첫 터치 때부터 재생(브라우저 자동재생 제한). 캠핑장=Campfire, 꾸미기·텐트 안=Mellow Moments, 모닥불 소리는 은은하게 깔아요 */
+const Sound=(()=>{
+  let ctx=null, started=false, on=true, cur=null; const tr={};
+  try{ on=localStorage.getItem('mlc-sound')!=='off'; }catch(e){}
+  const SRC={campfire:['bgm/campfire.mp3',.22],mellow:['bgm/mellow.mp3',.22],fire:['bgm/bonfire.mp3',.10]};
+  function mk(k){ const a=new Audio(SRC[k][0]); a.loop=true; a.preload='auto'; a.crossOrigin='anonymous';
+    const g=ctx.createGain(); g.gain.value=0; ctx.createMediaElementSource(a).connect(g).connect(ctx.destination); tr[k]={a,g,v:SRC[k][1]}; }
+  function fade(k,to,sec){ const t=tr[k]; if(!t) return; const now=ctx.currentTime; t.g.gain.cancelScheduledValues(now); t.g.gain.setValueAtTime(t.g.gain.value,now); t.g.gain.linearRampToValueAtTime(to,now+sec);
+    if(to>0){ t.a.play().catch(()=>{}); } else { clearTimeout(t.st); t.st=setTimeout(()=>{ if(t.g.gain.value<0.001) t.a.pause(); },sec*1000+100); } }
+  function want(){ return (mode==='outside'||mode==='inside'||mode==='visitIn')?'mellow':'campfire'; }
+  function apply(){ if(!started) return; const w=on?want():null;
+    ['campfire','mellow'].forEach(k=>fade(k,k===w?tr[k].v:0,1.6)); fade('fire',on?tr.fire.v:0,1.2); cur=w; }
+  function icon(){ $('snd').textContent=on?'🔊':'🔇'; }
+  function start(){ if(started) return; try{ ctx=new (window.AudioContext||window.webkitAudioContext)(); ['campfire','mellow','fire'].forEach(mk); started=true; ctx.resume&&ctx.resume(); apply(); }catch(e){} }
+  addEventListener('pointerdown',()=>{ if(on) start(); },{once:false,passive:true});
+  $('snd').onclick=e=>{ e.stopPropagation(); on=!on; try{ localStorage.setItem('mlc-sound',on?'on':'off'); }catch(_){} icon(); if(on) start(); apply(); };
+  document.addEventListener('visibilitychange',()=>{ if(!started) return; if(document.hidden) ctx.suspend(); else { ctx.resume(); } });
+  setInterval(()=>{ if(started&&on&&want()!==cur) apply(); },400);
+  icon(); return {start,apply};
+})();
 (async()=>{
   const q=new URLSearchParams(location.search); const qc=parseInt(q.get('c'))||null, qs=parseInt(q.get('s'))||null;
   const {data}=await sb.auth.getSession(); user=data.session?data.session.user:null;
