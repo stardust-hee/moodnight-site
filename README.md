@@ -87,9 +87,9 @@
 - 연등 색 뜻: 빨강 복과 보호, 노랑 지혜와 평온, 초록 건강과 치유, 파랑 평화와 깨달음, 보라 성장과 수행, 흰색 "그리운 사람에게"(영가등에서 따옴, 문구·버튼이 바뀜). 분홍은 예전 호환용으로만 남김
 - 기와: 청·녹·적·흑 4색 수키와 + 암키와 골을 줄마다 겹친 물결 지붕(SVG 도트). 36장 = 지붕 한 채, 다 차면 다음 기와부터 새 지붕
 - 테이블: `sansa_items`(kind lantern/tile, color, text, device, hidden), `sansa_reports`, `sansa_bonnoe`(날짜별 번뇌 개수만, 글은 저장 안 함). 모두 RLS, 함수로만 접근
-- 함수: `sansa_list(kind)` 연등 최근 60개 / 기와는 지금 짓는 지붕만, `sansa_add(kind,color,text,device)` 한 기기 하루 10개·전체 분당 60개, `sansa_report(id,device)` 서로 다른 기기 2곳이 신고하면 hidden, `sansa_bonnoe_add()`, `sansa_stats()`
+- 함수: `sansa_list(kind)` 연등 최근 60개 / 기와는 지금 짓는 지붕만, `sansa_add(kind,color,text,device)` 한 기기 하루 10개·전체 분당 60개, `sansa_report(id,device)` 신고 접수만 수행, 신고자 화면에서 가림. 전체 숨김은 관리자 검토 후 처리, `sansa_bonnoe_add()`, `sansa_stats()`
 - 브라우저 저장: `mn_device`(track.js와 공유), `sansa-mine`(내가 올린 id), `sansa-hidden`(내가 신고한 id)
-- 관리: 직접 숨기기는 SQL `update sansa_items set hidden=true where id=...`. 방문 기록 page `sansa`, act `lantern`/`tile`/`bonnoe`
+- 관리: `/admin/#report`에서 신고 검토 · 전체 숨기기 · 공개 유지/복원. `admin_sansa_reports()`, `admin_review_sansa(id,hidden)`는 DB 관리자만 실행 가능. 방문 기록 page `sansa`, act `lantern`/`tile`/`bonnoe`
 - 공유 이미지 `sansa/og.png`, 홈 카드 썸네일 `sansa/preview.webp`
 
 ### 박살방 (11/10 공개)
@@ -177,3 +177,10 @@
 - 숫자는 `admin_stats()` 함수 하나로: DB 용량, 회원(카카오/구글), 선물가게·선물·열어봄·맞힘, 맨션·입주·벽보·차단, 오늘/7일 방문자, 재방문, 공유 버튼, 링크 방문, 일간/주간/월간 표, 페이지별 방문, 신고 기록
 - 방문·공유 기록: `track.js`(홈, 읽을거리, 산타, 맨션에 붙음, 체험판·관리실 제외) → `log_event()` → `page_events` 테이블. 같은 기기·같은 페이지 10분 안 재방문은 한 번만. 개인정보처리방침에 기재
 - 관리자 추가: SQL로 `insert into public.admins values ('<user id>')`
+
+## 익명 악용 방지 (2026-11-10 추가)
+
+- 실제 DB에 `anonymous_abuse_quotas_and_manual_moderation` 적용. 소스: `security/anonymous-abuse.sql`.
+- 익명 기기 ID를 신뢰해 자동 숨김 처리하지 않음. 검토 목록은 `/admin/#report`.
+- 방/서비스 공통 저장 한도는 기기 ID·이름 변경과 무관하게 서버에서 적용. 단위 시간과 정확한 한도·운영 주의점: `security/ANONYMOUS_ABUSE.md`.
+- 전체 트래픽 차단이나 사람 인증은 아님. 분산 공격 또는 정상 사용자를 밀어내는 한도 소진 공격은 별도 게이트웨이/봇 방어가 필요.

@@ -17,7 +17,7 @@ const POSS = n => /s$/i.test(n) ? `${n}'` : `${n}'s`;
 const MN = n => L(`${n}의 성탄맨션`, `${POSS(n)} Christmas Mansion`);
 const nameOk = n => EN ? n.length >= 2 && n.length <= 12 : n.length >= 2 && n.length <= 3;
 const cleanName = v => EN ? v.trim().replace(/\s+/g, ' ') : v.replace(/\s/g, '');
-const ERR_EN = { not_found: "We couldn't find that.", nick: 'Please choose a different nickname.', banned: "The owner has blocked you from this mansion.", dup: "You've already moved in. One home per person.", taken: 'Someone just took that unit. Pick another one.', full: 'The mansion is full. Leave a note on the board instead!', text: 'Please write something.', limit: 'You can post up to 5 notes.', login: 'Please log in first.' };
+const ERR_EN = { rate_limit: "Too many requests right now. Please try again later.", not_found: "We couldn't find that.", nick: 'Please choose a different nickname.', banned: "The owner has blocked you from this mansion.", dup: "You've already moved in. One home per person.", taken: 'Someone just took that unit. Pick another one.', full: 'The mansion is full. Leave a note on the board instead!', text: 'Please write something.', limit: 'You can post up to 5 notes.', login: 'Please log in first.' };
 const errMsg = e => { const m = (e && e.message) || L('잠시 후 다시 시도해 주세요.', 'Something went wrong. Please try again.'); const code = m.split(':')[0].trim();
   if (EN) return ERR_EN[code] || (/[가-힣]/.test(m) ? 'Something went wrong. Please try again.' : m);
   return m.includes(': ') ? m.split(': ').slice(1).join(': ') : m; };

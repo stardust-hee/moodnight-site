@@ -32,7 +32,7 @@ const item = id => localize((window.REAL_GIFTS || []).find(g => g.id === id) || 
 const POSS = n => L(`${n}의`, /s$/i.test(n) ? `${n}'` : `${n}'s`);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const giftHTML = () => `<span class="spr"></span>`;
-const ERR_EN = { locked: "Gifts open on Dec 25.", not_found: "We couldn't find that.", closed: "Sending gifts has closed.", full: "This gift shop is full.", login: "Please log in first." };
+const ERR_EN = { rate_limit: "Too many requests right now. Please try again later.", locked: "Gifts open on Dec 25.", not_found: "We couldn't find that.", closed: "Sending gifts has closed.", full: "This gift shop is full.", login: "Please log in first." };
 const errMsg = e => { const m = (e && e.message) || L("잠시 후 다시 시도해 주세요.", "Something went wrong. Please try again."); const code = m.split(":")[0].trim();
   if (EN) return ERR_EN[code] || (/[가-힣]/.test(m) ? "Something went wrong. Please try again." : m);
   return m.includes(": ") ? m.split(": ").slice(1).join(": ") : m; };

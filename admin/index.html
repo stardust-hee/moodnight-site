@@ -159,6 +159,38 @@ function mindHTML() {
     <p class="msg" style="margin:8px 0 0">산사·박살방·트레이 칸은 그날 들어온 사람 수예요. 이 관리자 기기 방문은 빠져요.</p>
   </div></section>`;
 }
+function moderationHTML() {
+  if (!Array.isArray(S.sansaQueue)) return '<section class="win"><h2>신고 검토.exe</h2><div class="body"><p class="msg">신고 목록을 불러오지 못했어요. 새로고침해 주세요.</p></div></section>';
+  return `<section class="win"><h2>신고 검토.exe</h2><div class="body">
+    <p class="msg">익명 신고만으로 글이 자동 삭제되지는 않아요. 내용을 확인한 뒤 처리해 주세요. 최근 신고 100개 중 검토 대기 글이 먼저 보여요.</p>
+    <div class="rep">${S.sansaQueue.map(r => `<div>
+      <small>${r.kind === 'lantern' ? '연등' : '기와'} · 신고 ${n(r.reports)}건 · ${r.pending ? '검토 대기' : '검토 완료'} · ${r.hidden ? '숨김' : '공개'}</small>
+      <p style="margin:8px 0;white-space:pre-wrap">${esc(r.text)}</p>
+      <div class="row">
+        ${r.hidden ? '' : `<button type="button" data-review-id="${esc(r.id)}" data-hidden="true">전체 숨기기</button>`}
+        <button type="button" data-review-id="${esc(r.id)}" data-hidden="false">${r.hidden ? '다시 공개하기' : '공개 유지 · 검토 완료'}</button>
+      </div></div>`).join('') || '<p class="msg">검토할 산사 신고가 없어요.</p>'}</div>
+    <p id="reviewStatus" class="msg" role="status" aria-live="polite"></p>
+  </div></section>`;
+}
+function bindModeration() {
+  document.querySelectorAll('[data-review-id]').forEach(b => b.onclick = async () => {
+    const hidden = b.dataset.hidden === 'true';
+    if (hidden && !confirm('이 글을 모든 방문자에게 숨길까요? 나중에 다시 공개할 수 있어요.')) return;
+    const buttons = document.querySelectorAll('[data-review-id]');
+    buttons.forEach(x => x.disabled = true);
+    const status = $('#reviewStatus'); status.textContent = '처리 중이에요…';
+    try {
+      const { error } = await sb.rpc('admin_review_sansa', { p_id: b.dataset.reviewId, p_hidden: hidden });
+      if (error) throw error;
+      await load();
+      const next = $('#reviewStatus'); if (next) next.textContent = hidden ? '전체 화면에서 숨겼어요.' : '공개 상태로 검토를 완료했어요.';
+    } catch (e) {
+      status.textContent = '처리하지 못했어요. 관리자 권한과 연결 상태를 확인해 주세요.';
+      buttons.forEach(x => x.disabled = false);
+    }
+  });
+}
 // 크롬 탭처럼: 섹션 제목으로 어느 탭에 둘지 정해요
 const TABS = [["home", "🌙", "전체"], ["members", "👤", "회원"], ["santa", "🎁", "선물가게"], ["mansion", "🏠", "성탄맨션"], ["sansa", "🏮", "산사"], ["smash", "🔨", "박살방"], ["tray", "🍽️", "실버 트레이"], ["report", "🚩", "신고"]];
 const SEC_TAB = [["한눈에", "home"], ["기간별", "home"], ["광고", "home"], ["최근 7일 페이지별", "home"], ["회원", "members"], ["산타의 선물가게", "santa"], ["성탄맨션", "mansion"], ["무드나잇 산사", "sansa"], ["박살방", "smash"], ["Silver Tray", "tray"], ["마음 챙기기", "sansa smash tray"], ["신고", "report"]];
@@ -166,7 +198,7 @@ let tab = (() => { try { const h = location.hash.slice(1); if (TABS.some(t => t[
 if (!TABS.some(t => t[0] === tab)) tab = "home";
 function applyTabs() {
   const today = new Date().toLocaleDateString("ko-KR", { timeZone: "Asia/Seoul" });
-  const badge = { members: (S.members || []).filter(m => !m.admin && new Date(m.joined).toLocaleDateString("ko-KR", { timeZone: "Asia/Seoul" }) === today).length, report: (S.reports || []).length };
+  const badge = { members: (S.members || []).filter(m => !m.admin && new Date(m.joined).toLocaleDateString("ko-KR", { timeZone: "Asia/Seoul" }) === today).length, report: (S.reports || []).filter(r => r.svc !== "산사").length + (S.sansaQueue || []).filter(r => r.pending).length };
   $("#ctabs").innerHTML = TABS.map(([k, ic, l]) => `<button role="tab" data-tab="${k}" aria-selected="${tab === k}"><span class="ic">${ic}</span>${l}${badge[k] ? `<span class="ct">${badge[k]}</span>` : ""}</button>`).join("");
   $("#ctabs").hidden = false;
   document.querySelectorAll("#dash > section").forEach(sec => {
@@ -219,11 +251,13 @@ function render() {
   <section class="win"><h2>최근 7일 페이지별 방문.exe</h2><div class="body"><div class="grid">
     ${Object.keys(PAGES).filter(k => (s.pages || {})[k]).map(k => card(PAGES[k], n(s.pages[k]))).join("") || '<p class="msg">아직 기록이 없어요. 방문 기록은 11월 9일부터 쌓여요.</p>'}
   </div></div></section>
+  ${moderationHTML()}
   <section class="win"><h2>신고·숨김 기록.exe</h2><div class="body"><div class="rep">
     ${(s.reports || []).map(r => `<div><small>${esc(new Date(r.at).toLocaleString("ko-KR"))} · ${esc(r.svc)} ${esc(r.kind)}</small><p style="margin:2px 0">${esc(r.text) || "(내용 없음)"}</p><small>사유: ${esc(r.reason || "-")}</small></div>`).join("") || '<p class="msg">신고된 게 없어요.</p>'}
   </div></div></section>`;
   document.querySelectorAll("[data-p]").forEach(b => b.onclick = () => { period = b.dataset.p; render(); });
   applyTabs();
+  bindModeration();
 }
 async function load() {
   // 이 기기는 관리자 기기로 표시해서 방문 숫자에서 빼요 (지난 기록도 지워요)
@@ -234,6 +268,7 @@ async function load() {
   try { const r = await sb.rpc("admin_ads"); data.ads = r.data || []; } catch (e) { data.ads = []; }
   try { const r = await sb.rpc("admin_members"); data.members = r.error ? null : r.data; } catch (e) { data.members = null; }
   try { const r = await sb.rpc("admin_mind_stats"); data.mind = r.error ? null : r.data; } catch (e) { data.mind = null; }
+  try { const r = await sb.rpc("admin_sansa_reports"); data.sansaQueue = r.error ? null : r.data; } catch (e) { data.sansaQueue = null; }
   if (data.mind && data.mind.reports) data.reports = (data.reports || []).concat(data.mind.reports).sort((x, y) => String(y.at).localeCompare(String(x.at)));
   S = data; $("#loginBox").hidden = true; $("#dash").hidden = false; $("#reload").hidden = false; $("#logout").hidden = false;
   $("#who").textContent = `${new Date().toLocaleString("ko-KR")} 기준`;
