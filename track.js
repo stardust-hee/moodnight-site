@@ -11,7 +11,7 @@
   const page = p === "/" || p === "/index.html" ? "home" : p.startsWith("/blog") ? "blog"
     : p.startsWith("/santa/r/") ? "santa_r" : p.startsWith("/santa") ? "santa"
     : p.startsWith("/mansion/r/") ? "mansion_r" : p.startsWith("/mansion") ? "mansion"
-    : p.startsWith("/sansa") ? "sansa" : p.startsWith("/smash") ? "smash" : p.startsWith("/tray") ? "tray" : "other";
+    : p.startsWith("/sansa") ? "sansa" : p.startsWith("/smash") ? "smash" : p.startsWith("/tray") ? "tray" : p.startsWith("/camp") ? "camp" : "other";
   const device = (() => {
     const make = () => Array.from(crypto.getRandomValues(new Uint8Array(12)), b => (b % 36).toString(36)).join("") + Date.now().toString(36);
     try { let d = localStorage.getItem("mn_device"); if (!d || !/^[a-z0-9]{16,40}$/.test(d)) { d = make(); localStorage.setItem("mn_device", d); } return d; } catch (e) { return null; }

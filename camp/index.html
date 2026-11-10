@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<title>MY LITTLE CAMP · 무드나잇 숲속 캠핑장</title>
+<meta name="description" content="호숫가 숲속 캠핑장에 내 텐트를 치고 꾸며요. 벨·A형·돔 텐트, 모닥불과 랜턴, 텐트 안 침낭까지. 이웃 텐트에 놀러 가서 구경해요.">
+<meta property="og:type" content="website"><meta property="og:site_name" content="무드나잇">
+<meta property="og:title" content="MY LITTLE CAMP · 숲속 캠핑장에 텐트 치기">
+<meta property="og:description" content="12자리 호숫가 캠핑장. 내 텐트를 치고 꾸미고, 이웃 텐트에 놀러 가요.">
+<meta property="og:url" content="https://www.moodnight.co.kr/camp/">
+<link rel="canonical" href="https://www.moodnight.co.kr/camp/">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%238fae7e'/%3E%3Cpath d='M2 13L8 3l6 10z' fill='%23fbf6ea'/%3E%3Cpath d='M6.5 13L8 10l1.5 3z' fill='%239b6b45'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Jua&display=swap">
+<style>
+  :root{--sage:#8fae7e;--sage-d:#6f8f60;--cream:#fbf6ea;--beige:#efe4cf;--wood:#9b6b45;--ink:#4a3f35;--dim:#8a7f72;--line:#e6dcc8}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;overflow:hidden;background:#dfe8d6;font-family:"Gowun Dodum",-apple-system,"Apple SD Gothic Neo",sans-serif;color:var(--ink);-webkit-tap-highlight-color:transparent}
+  #cv{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none;outline:none}
+  button{font:inherit;color:inherit;cursor:pointer;border:none;background:none}
+
+  .top{position:fixed;left:0;right:0;top:0;z-index:5;display:flex;justify-content:space-between;align-items:flex-start;gap:8px;padding:calc(10px + env(safe-area-inset-top)) 12px 0;pointer-events:none}
+  .logo{pointer-events:auto;background:var(--cream);border-radius:999px;padding:9px 15px;font-weight:800;font-size:15px;letter-spacing:-.02em;box-shadow:0 4px 14px #4a3f3520;display:flex;align-items:center;gap:6px}
+  .logo small{font-weight:600;font-size:11px;color:var(--dim);margin-left:4px}@media(max-width:480px){.logo small{display:none}}
+  .logo{white-space:nowrap}.chip{white-space:nowrap;pointer-events:auto;background:#fbf6eae6;border-radius:999px;padding:8px 12px;font-size:12px;font-weight:600;color:var(--ink);box-shadow:0 4px 14px #4a3f3518}
+  .chip b{color:var(--sage-d)}
+
+  .sheet{position:fixed;left:0;right:0;bottom:0;z-index:6;padding:0 10px calc(10px + env(safe-area-inset-bottom));pointer-events:none;display:flex;justify-content:center}
+  .card{pointer-events:auto;width:min(100%,520px);background:var(--cream);border-radius:22px;padding:14px 14px 12px;box-shadow:0 10px 34px #4a3f3530;transform:translateY(calc(100% + 30px));transition:transform .38s cubic-bezier(.2,.8,.2,1)}
+  .card.show{transform:none}
+  .card h3{font-size:16px;font-weight:800;letter-spacing:-.02em;margin-bottom:2px}
+  .card p.sub{font-size:12px;color:var(--dim);margin-bottom:10px}
+  .row{display:flex;gap:8px}
+  .btn{flex:1;height:46px;border-radius:14px;background:var(--sage);color:#fff;font-weight:700;font-size:15px;box-shadow:0 3px 0 var(--sage-d)}
+  .btn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--sage-d)}
+  .btn.ghost{background:#fff;color:var(--ink);box-shadow:0 3px 0 var(--line);border:1px solid var(--line)}
+  .btn.wood{background:var(--wood);box-shadow:0 3px 0 #74492b}
+
+  .types{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px}
+  .type{background:#fff;border:2px solid var(--line);border-radius:16px;padding:9px 4px 8px;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:13px;font-weight:700}
+  .type svg{width:52px;height:38px}
+  .type small{font-size:10px;font-weight:500;color:var(--dim)}
+  .type.sel{border-color:var(--sage-d);background:#f2f6ec}
+  .swatches{display:flex;gap:10px;justify-content:center;margin-bottom:12px}
+  .sw{width:30px;height:30px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 1px var(--line)}
+  .sw.sel{box-shadow:0 0 0 2px var(--sage-d)}
+
+  .palette{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:2px 2px 10px;margin:0 -2px}
+  .palette::-webkit-scrollbar{display:none}
+  .pi{flex:0 0 66px;height:70px;background:#fff;border:1px solid var(--line);border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:11px;font-weight:600}
+  .pi span{font-size:24px;line-height:1}
+  .pi:active{background:#f2f6ec}
+
+  .tool{position:fixed;left:50%;z-index:7;transform:translate(-50%,20px);opacity:0;pointer-events:none;transition:.25s;display:flex;gap:6px;background:var(--ink);border-radius:999px;padding:6px;box-shadow:0 8px 24px #0003}
+  .tool.show{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+  .tool button{white-space:nowrap;color:#fff;font-size:13px;font-weight:700;padding:9px 13px;border-radius:999px}
+  .tool button:active{background:#ffffff22}
+  .tool,.tool *{user-select:none;-webkit-user-select:none}
+  .tname{display:flex;align-items:center;gap:4px;background:#f6c453;color:var(--ink);font-size:13px;font-weight:800;padding:9px 13px;border-radius:999px;white-space:nowrap}
+
+  .toast{position:fixed;left:50%;top:calc(64px + env(safe-area-inset-top));transform:translate(-50%,-10px);z-index:9;background:var(--ink);color:#fff;font-size:13px;font-weight:600;padding:10px 16px;border-radius:999px;opacity:0;transition:.25s;pointer-events:none;white-space:nowrap}
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+  .hint{text-align:center;font-size:13px;color:var(--ink);font-weight:600}
+  .hint small{display:block;font-size:11px;color:var(--dim);font-weight:500;margin-top:3px}
+  .proto{position:fixed;left:12px;top:calc(62px + env(safe-area-inset-top));z-index:4;font-size:12px;color:#5d6e54;text-decoration:none;background:#fbf6eacc;padding:4px 10px;border-radius:999px}
+  .field{width:100%;padding:11px 13px;border:1.5px solid var(--line);border-radius:12px;font:inherit;font-size:16px;background:#fff;color:var(--ink);margin:6px 0 10px}
+  .btn.kakao{background:#FEE500;color:#191600;box-shadow:0 3px 0 #c9b400}
+  .link{background:none;border:0;color:var(--dim);font:inherit;font-size:12px;text-decoration:underline;margin-top:8px;cursor:pointer}
+  .campnav{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:8px;font-size:13px;color:var(--dim)}
+  .campnav button{border:0;background:var(--beige);border-radius:999px;width:30px;height:30px;font-size:15px;color:var(--ink)}
+  .campnav button:disabled{opacity:.35}
+  .loading{position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;background:#dfe8d6;font-weight:700;color:var(--sage-d);transition:opacity .5s}
+  .loading.hide{opacity:0;pointer-events:none}
+</style>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
+</head>
+<body>
+<canvas id="cv"></canvas>
+<div class="loading" id="loading">⛺ 캠핑장 준비 중…</div>
+
+<div class="top">
+  <div class="logo">⛺ MY LITTLE CAMP<small>숲속 호숫가</small></div>
+  <div class="chip" id="count">12자리 중 <b>0</b>자리 사용 중</div>
+</div>
+
+<div class="tool" id="tool">
+  <span class="tname" id="tName"></span>
+  <button id="tRot">⟳ 돌리기</button>
+  <button id="tDel">🗑 치우기</button>
+  <button id="tOk">✓ 완료</button>
+</div>
+
+<div class="sheet"><div class="card" id="card"></div></div>
+<div class="toast" id="toast"></div>
+<a class="proto" href="/">← 무드나잇</a>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="/track.js?v=5" defer></script>
+<script type="module">
+const fires=[];
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+/* ================= 기본 ================= */
+const $=id=>document.getElementById(id);
+const cv=$('cv');
+const renderer=new THREE.WebGLRenderer({canvas:cv,antialias:true});
+renderer.setPixelRatio(Math.min(2,window.devicePixelRatio||1));
+renderer.shadowMap.enabled=true; renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+renderer.outputColorSpace=THREE.SRGBColorSpace;
+renderer.toneMapping=THREE.ACESFilmicToneMapping; renderer.toneMappingExposure=1.05;
+
+const PAL={grass:0xa9c784,grass2:0x9dbd78,soil:0xa57c55,soilD:0x84603f,sand:0xe8d9b5,stone:0xd9cdb4,water:0x86c9d1,waterD:0x6fb3be,rock:0xbfb6a6,rockD:0x9e968a,pine:0x5e8b5c,pine2:0x6f9d68,trunk:0x8a5a3a,wood:0x9b6b45,woodL:0xc49a6c,cream:0xf6eedc,beige:0xe8d8b8};
+const TENT_COLORS=[['크림',0xf3ead6],['세이지',0x9cb98a],['테라코타',0xd98a62],['머스터드',0xe2b65e],['하늘',0x95bfd6],['로즈',0xe3a9a6]];
+const TENT_TYPES={bell:'벨 텐트',aframe:'A형 텐트',dome:'돔 텐트'};
+
+const matCache={};
+function M(color,opt){ const k=color+'|'+JSON.stringify(opt||{}); if(!matCache[k]) matCache[k]=new THREE.MeshStandardMaterial(Object.assign({color,flatShading:true,roughness:.92,metalness:0},opt||{})); return matCache[k]; }
+function mesh(geo,color,opt){ const m=new THREE.Mesh(geo,M(color,opt)); m.castShadow=true; m.receiveShadow=true; return m; }
+const rnd=(a,b)=>a+Math.random()*(b-a);
+let seed=7; const srnd=(a,b)=>{ seed=(seed*16807)%2147483647; return a+(seed/2147483647)*(b-a); };
+
+/* ================= 장면 ================= */
+const world=new THREE.Scene();
+world.background=new THREE.Color(0xdfe8d6);
+world.fog=new THREE.Fog(0xdfe8d6,70,130);
+const inside=new THREE.Scene();
+inside.background=new THREE.Color(0xe9e1d0);
+let scene=world;
+
+function addLights(sc,warm){
+  const hemi=new THREE.HemisphereLight(warm?0xfff1dc:0xf4f7ff, warm?0x9b7b5a:0x7f9a6a, warm?1.15:1.25); sc.add(hemi);
+  const sun=new THREE.DirectionalLight(warm?0xffe2b8:0xfff3dc, warm?1.6:2.2);
+  sun.position.set(warm?6:22,warm?14:34,warm?10:14); sun.castShadow=true;
+  sun.shadow.mapSize.set(2048,2048); const s=warm?8:30;
+  Object.assign(sun.shadow.camera,{left:-s,right:s,top:s,bottom:-s,near:1,far:120}); sun.shadow.bias=-0.0006; sun.shadow.normalBias=0.03;
+  sc.add(sun);
+}
+addLights(world,false); addLights(inside,true);
+
+/* ===== 카메라: 아이소메트릭 느낌의 직교 카메라 ===== */
+const camera=new THREE.OrthographicCamera(-10,10,10,-10,-200,400);
+const camDir=new THREE.Vector3(1,1.05,1).normalize();
+camera.position.copy(camDir).multiplyScalar(80);
+const controls=new OrbitControls(camera,cv);
+controls.enableDamping=true; controls.dampingFactor=.12;
+controls.minPolarAngle=0.62; controls.maxPolarAngle=1.12;
+controls.minAzimuthAngle=Math.PI/4-0.6; controls.maxAzimuthAngle=Math.PI/4+0.6;
+controls.minZoom=0.7; controls.maxZoom=3.2; controls.zoomSpeed=1.1;
+controls.screenSpacePanning=false;
+controls.touches={ONE:THREE.TOUCH.ROTATE,TWO:THREE.TOUCH.DOLLY_PAN};
+let viewH=26;
+function resize(){
+  const w=innerWidth,h=innerHeight,a=w/h;
+  renderer.setSize(w,h,false);
+  const H=Math.max(viewH, (viewH*1.1)/a*0.62);
+  camera.left=-H*a/2; camera.right=H*a/2; camera.top=H/2; camera.bottom=-H/2; camera.updateProjectionMatrix();
+}
+addEventListener('resize',resize);
+
+/* ================= 캠핑장 지형 ================= */
+const ISL={w:44,d:34};
+function roundRectShape(w,d,r){ const s=new THREE.Shape(), x=-w/2, y=-d/2;
+  s.moveTo(x+r,y); s.lineTo(x+w-r,y); s.quadraticCurveTo(x+w,y,x+w,y+r); s.lineTo(x+w,y+d-r); s.quadraticCurveTo(x+w,y+d,x+w-r,y+d);
+  s.lineTo(x+r,y+d); s.quadraticCurveTo(x,y+d,x,y+d-r); s.lineTo(x,y+r); s.quadraticCurveTo(x,y,x+r,y); return s; }
+{
+  const soil=mesh(new THREE.ExtrudeGeometry(roundRectShape(ISL.w,ISL.d,4),{depth:3.2,bevelEnabled:false,curveSegments:6}),PAL.soil);
+  soil.rotation.x=Math.PI/2; soil.position.y=-0.2; world.add(soil);
+  const soilD=mesh(new THREE.ExtrudeGeometry(roundRectShape(ISL.w-1.2,ISL.d-1.2,3.6),{depth:1.6,bevelEnabled:false,curveSegments:6}),PAL.soilD);
+  soilD.rotation.x=Math.PI/2; soilD.position.y=-3.3; world.add(soilD);
+  const grass=mesh(new THREE.ExtrudeGeometry(roundRectShape(ISL.w+0.3,ISL.d+0.3,4.1),{depth:0.5,bevelEnabled:true,bevelSize:.15,bevelThickness:.15,bevelSegments:1,curveSegments:6}),PAL.grass);
+  grass.rotation.x=Math.PI/2; grass.position.y=0.3; world.add(grass);
+  // 바닥 그림자 받는 면
+  const ground=new THREE.Mesh(new THREE.PlaneGeometry(ISL.w,ISL.d),new THREE.ShadowMaterial({opacity:.18})); ground.rotation.x=-Math.PI/2; ground.position.y=0.46; ground.receiveShadow=true; world.add(ground);
+  // 풀 패치
+  for(let i=0;i<26;i++){ const p=mesh(new THREE.CircleGeometry(srnd(1.2,3),7),PAL.grass2); p.rotation.x=-Math.PI/2; p.position.set(srnd(-19,19),0.47,srnd(-14,14)); p.castShadow=false; world.add(p); }
+}
+const Y0=0.47; // 땅 높이
+
+// 호수
+const LAKE={x:-14.5,z:9,rx:5.5,rz:4};
+{
+  const shore=mesh(new THREE.CircleGeometry(1,20),PAL.sand); shore.rotation.x=-Math.PI/2; shore.scale.set(LAKE.rx+1,LAKE.rz+1,1); shore.position.set(LAKE.x,Y0+0.01,LAKE.z); shore.castShadow=false; world.add(shore);
+  const water=new THREE.Mesh(new THREE.CircleGeometry(1,24),new THREE.MeshStandardMaterial({color:PAL.water,roughness:.25,metalness:.05,flatShading:true}));
+  water.rotation.x=-Math.PI/2; water.scale.set(LAKE.rx,LAKE.rz,1); water.position.set(LAKE.x,Y0+0.03,LAKE.z); water.receiveShadow=true; world.add(water);
+  world.userData.water=water;
+  // 물결 반짝임
+  const glints=new THREE.Group(); for(let i=0;i<9;i++){ const g=new THREE.Mesh(new THREE.PlaneGeometry(rnd(.6,1.4),.08),new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.7})); g.rotation.x=-Math.PI/2; g.position.set(LAKE.x+rnd(-3.5,3.5),Y0+0.05,LAKE.z+rnd(-2.4,2.4)); g.userData.ph=rnd(0,6); glints.add(g);} world.add(glints); world.userData.glints=glints;
+  // 작은 나무 데크
+  const deck=new THREE.Group(); for(let i=0;i<5;i++){ const b=mesh(new THREE.BoxGeometry(.5,.14,3),PAL.woodL); b.position.set(i*.55,0,0); deck.add(b);} deck.position.set(LAKE.x+4.2,Y0+0.12,LAKE.z-2.6); deck.rotation.y=-0.7; world.add(deck);
+  for(let i=0;i<6;i++){ const r=mesh(new THREE.DodecahedronGeometry(rnd(.3,.6),0),PAL.rock); const a=rnd(0,Math.PI*2); r.position.set(LAKE.x+Math.cos(a)*(LAKE.rx+.6),Y0+.1,LAKE.z+Math.sin(a)*(LAKE.rz+.6)); r.scale.y=.7; world.add(r); }
+}
+
+// 뒤쪽 바위산
+{
+  const g=new THREE.Group();
+  [[0,0,0,4.2,6.5],[3.2,0,1.2,3,4.8],[-2.6,0,1.6,2.6,3.6],[1.4,0,-2.4,2.8,4.2]].forEach(([x,y,z,r,h])=>{
+    const c=mesh(new THREE.ConeGeometry(r,h,6,1),PAL.rock); c.position.set(x,h/2,z); c.rotation.y=rnd(0,1); g.add(c);
+    const c2=mesh(new THREE.ConeGeometry(r*.55,h*.45,5,1),PAL.rockD); c2.position.set(x+r*.3,h*.22,z+r*.4); g.add(c2);
+  });
+  g.position.set(14.5,Y0,-11.5); world.add(g);
+}
+
+/* ===== 12자리 ===== */
+const SITES=[]; const CENTER={x:1,z:-0.5}, RX=10.8, RZ=7.6;
+for(let i=0;i<12;i++){ const a=-Math.PI/2+i*(Math.PI*2/12)+0.12; SITES.push({no:i+1,x:CENTER.x+Math.cos(a)*RX,z:CENTER.z+Math.sin(a)*RZ}); }
+
+// 가운데 광장 + 큰 모닥불 + 간판
+{
+  const plaza=mesh(new THREE.CircleGeometry(1,22),PAL.sand); plaza.rotation.x=-Math.PI/2; plaza.scale.set(4.6,3.4,1); plaza.position.set(CENTER.x,Y0+.01,CENTER.z); plaza.castShadow=false; world.add(plaza);
+  // 둥근 오솔길 (징검돌)
+  for(let k=0;k<64;k++){ const a=k/64*Math.PI*2; const s=mesh(new THREE.CylinderGeometry(.42,.48,.08,7),PAL.stone); s.position.set(CENTER.x+Math.cos(a)*7.1,Y0+.04,CENTER.z+Math.sin(a)*4.9); s.castShadow=false; world.add(s); }
+  SITES.forEach(st=>{ for(let k=1;k<=3;k++){ const t=.42+k*.12; const s=mesh(new THREE.CylinderGeometry(.34,.4,.07,7),PAL.stone); s.position.set(CENTER.x+(st.x-CENTER.x)*t,Y0+.035,CENTER.z+(st.z-CENTER.z)*t); s.castShadow=false; world.add(s);} });
+  const sign=new THREE.Group(); const p1=mesh(new THREE.BoxGeometry(.18,1.6,.18),PAL.wood); p1.position.set(-1,.8,0); const p2=p1.clone(); p2.position.x=1;
+  const board=mesh(new THREE.BoxGeometry(2.6,.9,.14),PAL.woodL); board.position.y=1.45; sign.add(p1,p2,board);
+  const tex=textTexture('MY LITTLE CAMP',512,160,'#6b4a2f',58); const face=new THREE.Mesh(new THREE.PlaneGeometry(2.4,.75),new THREE.MeshBasicMaterial({map:tex,transparent:true})); face.position.set(0,1.45,.08); sign.add(face);
+  sign.position.set(CENTER.x-1.6,Y0,CENTER.z-2.3); sign.rotation.y=Math.PI/4; world.add(sign);
+  const fire=makeProp('campfire'); fire.scale.setScalar(1.6); fire.position.set(CENTER.x+1,Y0,CENTER.z+.6); world.add(fire);
+  for(let k=0;k<4;k++){ const a=k/4*Math.PI*2+.4; const log=mesh(new THREE.CylinderGeometry(.32,.32,1.6,7),PAL.wood); log.rotation.z=Math.PI/2; log.rotation.y=a; log.position.set(CENTER.x+1+Math.cos(a)*2.4,Y0+.32,CENTER.z+.6+Math.sin(a)*2.4); world.add(log); }
+}
+
+// 나무 흩뿌리기
+function pine(h){ const g=new THREE.Group(); const t=mesh(new THREE.CylinderGeometry(.16,.22,h*.3,6),PAL.trunk); t.position.y=h*.15; g.add(t);
+  const col=Math.random()<.5?PAL.pine:PAL.pine2;
+  for(let i=0;i<3;i++){ const c=mesh(new THREE.ConeGeometry(h*(.36-i*.08),h*.42,7),col); c.position.y=h*(.32+i*.2); g.add(c);} return g; }
+function bush(r){ const g=new THREE.Group(); for(let i=0;i<3;i++){ const s=mesh(new THREE.IcosahedronGeometry(r*rnd(.7,1),0),PAL.pine2); s.position.set(rnd(-r,r)*.6,r*.6,rnd(-r,r)*.6); g.add(s);} return g; }
+{
+  let placed=0, guard=0;
+  while(placed<70 && guard++<3000){
+    const x=srnd(-20.5,20.5), z=srnd(-15.5,15.5);
+    if(Math.abs(x)>ISL.w/2-1.2||Math.abs(z)>ISL.d/2-1.2) continue;
+    if(SITES.some(s=>Math.hypot(s.x-x,s.z-z)<4.2)) continue;
+    if(((x-LAKE.x)/(LAKE.rx+1.6))**2+((z-LAKE.z)/(LAKE.rz+1.6))**2<1) continue;
+    if(((x-CENTER.x)/8.4)**2+((z-CENTER.z)/6.2)**2<1) continue;
+    if(Math.hypot(x-14.5,z+11.5)<5.5) continue;
+    const t=Math.random()<.78?pine(srnd(2.6,4.6)):bush(srnd(.6,1)); t.position.set(x,Y0,z); t.rotation.y=srnd(0,6); world.add(t); placed++;
+  }
+  for(let i=0;i<14;i++){ const r=mesh(new THREE.DodecahedronGeometry(srnd(.25,.55),0),PAL.rock); r.position.set(srnd(-19,19),Y0+.1,srnd(-14,14)); r.scale.y=.65; world.add(r); }
+}
+
+/* ================= 텐트 ================= */
+function makeTent(type,color,cut){
+  const g=new THREE.Group(); const C=M(color), dark=0x5a4636;
+  const side=cut?THREE.DoubleSide:THREE.FrontSide;
+  const mat=new THREE.MeshStandardMaterial({color,flatShading:true,roughness:.95,side});
+  const add=(geo,m,pos,rot)=>{ const o=new THREE.Mesh(geo,m||mat); o.castShadow=o.receiveShadow=true; if(pos) o.position.set(...pos); if(rot) o.rotation.set(...rot); g.add(o); return o; };
+  if(type==='bell'){
+    add(new THREE.CylinderGeometry(1.75,1.75,.95,14,1,true),null,[0,.475,0]);
+    add(new THREE.ConeGeometry(1.95,1.75,14,1,true),null,[0,1.82,0]);
+    add(new THREE.CylinderGeometry(.04,.04,.6,5),M(PAL.wood),[0,2.85,0]);
+    add(new THREE.ConeGeometry(.18,.32,3),M(0xe0574a),[0.14,3.02,0],[0,0,-Math.PI/2]);
+    if(!cut){ const door=add(new THREE.CircleGeometry(.62,12,0,Math.PI),M(dark),[0,.02,1.76]); door.scale.y=1.45; }
+  }else if(type==='aframe'){
+    const sh=new THREE.Shape(); sh.moveTo(-1.6,0); sh.lineTo(1.6,0); sh.lineTo(0,2.1); sh.lineTo(-1.6,0);
+    if(cut){ add(new THREE.ShapeGeometry(sh),mat,[0,0,-1.5]); const roof=add(new THREE.PlaneGeometry(2.62,3),mat,[-.8,1.05,0],[0,-Math.PI/2,0]); roof.rotation.set(0,-Math.PI/2,0); roof.rotateX(-0.65); roof.position.set(-.8,1.05,0); }
+    else{ add(new THREE.ExtrudeGeometry(sh,{depth:3,bevelEnabled:false}),null,[0,0,-1.5]);
+      const ds=new THREE.Shape(); ds.moveTo(-.55,0); ds.lineTo(.55,0); ds.lineTo(0,1.25); ds.lineTo(-.55,0);
+      add(new THREE.ShapeGeometry(ds),M(dark),[0,.01,1.52]); }
+    add(new THREE.CylinderGeometry(.05,.05,3.4,5),M(PAL.wood),[0,2.12,0],[Math.PI/2,0,0]);
+  }else{
+    add(new THREE.SphereGeometry(1.75,12,7,0,Math.PI*2,0,Math.PI/2),null,[0,0,0]);
+    [0,Math.PI/2].forEach(r=>add(new THREE.TorusGeometry(1.78,.04,4,16,Math.PI),M(0x6a6f78),[0,0,0],[0,r+Math.PI/4,0]));
+    if(!cut){ const door=add(new THREE.CircleGeometry(.6,12,0,Math.PI),M(dark),[0,.02,1.7]); door.scale.y=1.6; door.rotation.x=-0.18; }
+  }
+  return g;
+}
+
+/* ================= 소품 ================= */
+const OUT_ITEMS=[['chair','캠핑 의자','🪑'],['table','테이블','🍽️'],['campfire','모닥불','🔥'],['lantern','랜턴','🏮'],['plant','화분','🪴'],['tree','나무','🌲'],['rug','러그','🟫'],['bear','곰 인형','🧸']];
+const IN_ITEMS=[['sleepbag','침낭','🛏️'],['cushion','쿠션','🛋️'],['rug2','러그','🟫'],['lamp','조명','💡'],['books','책','📚'],['shelf','선반','🗄️'],['lowtable','작은 테이블','☕']];
+function makeProp(t){
+  const g=new THREE.Group(); const add=(geo,c,pos,rot,opt)=>{ const o=mesh(geo,c,opt); if(pos) o.position.set(...pos); if(rot) o.rotation.set(...rot); g.add(o); return o; };
+  switch(t){
+    case 'chair': [[-.3,-.25],[.3,-.25],[-.3,.25],[.3,.25]].forEach(([x,z])=>add(new THREE.CylinderGeometry(.04,.04,.45,5),PAL.wood,[x,.22,z]));
+      add(new THREE.BoxGeometry(.72,.08,.62),0xe6c79a,[0,.46,0]); add(new THREE.BoxGeometry(.72,.62,.08),0xe6c79a,[0,.78,-.3],[-.2,0,0]);
+      add(new THREE.BoxGeometry(.06,.06,.6),PAL.wood,[-.36,.62,0]); add(new THREE.BoxGeometry(.06,.06,.6),PAL.wood,[.36,.62,0]); break;
+    case 'table': add(new THREE.BoxGeometry(1.1,.08,.75),PAL.woodL,[0,.62,0]); [[-.45,-.28],[.45,-.28],[-.45,.28],[.45,.28]].forEach(([x,z])=>add(new THREE.CylinderGeometry(.04,.04,.6,5),PAL.wood,[x,.3,z]));
+      add(new THREE.CylinderGeometry(.09,.08,.16,8),0xf2efe8,[.25,.74,.1]); add(new THREE.CylinderGeometry(.16,.16,.04,10),0xe8e2d6,[-.2,.68,-.05]); break;
+    case 'campfire': for(let i=0;i<7;i++){ const a=i/7*Math.PI*2; add(new THREE.DodecahedronGeometry(.17,0),PAL.rock,[Math.cos(a)*.48,.1,Math.sin(a)*.48]); }
+      for(let i=0;i<3;i++){ add(new THREE.CylinderGeometry(.07,.07,.75,5),PAL.trunk,[0,.13,0],[Math.PI/2.4,i*2.1,0]); }
+      { const f1=add(new THREE.ConeGeometry(.24,.62,6),0xff8a3d,[0,.42,0],null,{emissive:0xff6a1a,emissiveIntensity:1.2}); const f2=add(new THREE.ConeGeometry(.13,.42,5),0xffd36a,[0,.42,0],null,{emissive:0xffc040,emissiveIntensity:1.4});
+        f1.castShadow=f2.castShadow=false; fires.push(f1,f2); } break;
+    case 'lantern': add(new THREE.CylinderGeometry(.16,.18,.06,8),0x3f4a42,[0,.03,0]); add(new THREE.CylinderGeometry(.13,.13,.3,8),0xffe7a8,[0,.21,0],null,{emissive:0xffc560,emissiveIntensity:1.1});
+      add(new THREE.ConeGeometry(.18,.12,8),0x3f4a42,[0,.42,0]); add(new THREE.TorusGeometry(.08,.015,4,10),0x3f4a42,[0,.52,0]); break;
+    case 'plant': add(new THREE.CylinderGeometry(.22,.16,.32,8),0xc97b56,[0,.16,0]); for(let i=0;i<4;i++) add(new THREE.IcosahedronGeometry(.2,0),PAL.pine2,[rnd(-.12,.12),.42+i*.07,rnd(-.12,.12)]); break;
+    case 'tree': { const p=pine(2.2); g.add(p); } break;
+    case 'rug': { const r=add(new THREE.CylinderGeometry(.9,.9,.03,16),0xe9c7a0,[0,.015,0]); r.castShadow=false; r.scale.z=.7; const r2=add(new THREE.CylinderGeometry(.62,.62,.035,16),0xc98f6b,[0,.02,0]); r2.scale.z=.7; r2.castShadow=false; } break;
+    case 'bear': { const c=0xc49066; add(new THREE.SphereGeometry(.26,8,6),c,[0,.26,0]); add(new THREE.SphereGeometry(.2,8,6),c,[0,.62,0]);
+      add(new THREE.SphereGeometry(.07,6,4),c,[-.14,.78,0]); add(new THREE.SphereGeometry(.07,6,4),c,[.14,.78,0]); add(new THREE.SphereGeometry(.07,6,4),0xe8cfae,[0,.59,.17]);
+      add(new THREE.SphereGeometry(.025,4,3),0x3a2a20,[-.07,.67,.17]); add(new THREE.SphereGeometry(.025,4,3),0x3a2a20,[.07,.67,.17]); } break;
+    case 'sleepbag': { const b=add(new THREE.CapsuleGeometry(.36,1.3,3,8),0x8fae7e,[0,.2,0],[Math.PI/2,0,0]); b.scale.set(1,1,.5); add(new THREE.BoxGeometry(.55,.14,.36),0xf6eedc,[0,.24,-.72]); } break;
+    case 'cushion': { const c=add(new THREE.SphereGeometry(.34,10,6),0xe3a9a6,[0,.14,0]); c.scale.y=.45; const c2=add(new THREE.SphereGeometry(.28,10,6),0xf3d9a4,[.42,.12,.22]); c2.scale.y=.45; } break;
+    case 'rug2': { const r=add(new THREE.BoxGeometry(1.8,.03,1.2),0xd8b98f,[0,.015,0]); r.castShadow=false; for(let i=0;i<3;i++){ const s=add(new THREE.BoxGeometry(1.8,.035,.12),0xb0805a,[0,.02,-.35+i*.35]); s.castShadow=false; } } break;
+    case 'lamp': add(new THREE.CylinderGeometry(.18,.2,.05,8),0x5a4636,[0,.025,0]); add(new THREE.CylinderGeometry(.025,.025,1.1,5),0x5a4636,[0,.57,0]);
+      add(new THREE.CylinderGeometry(.18,.3,.32,10,1,true),0xfff0cc,[0,1.2,0],null,{emissive:0xffd890,emissiveIntensity:.9,side:THREE.DoubleSide}); break;
+    case 'books': [[0xb35d4a,.0],[0x6f8f60,.09],[0xe2b65e,.17],[0x7f8fb0,.25]].forEach(([c,y],i)=>add(new THREE.BoxGeometry(.5-i*.04,.08,.36),c,[0,.04+y,0],[0,i*.25,0])); break;
+    case 'shelf': [[0,.02],[0,.5],[0,.98]].forEach(([x,y])=>add(new THREE.BoxGeometry(1.1,.05,.36),PAL.woodL,[x,y,0])); add(new THREE.BoxGeometry(.05,1.02,.36),PAL.wood,[-.55,.5,0]); add(new THREE.BoxGeometry(.05,1.02,.36),PAL.wood,[.55,.5,0]);
+      add(new THREE.CylinderGeometry(.08,.07,.18,8),0xc97b56,[-.3,.62,0]); add(new THREE.IcosahedronGeometry(.12,0),PAL.pine2,[-.3,.78,0]); add(new THREE.BoxGeometry(.3,.22,.2),0x7f8fb0,[.25,.63,0]); add(new THREE.BoxGeometry(.4,.16,.24),0xe2b65e,[.1,1.09,0]); break;
+    case 'lowtable': add(new THREE.CylinderGeometry(.48,.48,.06,12),PAL.woodL,[0,.32,0]); add(new THREE.CylinderGeometry(.06,.1,.3,6),PAL.wood,[0,.15,0]);
+      add(new THREE.CylinderGeometry(.07,.06,.12,8),0xf2efe8,[.12,.41,.05]); add(new THREE.TorusGeometry(.04,.012,4,8),0xf2efe8,[.2,.41,.05]); break;
+  }
+  g.userData.type=t; return g;
+}
+
+/* ================= 숫자 표지 ================= */
+function textTexture(txt,w,h,color,size,bg){ const c=document.createElement('canvas'); c.width=w; c.height=h; const x=c.getContext('2d');
+  if(bg){ x.fillStyle=bg; x.beginPath(); x.arc(w/2,h/2,Math.min(w,h)/2-4,0,Math.PI*2); x.fill(); }
+  x.fillStyle=color; x.font=`800 ${size}px Jua,sans-serif`; x.textAlign='center'; x.textBaseline='middle'; x.fillText(txt,w/2,h/2+2);
+  const t=new THREE.CanvasTexture(c); t.colorSpace=THREE.SRGBColorSpace; t.anisotropy=4; return t; }
+
+/* ================= 상태 ================= */
+const sb=window.supabase.createClient("https://gbmlkyfguktjtroczqfw.supabase.co","sb_publishable_RO92ntdlSM5_Urctc5FD9w_4OHcZQzf");
+let NEIGHBORS={}; let me=null; let myLoc=null; let campNo=1, campCount=1; let user=null;
+const track=(k,d)=>{ try{ window.mnTrack&&window.mnTrack(k,d); }catch(e){} };
+const errMsg=e=>{ const m=(e&&e.message)||''; return m.includes(':')?m.split(':').slice(1).join(':').trim():'잠시 뒤에 다시 해 주세요'; };
+async function loadCamp(no){
+  const {data,error}=await sb.rpc('camp_get',{p_camp:no??null});
+  if(error){ toast('캠핑장을 불러오지 못했어요'); return false; }
+  campNo=data.camp; campCount=data.camps; myLoc=data.me; NEIGHBORS={}; me=null;
+  (data.tents||[]).forEach(t=>{ const d={site:t.site,name:t.name,type:t.type,color:t.color,out:t.out||[],in:t.in||[]}; if(t.mine) me=d; else NEIGHBORS[t.site]=d; });
+  return true;
+}
+let saveTimer=null, saving=Promise.resolve();
+function save(){ if(!me) return; clearTimeout(saveTimer); saveTimer=setTimeout(()=>{ const body={p_out:me.out,p_in:me.in,p_type:me.type,p_color:me.color};
+  saving=sb.rpc('camp_save',body).then(({error})=>{ if(error) toast('저장하지 못했어요: '+errMsg(error)); }); },700); }
+addEventListener('pagehide',()=>{ if(saveTimer){ clearTimeout(saveTimer); if(me) sb.rpc('camp_save',{p_out:me.out,p_in:me.in,p_type:me.type,p_color:me.color}); } });
+function loginCard(after){
+  setCard(`<h3>로그인하고 텐트 치기</h3><p class="sub">내 텐트는 계정에 저장돼요. 다른 기기에서도 그대로 이어서 꾸밀 수 있어요</p>
+  <div class="row"><button class="btn kakao" id="lk">카카오로 시작</button><button class="btn ghost" id="lg">구글로 시작</button></div>
+  <div class="row" style="margin-top:6px"><button class="link" id="lc">그냥 구경할게요</button></div>`);
+  try{ sessionStorage.setItem('mlc-after',JSON.stringify(after||null)); }catch(e){}
+  const back=location.origin+'/camp/';
+  setTimeout(()=>{ $('lk').onclick=()=>sb.auth.signInWithOAuth({provider:'kakao',options:{redirectTo:back,scopes:'profile_nickname profile_image'}});
+    $('lg').onclick=()=>sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:back}}); $('lc').onclick=()=>{ focusWorld(); showWorldCard(); }; },140);
+}
+const isTaken=no=>!!NEIGHBORS[no] || (me&&me.site===no);
+
+/* ================= 자리 그리기 ================= */
+const siteObjs={}; const hitMeshes=[];
+function buildSite(st){
+  if(siteObjs[st.no]) world.remove(siteObjs[st.no].root);
+  const root=new THREE.Group(); root.position.set(st.x,Y0,st.z);
+  // 텐트가 정면(카메라 쪽, 광장 반대가 아닌 카메라 방향)을 보도록
+  const pad=mesh(new THREE.CylinderGeometry(3.05,3.15,.1,20),0xd8c39c); pad.position.y=.05; pad.receiveShadow=true; pad.castShadow=false; root.add(pad);
+  const rim=new THREE.Mesh(new THREE.TorusGeometry(3.1,.07,4,32),M(PAL.woodL)); rim.rotation.x=Math.PI/2; rim.position.y=.1; root.add(rim);
+  const post=mesh(new THREE.BoxGeometry(.12,.9,.12),PAL.wood); const ang=Math.atan2(CENTER.z-st.z,CENTER.x-st.x); post.position.set(Math.cos(ang)*3.3,.45,Math.sin(ang)*3.3); root.add(post);
+  const num=new THREE.Sprite(new THREE.SpriteMaterial({map:textTexture(String(st.no),128,128,'#fff',64,isTaken(st.no)?'#9b6b45':'#8fae7e'),depthTest:false}));
+  num.scale.set(1.05,1.05,1); num.position.set(Math.cos(ang)*3.3,1.35,Math.sin(ang)*3.3); num.renderOrder=5; root.add(num);
+  const data = me&&me.site===st.no ? me : NEIGHBORS[st.no];
+  let tent=null, outGroup=new THREE.Group(); root.add(outGroup);
+  if(data){
+    tent=makeTent(data.type,data.color); tent.position.y=.1; tent.rotation.y=Math.PI/4; root.add(tent);
+    (data.out||[]).forEach(([t,x,z,r])=>{ const p=makeProp(t); p.position.set(x,.1,z); p.rotation.y=r||0; p.userData.item=true; outGroup.add(p); });
+  }else{
+    const ring=new THREE.Mesh(new THREE.TorusGeometry(1.4,.06,4,40),new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.85})); ring.rotation.x=Math.PI/2; ring.position.y=.14; root.add(ring);
+    const plus=new THREE.Sprite(new THREE.SpriteMaterial({map:textTexture('+',128,128,'#ffffff',96),transparent:true})); plus.scale.set(1.3,1.3,1); plus.position.y=.9; root.add(plus);
+    root.userData.pulse=[ring,plus];
+  }
+  const hit=new THREE.Mesh(new THREE.CylinderGeometry(3.1,3.1,3.4,12),new THREE.MeshBasicMaterial({visible:false})); hit.position.y=1.6; hit.userData.site=st.no; root.add(hit); hitMeshes.push(hit);
+  world.add(root); siteObjs[st.no]={root,tent,outGroup,hit};
+}
+function buildAll(){ hitMeshes.length=0; SITES.forEach(buildSite); updateCount(); }
+function updateCount(){ const n=SITES.filter(s=>isTaken(s.no)).length; $('count').innerHTML=`⛺ <b>${n}</b> / 12자리`; }
+
+/* ================= 텐트 안 ================= */
+let inRoot=null, inItems=null, inOwner=null;
+function buildInside(data, editable){
+  if(inRoot) inside.remove(inRoot);
+  inRoot=new THREE.Group(); inside.add(inRoot); inOwner=editable;
+  // 나무 바닥
+  const base=mesh(new THREE.CylinderGeometry(4.3,4.5,.5,24),PAL.soil); base.position.y=-.25; inRoot.add(base);
+  for(let i=-4;i<=4;i++){ const w=Math.sqrt(Math.max(0,4.1**2-(i*.95)**2))*2; if(w<.5) continue; const plank=mesh(new THREE.BoxGeometry(.9,.08,w),i%2?PAL.woodL:0xb88d62); plank.position.set(i*.95,.04,0); plank.castShadow=false; inRoot.add(plank); }
+  // 텐트 뒷벽 (단면)
+  const shell=makeTent(data.type,data.color,true);
+  if(data.type==='bell'){ shell.clear();
+    const mat=new THREE.MeshStandardMaterial({color:data.color,flatShading:true,roughness:.95,side:THREE.DoubleSide});
+    const w=new THREE.Mesh(new THREE.CylinderGeometry(4.2,4.2,2.2,20,1,true,Math.PI*3/4,Math.PI),mat); w.position.y=1.1; w.receiveShadow=true;
+    const r=new THREE.Mesh(new THREE.ConeGeometry(4.5,3,20,1,true,Math.PI*3/4,Math.PI),mat); r.position.y=3.7; r.receiveShadow=true; shell.add(w,r);
+  } else if(data.type==='dome'){ shell.clear();
+    const mat=new THREE.MeshStandardMaterial({color:data.color,flatShading:true,roughness:.95,side:THREE.DoubleSide});
+    const d=new THREE.Mesh(new THREE.SphereGeometry(4.2,16,8,Math.PI*3/4+Math.PI/2,Math.PI,0,Math.PI/2),mat); d.receiveShadow=true; shell.add(d);
+  } else { shell.clear();
+    const mat=new THREE.MeshStandardMaterial({color:data.color,flatShading:true,roughness:.95,side:THREE.DoubleSide});
+    // 능선이 앞뒤(z)로 뻗은 A형: 카메라(+x,+z) 반대편인 뒷면 삼각벽 + 왼쪽 경사면만 남김
+    const W=3.7,H=4.4,Z=3.3;
+    const back=new THREE.Shape(); back.moveTo(-W,0); back.lineTo(W,0); back.lineTo(0,H); back.lineTo(-W,0);
+    const bw=new THREE.Mesh(new THREE.ShapeGeometry(back),mat); bw.position.z=-Z; bw.receiveShadow=true;
+    const g=new THREE.BufferGeometry(); g.setAttribute('position',new THREE.Float32BufferAttribute([-W,0,-Z, 0,H,-Z, 0,H,Z, -W,0,-Z, 0,H,Z, -W,0,Z],3)); g.computeVertexNormals();
+    const roof=new THREE.Mesh(g,mat); roof.receiveShadow=true;
+    const pole=mesh(new THREE.CylinderGeometry(.06,.06,H,6),PAL.wood); pole.position.set(0,H/2,-Z+.05);
+    shell.add(bw,roof,pole);
+  }
+  inRoot.add(shell);
+  // 꼬마전구 줄
+  const bulbs=new THREE.Group(); if(data.type==='aframe'){ for(let i=0;i<12;i++){ const t=i/11; const b=new THREE.Mesh(new THREE.SphereGeometry(.07,6,4),new THREE.MeshStandardMaterial({color:0xfff2c4,emissive:0xffd27a,emissiveIntensity:1.6})); b.position.set(-1.1,3.05-Math.sin(t*Math.PI)*.3,-3.1+t*6.2); bulbs.add(b);} } else for(let i=0;i<14;i++){ const a=Math.PI*3/4+Math.PI/2*0+ (i/13)*Math.PI; const r=3.7; const b=new THREE.Mesh(new THREE.SphereGeometry(.07,6,4),new THREE.MeshStandardMaterial({color:0xfff2c4,emissive:0xffd27a,emissiveIntensity:1.6}));
+    b.position.set(Math.sin(a)*r,2.6-Math.sin(i/13*Math.PI)*.35,Math.cos(a)*r); bulbs.add(b);} inRoot.add(bulbs);
+  inItems=new THREE.Group(); inRoot.add(inItems);
+  (data.in||[]).forEach(([t,x,z,r])=>{ const p=makeProp(t); p.position.set(x,.08,z); p.rotation.y=r||0; p.userData.item=true; inItems.add(p); });
+  const warm=new THREE.PointLight(0xffd29a,18,9,1.6); warm.position.set(0,2.4,0); inRoot.add(warm);
+}
+
+/* ================= UI ================= */
+const card=$('card'); let mode='world', curSite=null, visitData=null;
+function toast(m){ const t=$('toast'); t.textContent=m; t.classList.add('show'); clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('show'),2200); }
+function setCard(html){ card.classList.remove('show'); setTimeout(()=>{ card.innerHTML=html; if(html) card.classList.add('show'); },html?120:0); }
+const tentIcon={bell:'<svg viewBox="0 0 52 38"><path d="M6 34h40l-4-14H10z" fill="#e8d8b8"/><path d="M10 20L26 4l16 16z" fill="#d8c39c"/><path d="M22 34a4 6 0 0 1 8 0z" fill="#5a4636"/></svg>',
+  aframe:'<svg viewBox="0 0 52 38"><path d="M6 34L26 4l20 30z" fill="#e8d8b8"/><path d="M20 34l6-12 6 12z" fill="#5a4636"/></svg>',
+  dome:'<svg viewBox="0 0 52 38"><path d="M6 34a20 22 0 0 1 40 0z" fill="#e8d8b8"/><path d="M20 34a6 9 0 0 1 12 0z" fill="#5a4636"/></svg>'};
+
+function campNav(){ return `<div class="campnav"><button id="cPrev" ${campNo<=1?'disabled':''}>‹</button><span>${campNo}번 캠핑장${campCount>1?` · 전체 ${campCount}곳`:''}</span><button id="cNext" ${campNo>=campCount?'disabled':''}>›</button></div>`; }
+async function switchCamp(no){ select(null); if(!(await loadCamp(no))) return; buildAll(); focusWorld(); showWorldCard(); }
+function showWorldCard(){
+  mode='world'; hideTool();
+  const full=SITES.every(s=>isTaken(s.no));
+  if(me) setCard(`<div class="hint">${me.site}번 자리가 내 텐트예요 ⛺<small>다른 텐트를 눌러 구경하거나, 내 텐트를 꾸며 보세요</small></div><div class="row" style="margin-top:10px"><button class="btn" id="goMine">내 텐트로 가기</button><button class="btn ghost" id="share">링크 공유</button></div>${campNav()}`);
+  else if(myLoc) setCard(`<div class="hint">놀러 온 캠핑장이에요<small>내 텐트는 ${myLoc.camp}번 캠핑장 ${myLoc.site}번 자리에 있어요</small></div><div class="row" style="margin-top:10px"><button class="btn" id="goHome">내 캠핑장으로</button></div>${campNav()}`);
+  else setCard(`<div class="hint">${full?'이 캠핑장은 꽉 찼어요 · 옆 캠핑장(›)으로 가 보세요':'빈자리(＋)를 눌러 내 텐트를 쳐 보세요'}<small>손가락으로 돌려 보고, 두 손가락으로 확대할 수 있어요</small></div>${campNav()}`);
+  setTimeout(()=>{ const b=$('goMine'); if(b) b.onclick=()=>enterOutside(me.site);
+    const h=$('goHome'); if(h) h.onclick=()=>switchCamp(myLoc.camp);
+    const sh=$('share'); if(sh) sh.onclick=shareCamp;
+    const p=$('cPrev'), n=$('cNext'); if(p) p.onclick=()=>switchCamp(campNo-1); if(n) n.onclick=()=>switchCamp(campNo+1); },140);
+}
+async function shareCamp(){ const url=`${location.origin}/camp/?c=${campNo}${me?`&s=${me.site}`:''}`; track('share','camp');
+  try{ if(navigator.share){ await navigator.share({title:'MY LITTLE CAMP',text:'내 텐트 구경 와 ⛺',url}); return; } }catch(e){ return; }
+  try{ await navigator.clipboard.writeText(url); toast('링크를 복사했어요'); }catch(e){ prompt('링크를 복사해 주세요',url); } }
+let pick={type:'bell',color:TENT_COLORS[0][1]};
+function showPlaceCard(no){
+  curSite=no; if(!pick.name&&user&&user.user_metadata){ const nm=user.user_metadata.name||user.user_metadata.full_name; if(nm) pick.name=String(nm).slice(0,10); }
+  setCard(`<h3>${no}번 자리에 텐트 치기</h3><p class="sub">텐트 종류와 색을 골라 주세요</p>
+  <div class="types">${Object.entries(TENT_TYPES).map(([k,v])=>`<button class="type${k===pick.type?' sel':''}" data-t="${k}">${tentIcon[k]}${v}<small>${k==='bell'?'넓고 아늑해요':k==='aframe'?'클래식 삼각':'동글동글'}</small></button>`).join('')}</div>
+  <div class="swatches">${TENT_COLORS.map(([n,c])=>`<button class="sw${c===pick.color?' sel':''}" data-c="${c}" title="${n}" style="background:#${c.toString(16).padStart(6,'0')}"></button>`).join('')}</div>
+  ${me||myLoc?'':`<input class="field" id="nick" maxlength="10" placeholder="캠핑장에서 쓸 이름 (10자까지)" value="${(pick.name||'').replace(/"/g,'')}">`}
+  <div class="row"><button class="btn ghost" id="cancel">취소</button><button class="btn" id="pitch">⛺ ${me&&me.site===no?'바꾸기':'텐트 치기'}</button></div>
+  ${me&&me.site===no?'<div class="row"><button class="link" id="leave">텐트 걷기 (자리 비우기)</button></div>':''}`);
+  { const st=SITES.find(s=>s.no===no); focus(st.x,st.z,innerWidth<700?1.7:1.6,330); }
+  setTimeout(()=>{
+    card.querySelectorAll('.type').forEach(b=>b.onclick=()=>{ pick.type=b.dataset.t; card.querySelectorAll('.type').forEach(x=>x.classList.toggle('sel',x===b)); preview(); });
+    card.querySelectorAll('.sw').forEach(b=>b.onclick=()=>{ pick.color=+b.dataset.c; card.querySelectorAll('.sw').forEach(x=>x.classList.toggle('sel',x===b)); preview(); });
+    $('cancel').onclick=()=>{ clearPreview(); showWorldCard(); focusWorld(); };
+    const nk=$('nick'); if(nk) nk.oninput=()=>{ pick.name=nk.value; };
+    const lv=$('leave'); if(lv) lv.onclick=async()=>{ if(!confirm('텐트를 걷으면 꾸민 소품도 모두 사라져요. 걷을까요?')) return; clearPreview(); const {error}=await sb.rpc('camp_leave'); if(error){ toast(errMsg(error)); return; } await loadCamp(campNo); buildAll(); focusWorld(); showWorldCard(); toast('텐트를 걷었어요'); };
+    $('pitch').onclick=async()=>{
+      if(!user){ clearPreview(); loginCard({camp:campNo,site:no,type:pick.type,color:pick.color}); return; }
+      const name=me?me.name:((pick.name||'').trim()||(myLoc&&myLoc.name)||''); if(!name){ toast('캠핑장에서 쓸 이름을 적어 주세요'); nk&&nk.focus(); return; }
+      const btn=$('pitch'); btn.disabled=true; await saving;
+      const moving=myLoc&&!(myLoc.camp===campNo&&myLoc.site===no);
+      if(moving&&!confirm(`지금 텐트(${myLoc.camp}번 캠핑장 ${myLoc.site}번)를 이 자리로 옮길까요? 꾸민 소품은 그대로 따라와요`)){ btn.disabled=false; return; }
+      const {error}=await sb.rpc('camp_pick',{p_camp:campNo,p_site:no,p_type:pick.type,p_color:pick.color,p_name:name});
+      btn.disabled=false;
+      if(error){ toast(errMsg(error)); clearPreview(); await loadCamp(campNo); buildAll(); focusWorld(); showWorldCard(); return; }
+      clearPreview(); const isNew=!myLoc; await loadCamp(campNo); buildAll(); if(isNew) track('create','camp');
+      toast(`${no}번 자리에 ${TENT_TYPES[pick.type]}를 쳤어요!`); enterOutside(no); };
+    preview();
+  },140);
+}
+let ghost=null;
+function preview(){ clearPreview(); const s=SITES[curSite-1]; ghost=makeTent(pick.type,pick.color); ghost.position.set(s.x,Y0+.1,s.z); ghost.rotation.y=Math.PI/4; ghost.traverse(o=>{ if(o.material){ o.material=o.material.clone(); o.material.transparent=true; o.material.opacity=.8; } }); world.add(ghost); }
+function clearPreview(){ if(ghost){ world.remove(ghost); ghost=null; } }
+
+function enterOutside(no){
+  mode='outside'; curSite=no; scene=world; const s=SITES[no-1]; focus(s.x,s.z,innerWidth<700?2.05:2.2);
+  setCard(`<h3>${no}번 자리 · 바깥 꾸미기</h3><p class="sub">소품을 누르면 텐트 앞에 놓여요. 끌어서 옮겨 보세요</p>
+  <div class="palette">${OUT_ITEMS.map(([k,n,e])=>`<button class="pi" data-k="${k}"><span>${e}</span>${n}</button>`).join('')}</div>
+  <div class="row"><button class="btn ghost" id="toWorld">캠핑장 보기</button><button class="btn ghost" id="retent">텐트 바꾸기</button><button class="btn wood" id="goIn">텐트 안으로</button></div>`);
+  setTimeout(()=>{
+    card.querySelectorAll('.pi').forEach(b=>b.onclick=()=>addItem(b.dataset.k));
+    $('toWorld').onclick=()=>{ select(null); focusWorld(); showWorldCard(); };
+    $('retent').onclick=()=>{ select(null); pick={type:me.type,color:me.color}; showPlaceCard(no); };
+    $('goIn').onclick=()=>{ select(null); enterInside(me,true); };
+  },140);
+}
+function enterInside(data,editable){
+  mode=editable?'inside':'visitIn'; scene=inside; buildInside(data,editable); focusInside();
+  if(editable) setCard(`<h3>텐트 안 꾸미기</h3><p class="sub">앞벽을 걷어 낸 단면이에요. 소품을 눌러 놓고 끌어서 옮겨요</p>
+    <div class="palette">${IN_ITEMS.map(([k,n,e])=>`<button class="pi" data-k="${k}"><span>${e}</span>${n}</button>`).join('')}</div>
+    <div class="row"><button class="btn ghost" id="goOut">밖으로 나가기</button></div>`);
+  else setCard(`<h3>${data.name}님의 텐트 안</h3><p class="sub">구경 중이에요. 마음에 들면 내 텐트도 꾸며 보세요</p><div class="row"><button class="btn ghost" id="goOut">밖으로 나가기</button></div>`);
+  setTimeout(()=>{ card.querySelectorAll('.pi').forEach(b=>b.onclick=()=>addItem(b.dataset.k)); $('goOut').onclick=()=>{ select(null); scene=world; if(editable) enterOutside(curSite); else { visitOutside(visitData); } }; },140);
+}
+function visitOutside(no){
+  mode='visit'; visitData=no; const d=NEIGHBORS[no], s=SITES[no-1]; focus(s.x,s.z,2.1);
+  setCard(`<h3>${d.name}님의 텐트 <span style="color:var(--dim);font-weight:600;font-size:13px">· ${no}번</span></h3><p class="sub">${TENT_TYPES[d.type]} · 놀러 왔어요</p>
+  <div class="row"><button class="btn ghost" id="back">캠핑장 보기</button><button class="btn wood" id="peek">텐트 안 구경하기</button></div>`);
+  setTimeout(()=>{ $('back').onclick=()=>{ focusWorld(); showWorldCard(); }; $('peek').onclick=()=>{ enterInside(d,false); }; },140);
+}
+
+/* ================= 소품 놓기·끌기 ================= */
+let selected=null;
+function editGroup(){ return mode==='outside'?siteObjs[curSite].outGroup : mode==='inside'?inItems : null; }
+function areaInfo(){ if(mode==='outside') return {R:2.75,core:1.95}; return {R:3.6,core:0}; }
+function addItem(k){
+  const g=editGroup(); if(!g) return; const p=makeProp(k); p.userData.item=true;
+  if(mode==='outside'){ const a=Math.PI/4+rnd(-.9,.9); p.position.set(Math.sin(a)*2.35,.1,Math.cos(a)*2.35); }
+  else { p.position.set(rnd(-1.2,1.6),.08,rnd(-.2,1.8)); }
+  p.rotation.y=rnd(-.5,.5); g.add(p); pop(p); persist(); select(p); setTimeout(()=>ensureVisible(p),60);
+}
+function pop(o){ o.scale.setScalar(.01); o.userData.grow=0; }
+function persist(){ if(!me) return; const pack=g=>g.children.map(o=>[o.userData.type,+o.position.x.toFixed(2),+o.position.z.toFixed(2),+o.rotation.y.toFixed(2)]);
+  if(mode==='outside') me.out=pack(siteObjs[curSite].outGroup); if(mode==='inside') me.in=pack(inItems); save(); }
+const ITEM_NAME=Object.fromEntries([...OUT_ITEMS,...IN_ITEMS].map(([k,n,e])=>[k,e+' '+n]));
+const marker=new THREE.Group();
+{ const ring=new THREE.Mesh(new THREE.RingGeometry(.48,.62,40),new THREE.MeshBasicMaterial({color:0xffd75e,transparent:true,opacity:.95,depthWrite:false,depthTest:false}));
+  ring.rotation.x=-Math.PI/2; ring.position.y=.03; ring.renderOrder=1; marker.add(ring); marker.userData.ring=ring;
+  const arrow=new THREE.Mesh(new THREE.ConeGeometry(.17,.32,4),new THREE.MeshBasicMaterial({color:0xffb52e,depthTest:false}));
+  arrow.renderOrder=20; arrow.rotation.x=Math.PI; marker.add(arrow); marker.userData.arrow=arrow; marker.userData.noPick=true; }
+function attachMarker(o){
+  if(marker.parent) marker.parent.remove(marker);
+  const sc=o.scale.x, ry=o.rotation.y; o.scale.setScalar(1); o.rotation.y=0; o.updateMatrixWorld(true);
+  const box=new THREE.Box3().setFromObject(o), sz=new THREE.Vector3(); box.getSize(sz);
+  const top=box.max.y-o.getWorldPosition(new THREE.Vector3()).y;
+  o.scale.setScalar(sc); o.rotation.y=ry; o.updateMatrixWorld(true);
+  const r=Math.min(1.2,Math.max(.35,Math.max(sz.x,sz.z)*.6));
+  marker.userData.ring.scale.setScalar(r/.55); marker.userData.top=top+.3; marker.userData.arrow.position.y=top+.3;
+  o.add(marker); }
+function select(o){ if(selected) setHighlight(selected,false); marker.parent&&marker.parent.remove(marker); selected=o;
+  if(o){ setHighlight(o,true); attachMarker(o); $('tName').textContent=ITEM_NAME[o.userData.type]||'소품'; $('tool').classList.add('show'); placeTool(); } else hideTool(); }
+function hideTool(){ $('tool').classList.remove('show'); }
+function placeTool(){ $('tool').style.bottom=(card.getBoundingClientRect().height+22)+'px'; }
+function setHighlight(o,on){ o.traverse(m=>{ if(m.isMesh&&m.material&&m.material.emissive){ if(on){ m.userData.orig=m.userData.orig||{e:m.material.emissive.getHex(),i:m.material.emissiveIntensity,mat:m.material}; m.material=m.material.clone(); m.material.emissive.setHex(0xffc94a); m.material.emissiveIntensity=.45; } else if(m.userData.orig){ m.material=m.userData.orig.mat; delete m.userData.orig; } } }); }
+$('tRot').onclick=()=>{ if(selected){ selected.rotation.y+=Math.PI/4; persist(); } };
+$('tDel').onclick=()=>{ if(selected){ selected.parent.remove(selected); selected=null; hideTool(); persist(); toast('치웠어요'); } };
+$('tOk').onclick=()=>select(null);
+
+const ray=new THREE.Raycaster(), ndc=new THREE.Vector2(); let down=null, dragging=null;
+function setNdc(e){ const r=cv.getBoundingClientRect(); ndc.set((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1); ray.setFromCamera(ndc,camera); }
+function itemUnder(e){ const g=editGroup(); if(!g) return null; setNdc(e); const hits=ray.intersectObjects(g.children,true); if(!hits.length) return null; let o=hits[0].object; while(o.parent&&o.parent!==g) o=o.parent; return o; }
+function groundPoint(e,y){ setNdc(e); const p=new THREE.Vector3(); return ray.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0,1,0),-y),p)?p:null; }
+cv.addEventListener('pointerdown',e=>{
+  down={x:e.clientX,y:e.clientY,t:performance.now()};
+  const it=itemUnder(e);
+  if(it){ dragging=it; select(it); controls.enabled=false; try{ cv.setPointerCapture(e.pointerId); }catch(_){} }
+});
+cv.addEventListener('pointermove',e=>{
+  if(!dragging) return;
+  const g=editGroup(); const root=mode==='outside'?siteObjs[curSite].root:inRoot;
+  const y=mode==='outside'?Y0+.1:.08; const p=groundPoint(e,y); if(!p) return;
+  const local=root.worldToLocal(p.clone()); const {R,core}=areaInfo();
+  let len=Math.hypot(local.x,local.z); if(len>R){ local.x*=R/len; local.z*=R/len; len=R; }
+  if(core && len<core){ const k=core/Math.max(len,.001); local.x*=k; local.z*=k; }
+  dragging.position.x=local.x; dragging.position.z=local.z;
+});
+cv.addEventListener('pointerup',e=>{
+  const moved=down?Math.hypot(e.clientX-down.x,e.clientY-down.y):99;
+  if(dragging){ dragging=null; controls.enabled=true; persist(); return; }
+  if(moved<7 && down && performance.now()-down.t<600) tap(e);
+  down=null;
+});
+function tap(e){
+  if(mode==='inside'||mode==='visitIn'){ select(null); return; }
+  if(mode==='outside' && selected){ select(null); }
+  setNdc(e); const hits=ray.intersectObjects(hitMeshes,false); if(!hits.length) return;
+  const no=hits[0].object.userData.site;
+  if(me && me.site===no){ if(mode!=='outside') enterOutside(no); return; }
+  if(NEIGHBORS[no]){ select(null); visitOutside(no); return; }
+  if(mode==='outside' && me) { toast('한 계정에 텐트는 한 자리예요'); }
+  focus(SITES[no-1].x,SITES[no-1].z,1.9); showPlaceCard(no);
+}
+
+/* ================= 카메라 이동 ================= */
+let tween=null;
+// 하단 카드·상단 바에 가리지 않는 '보이는 영역' 가운데로 (x,z)를 데려오는 목표점
+function bandTarget(x,y,z,zoom,sheetH){
+  const top=64, bottom=innerHeight-sheetH, yDes=(top+bottom)/2, dpx=yDes-innerHeight/2;
+  const upp=(camera.top-camera.bottom)/zoom/innerHeight;
+  camera.updateMatrixWorld(); const up=new THREE.Vector3(0,1,0).applyQuaternion(camera.quaternion);
+  const T=new THREE.Vector3(x,y,z).addScaledVector(up,dpx*upp);
+  const d=new THREE.Vector3(); camera.getWorldDirection(d); const k=(y-T.y)/d.y; return T.addScaledVector(d,k);
+}
+function sheetGuess(){ return Math.min(innerHeight*.5, 300); }
+function focus(x,z,zoom,sheetH){ const to=bandTarget(x,Y0+.6,z,zoom,sheetH==null?sheetGuess():sheetH); tween={from:controls.target.clone(),to,z0:camera.zoom,z1:zoom,t:0}; }
+function ensureVisible(o){
+  const p=o.getWorldPosition(new THREE.Vector3()); const v=p.clone().project(camera); const sy=(1-v.y)/2*innerHeight, sx=(v.x+1)/2*innerWidth;
+  const r=card.getBoundingClientRect(); const limit=Math.min(r.top,innerHeight)-80;
+  if(sy>limit||sy<90||sx<30||sx>innerWidth-30){ const to=bandTarget(p.x,p.y,p.z,camera.zoom,innerHeight-r.top+70); tween={from:controls.target.clone(),to,z0:camera.zoom,z1:camera.zoom,t:0}; }
+}
+function focusWorld(){ tween={from:controls.target.clone(),to:new THREE.Vector3(CENTER.x,0,CENTER.z),z0:camera.zoom,z1:1,t:0}; }
+function focusInside(){ controls.target.set(0,.8,0); camera.position.copy(camDir).multiplyScalar(60); camera.zoom=innerWidth<700?2.25:2.4; camera.updateProjectionMatrix(); controls.update(); const T=bandTarget(0,.3,.4,camera.zoom,sheetGuess()); camera.position.add(T.clone().sub(controls.target)); controls.target.copy(T); tween=null; }
+
+/* ================= 그리기 ================= */
+const clock=new THREE.Clock();
+function loop(){
+  const dt=Math.min(.05,clock.getDelta()), t=clock.elapsedTime;
+  if(tween){ tween.t=Math.min(1,tween.t+dt*1.8); const k=1-Math.pow(1-tween.t,3); const prev=controls.target.clone(); controls.target.lerpVectors(tween.from,tween.to,k); camera.position.add(controls.target.clone().sub(prev)); camera.zoom=tween.z0+(tween.z1-tween.z0)*k; camera.updateProjectionMatrix(); if(tween.t>=1) tween=null; }
+  if(scene===world){ const tg=controls.target; tg.x=Math.max(-16,Math.min(16,tg.x)); tg.z=Math.max(-12,Math.min(12,tg.z)); }
+  if(marker.parent){ marker.userData.arrow.position.y=marker.userData.top+Math.sin(t*5)*.12; marker.userData.arrow.rotation.y=t*2; marker.userData.ring.material.opacity=.65+.3*Math.sin(t*5); }
+  fires.forEach((f,i)=>{ f.scale.y=1+Math.sin(t*12+i)*.12; f.scale.x=f.scale.z=1+Math.cos(t*9+i)*.06; });
+  Object.values(siteObjs).forEach(s=>{ const p=s.root.userData.pulse; if(p){ const k=1+Math.sin(t*3)*.08; p[0].scale.set(k,k,k); p[1].position.y=.9+Math.sin(t*3)*.12; } });
+  const gl=world.userData.glints; if(gl) gl.children.forEach(g=>g.material.opacity=.25+.5*Math.max(0,Math.sin(t*1.6+g.userData.ph)));
+  [world,inside].forEach(sc=>sc.traverse(o=>{ if(o.userData.grow!==undefined){ o.userData.grow=Math.min(1,o.userData.grow+dt*4); const k=o.userData.grow; o.scale.setScalar(k<1?(1.15*Math.sin(k*Math.PI/2)):1); if(k>=1) delete o.userData.grow; } }));
+  controls.update(); renderer.render(scene,camera); requestAnimationFrame(loop);
+}
+
+/* ================= 시작 ================= */
+resize(); controls.target.set(CENTER.x,0,CENTER.z); camera.zoom=1; camera.updateProjectionMatrix();
+loop();
+(async()=>{
+  const q=new URLSearchParams(location.search); const qc=parseInt(q.get('c'))||null, qs=parseInt(q.get('s'))||null;
+  const {data}=await sb.auth.getSession(); user=data.session?data.session.user:null;
+  if(location.hash.includes('access_token')) history.replaceState(null,'',location.pathname+location.search);
+  sb.auth.onAuthStateChange((ev,ss)=>{ user=ss?ss.user:null; });
+  let after=null; try{ after=JSON.parse(sessionStorage.getItem('mlc-after')||'null'); sessionStorage.removeItem('mlc-after'); }catch(e){}
+  await loadCamp(after&&user?after.camp:qc); buildAll();
+  if(after&&user&&!isTaken(after.site)){ pick.type=after.type; pick.color=after.color;
+    const nm=user.user_metadata&&(user.user_metadata.name||user.user_metadata.full_name); if(!pick.name&&nm) pick.name=String(nm).slice(0,10);
+    showPlaceCard(after.site); return; }
+  if(qs&&NEIGHBORS[qs]){ showWorldCard(); setTimeout(()=>visitOutside(qs),300); return; }
+  showWorldCard();
+})();
+setTimeout(()=>$('loading').classList.add('hide'),200);
+window.__camp={marker,get selected(){return selected},get mode(){return mode},get me(){return me},SITES,enterOutside,addItem,enterInside,showPlaceCard,camera,controls,visitOutside};
+</script>
+</body>
+</html>
