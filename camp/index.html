@@ -144,6 +144,8 @@
 const fires=[]; let boardHit=null, boardArrow=null;
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 
 /* ================= 기본 ================= */
 const $=id=>document.getElementById(id);
@@ -260,7 +262,18 @@ for(let i=0;i<12;i++){ const a=-Math.PI/2+i*(Math.PI*2/12)+0.12; SITES.push({no:
 }
 
 /* ===== 공용 장식(관리자가 옮기고 바꿀 수 있어요) ===== */
+// GLB 모델(관리자가 놓는 공용 장식). 처음 쓸 때 한 번만 받아서 복제해요
+const draco=new DRACOLoader(); draco.setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/libs/draco/gltf/');
+const gltfLoader=new GLTFLoader(); gltfLoader.setDRACOLoader(draco);
+const MODELS={m_campfire:['campfire.glb',1.8,.6],m_stonefire:['stone-ring-campfire.glb',1.8,.55],m_lantern:['lantern.glb',2.2,0],m_stump:['axe-chopping-stump.glb',1.5,0],m_tent:['camp-tent.glb',2.2,0],m_tablet:['tablet.glb',2,0]};
+const modelCache={};
+function makeModel(k){ const [file,sc,fireY]=MODELS[k], holder=new THREE.Group();
+  if(!modelCache[k]) modelCache[k]=new Promise((res,rej)=>gltfLoader.load('models/'+file,g=>res(g.scene),undefined,rej));
+  modelCache[k].then(src=>{ const c=src.clone(true); c.scale.setScalar(sc); c.traverse(o=>{ if(o.isMesh){ o.castShadow=true; o.receiveShadow=true; } }); holder.add(c); if(selected===holder) attachMarker(holder); }).catch(()=>toast('모델을 불러오지 못했어요'));
+  if(fireY){ const a=new THREE.Object3D(), b=new THREE.Object3D(); a.position.y=b.position.y=fireY; holder.add(a,b); fires.push(a,b); }
+  return holder; }
 function makeLandmark(t){
+  if(MODELS[t]) return makeModel(t);
   if(t==='sign'){   const sign=new THREE.Group(); const p1=mesh(new THREE.BoxGeometry(.18,1.6,.18),PAL.wood); p1.position.set(-1,.8,0); const p2=p1.clone(); p2.position.x=1;
   const board=mesh(new THREE.BoxGeometry(2.6,.9,.14),PAL.woodL); board.position.y=1.45; sign.add(p1,p2,board);
   const tex=textTexture('MY LITTLE CAMP',512,160,'#6b4a2f',58); const face=new THREE.Mesh(new THREE.PlaneGeometry(2.4,.75),new THREE.MeshBasicMaterial({map:tex,transparent:true})); face.position.set(0,1.45,.08); sign.add(face);
@@ -305,7 +318,7 @@ function makeLandmark(t){
   if(t==='rock'){ const r=mesh(new THREE.DodecahedronGeometry(.45,0),PAL.rock); r.position.y=.25; r.scale.y=.7; const g=new THREE.Group(); g.add(r); return g; }
   return makeProp(t);
 }
-const COMMON_ITEMS=[['bigfire','모닥불 화로','🔥'],['board','게시판','📌'],['sign','간판','🪧'],['pine','소나무','🌲'],['bush','덤불','🌿'],['rock','바위','🪨'],
+const COMMON_ITEMS=[['m_campfire','모닥불 ✨','🔥'],['m_stonefire','돌 화덕 ✨','🪨'],['m_lantern','랜턴 ✨','🏮'],['m_stump','도끼 그루터기 ✨','🪓'],['m_tent','텐트 ✨','⛺'],['m_tablet','태블릿 ✨','📱'],['bigfire','모닥불 화로','🔥'],['board','게시판','📌'],['sign','간판','🪧'],['pine','소나무','🌲'],['bush','덤불','🌿'],['rock','바위','🪨'],
   ['chair','의자','🪑'],['table','테이블','🍽️'],['campfire','작은 모닥불','🔥'],['lantern','랜턴','🏮'],['plant','화분','🪴'],['tree','나무','🌳'],['rug','러그','🟫'],['bear','곰 인형','🧸']];
 const COMMON_DEFAULT=[['sign',CENTER.x-1.6,CENTER.z-2.3,0.79,1],['board',CENTER.x-3.5,CENTER.z-.2,0.79,1],['bigfire',CENTER.x+1,CENTER.z+.6,0.79,1]];
 const common=new THREE.Group(); common.position.y=Y0; world.add(common); let isAdmin=false, commonSaved=null, commonDirty=false;
