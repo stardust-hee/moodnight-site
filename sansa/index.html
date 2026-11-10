@@ -821,7 +821,7 @@ document.getElementById('reportBtn').addEventListener('click',async e=>{
   try{
     await rpc('sansa_report',{p_id:cardItem.id, p_device:DEVICE});
     lsAdd(HIDDEN, cardItem.id);
-    m.textContent='신고했어요. 내 화면에서는 바로 가렸어요';
+    m.textContent='내 화면에서 가렸어요. 전체 숨김은 관리자가 검토해요';
     b.hidden=true;
     skyItems=skyItems.filter(x=>x.id!==cardItem.id); roofItems=roofItems.filter(x=>x.id!==cardItem.id);
     setTimeout(()=>{ document.getElementById('card').classList.remove('on'); if(document.getElementById('s-sky').classList.contains('on')) drawSky(null); else if(document.getElementById('s-roof').classList.contains('on')) drawRoof(null); }, 1200);
