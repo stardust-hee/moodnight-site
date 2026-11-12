@@ -137,6 +137,7 @@ function drawStatic(state){
   C.fillStyle=rgba('#FFC86A',.12);C.fillRect(34,230,36,30);
 }
 /* 움직이는 것: 눈, 불빛 망울 */
+const LANTERNS=[[12,30,'#E0584A',0],[30,16,'#F2B84B',1.7],[46,38,'#E07A9A',3.1],[196,24,'#F2B84B',2.3],[220,44,'#E0584A',.8]];
 const FL=Array.from({length:90},()=>({x:Math.random()*240,y:Math.random()*264,v:.12+Math.random()*.28,s:Math.random()<.2?2:1,p:Math.random()*6}));
 const BOK=Array.from({length:22},(_,i)=>({x:(i*47+13)%240,y:(i*31)%150+6,r:2+(i%4),c:['#FFC86A','#FFB25C','#FFE3A0'][i%3],p:i*.7}));
 let base=document.createElement('canvas');base.width=240;base.height=264;
@@ -154,6 +155,10 @@ function drawOverlay(cx,t,still){
    for(let i=0;i<18;i++)Q(fx+17+i,oy+2+Math.min(grow,5)*2+Math.round(i*.55),1,1,'rgba(200,66,58,.9)');
    Q(fx+34,fy+24,5,4,'#C8423A');Q(fx+35,fy+23,3,1,'#C8423A');Q(fx+35,fy+25,2,1,'#E05A4A');
    if(nose){C=cx;glow(fx+24,oy+15,5,'#FF5A4A',.55);Q(fx+23,oy+14,3,3,'#FF3B30');Q(fx+23,oy+14,1,1,'#FFB0A8')}else Q(fx+23,oy+14,3,3,'#7A1E18');}
+  /* 하늘에 떠가는 연등 (누르면 무드나잇 산사) */
+  LANTERNS.forEach(([lx,ly,c,ph])=>{const bob=reduce?0:Math.round(Math.sin(t/900+ph)*2),y=ly+bob,Q=(x,yy,w,h,cc)=>{cx.fillStyle=cc;cx.fillRect(x,yy,w,h)};
+    C=cx;glow(lx+3,y+4,6,c,.45);
+    Q(lx+1,y,4,1,'#3A2418');Q(lx,y+1,6,6,c);Q(lx+1,y+2,1,4,'rgba(255,240,200,.55)');Q(lx,y+3,6,1,'rgba(90,30,20,.35)');Q(lx+1,y+7,4,1,'#3A2418');Q(lx+2,y+8,2,2,'#FFD27A')});
   /* 선물가게 간판 전구 + 반짝임 */
   const k=reduce?0:Math.floor(t/220);
   for(let x=2;x<=52;x+=3){[[x,181],[x,198]].forEach(([bx,by],j)=>{const on=((x/3|0)+j+k)%2===0;cx.fillStyle=on?'#FFE7A0':'#7A4A2A';cx.fillRect(bx,by,2,2);if(on){cx.fillStyle='rgba(255,220,140,.35)';cx.fillRect(bx-1,by-1,4,4)}})}
@@ -231,6 +236,7 @@ function render() {
   });
   const spot = (x, y, w, h, label, fn) => { const b = document.createElement('button'); b.className = 'spot'; Object.assign(b.style, { left: (x / 240 * 100) + '%', top: (y / 264 * 100) + '%', width: (w / 240 * 100) + '%', height: (h / 264 * 100) + '%' }); b.setAttribute('aria-label', label); b.onclick = fn; hits.appendChild(b); };
   spot(0, 184, 54, 42, L('산타의 선물가게 들어가기', "Enter Santa's Gift Shop"), openShop); spot(182, 184, 58, 42, L('루돌프네 양말공장 엿보기', "Peek into Rudolph's Sock Factory"), openFactory);
+  spot(4, 10, 54, 42, L('연등 따라 무드나잇 산사 가기', 'Follow the lanterns to Moodnight Temple'), openSansa); spot(188, 18, 46, 40, L('연등 따라 무드나잇 산사 가기', 'Follow the lanterns to Moodnight Temple'), openSansa);
   if (live) spot(138, 205, 38, 21, L(`벽보 보기, ${S.notes.length}장`, `Notice board, ${S.notes.length} notes`), () => openBoard());
   $('#title').textContent = live ? MN(S.name) : L('성탄맨션', 'Christmas Mansion');
   document.title = live ? `${MN(S.name)} | ${L('무드나잇', 'Moodnight')}` : L('성탄맨션 | 무드나잇', 'Christmas Mansion | Moodnight');
@@ -432,6 +438,12 @@ function openBoard(lead) {
 }
 function openFactory() {
   openSheet(L('루돌프네 양말공장', "Rudolph's Sock Factory"), EN ? `<div class="shop" style="background-color:#3A2418"><h3>Rudolph's Sock Factory</h3><p>A tiny factory next to the gift shop. Rudolph hooks yarn on his antlers and knits socks all night. When his nose blinks, one sock is done!</p><p style="color:var(--candle)">It's closed for now. Too many Christmas stocking orders.</p></div><p class="hint">Opening soon. For now you can only watch Rudolph work through the window.</p>` : `<div class="shop" style="background-color:#3A2418"><h3>루돌프네 양말공장</h3><p>선물가게 옆 작은 공장이에요. 루돌프가 뿔에 실을 걸고 밤새 양말을 떠요. 코가 깜빡이면 한 짝 완성!</p><p style="color:var(--candle)">지금은 크리스마스 양말 주문이 밀려서 문이 닫혀 있어요.</p></div><p class="hint">곧 열려요. 창문 너머로 루돌프가 일하는 모습만 볼 수 있어요.</p>`);
+}
+function openSansa() {
+  window.mnTrack && mnTrack('act', 'lantern');
+  openSheet(L('하늘에 뜬 연등', 'Lanterns in the sky'), `<div class="shop" style="background-color:#1B1B36"><h3>${L('무드나잇 산사', 'Moodnight Temple')}</h3><p>${L('밤하늘에 떠가는 연등은 무드나잇 산사에서 날린 소원이에요. 마음에 걸린 걸 적고 목탁을 두드려 흩어 보내고, 소원은 연등으로 띄울 수 있어요.', 'These lanterns were sent up from Moodnight Temple. Write down what weighs on you, tap the moktak to let it go, and float your wish up as a lantern.')}</p>
+    <a class="btn" href="/sansa/?ref=mansion_lantern" data-door="${L('무드나잇 산사', 'Moodnight Temple')}">${L('연등 따라 산사 가기', 'Follow the lanterns')}</a></div>
+    <p class="hint">${L('무드나잇의 또 다른 놀이, 무드나잇 산사로 연결돼요. 로그인 없이 바로 할 수 있어요.', "Takes you to Moodnight's other page, Moodnight Temple (Korean only). No login needed.")}</p>`);
 }
 function openShop() {
   openSheet(L('산타의 선물가게', "Santa's Gift Shop"), `<div class="shop"><h3>${L('산타의 선물가게', "Santa's Gift Shop")}</h3><p>${L('맨션 1층 모퉁이 가게예요. 친구에게 익명 선물과 편지를 맡겨 두면, 크리스마스에 열어 보고 누가 보냈는지 단서로 맞혀요.', 'The corner shop on the ground floor. Friends leave anonymous gifts and letters, and on Christmas you open them and guess who sent each one from the clues.')}</p>
