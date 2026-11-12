@@ -124,6 +124,10 @@ function drawStatic(state){
   (state.notes||[]).slice(-8).forEach((n,i)=>{const nx=143+(i%4)*7+(i>3?3:0),ny=210+(i>3?6:0)+(i%2);R(nx,ny,6,5,NOTE_COLORS[i%5]);P(nx+2,ny,'#C8423A');R(nx+1,ny+2,4,1,'#B9A58A')});
   /* 선물가게 문 */
   R(18,214,12,12,'#7A2E26');R(19,215,10,11,'#FFD9A0');R(23,215,1,11,'#7A2E26');P(27,220,'#5A3A2A');
+  /* 로비 왼쪽: 박살방 가는 지하 계단 (B1) */
+  R(66,206,28,20,'#140C10');C.fillStyle=rgba('#FF4A3A',.18);C.fillRect(64,204,32,22);
+  for(let i=0;i<5;i++){R(68+i*2,210+i*3,24-i*4,1,'#3A2A30');R(68+i*2,211+i*3,24-i*4,2,'#241820')}
+  R(66,205,28,1,'#5A3A2A');R(65,205,1,21,'#5A3A2A');R(94,205,1,21,'#5A3A2A');
   /* 가로등 */
   R(51,150,2,80,'#1B1E24');R(47,146,10,3,'#1B1E24');R(48,149,8,8,'#FFE7B0');R(47,157,10,2,'#1B1E24');glow(52,153,13,'#FFC86A',.45);
   /* 작은 트리 */
@@ -135,6 +139,9 @@ function drawStatic(state){
   for(let x=0;x<240;x+=1){const t=Math.sin(x/9)*1.2;P(x,240+t,'#B6C6D7');P(x,252+t*.8,'#B6C6D7')}
   C.fillStyle=rgba('#FFB25C',.18);C.fillRect(0,228,54,10);C.fillRect(180,228,60,10);C.fillRect(100,228,40,8);
   C.fillStyle=rgba('#FFC86A',.12);C.fillRect(34,230,36,30);
+  /* 길 끝 오른쪽: 숲속 캠핑장 이정표 */
+  R(222,236,3,22,'#5A3A2A');R(223,234,1,24,'#7A4A2A');R(219,256,9,2,'#DCE6F0');
+  [[206,240],[214,236],[236,242]].forEach(([tx,ty])=>{for(let i=0;i<12;i++){const w=Math.round(1+i*.35);R(tx-w,ty+i,w*2+1,1,i%5<1?'#EEF3F8':'#24452E')}R(tx,ty+12,1,3,'#3A2418')});
 }
 /* 움직이는 것: 눈, 불빛 망울 */
 const LANTERNS=[[12,30,'#E0584A',0],[30,16,'#F2B84B',1.7],[46,38,'#E07A9A',3.1],[196,24,'#F2B84B',2.3],[220,44,'#E0584A',.8]];
@@ -237,6 +244,7 @@ function render() {
   const spot = (x, y, w, h, label, fn) => { const b = document.createElement('button'); b.className = 'spot'; Object.assign(b.style, { left: (x / 240 * 100) + '%', top: (y / 264 * 100) + '%', width: (w / 240 * 100) + '%', height: (h / 264 * 100) + '%' }); b.setAttribute('aria-label', label); b.onclick = fn; hits.appendChild(b); };
   spot(0, 184, 54, 42, L('산타의 선물가게 들어가기', "Enter Santa's Gift Shop"), openShop); spot(182, 184, 58, 42, L('루돌프네 양말공장 엿보기', "Peek into Rudolph's Sock Factory"), openFactory);
   spot(4, 10, 54, 42, L('연등 따라 무드나잇 산사 가기', 'Follow the lanterns to Moodnight Temple'), openSansa); spot(188, 18, 46, 40, L('연등 따라 무드나잇 산사 가기', 'Follow the lanterns to Moodnight Temple'), openSansa);
+  spot(64, 203, 32, 23, L('지하 박살방 내려가기', 'Go down to the Smash Room'), openSmash); spot(196, 226, 44, 36, L('숲속 캠핑장 가는 길', 'Path to the forest camp'), openCamp);
   if (live) spot(138, 205, 38, 21, L(`벽보 보기, ${S.notes.length}장`, `Notice board, ${S.notes.length} notes`), () => openBoard());
   $('#title').textContent = live ? MN(S.name) : L('성탄맨션', 'Christmas Mansion');
   document.title = live ? `${MN(S.name)} | ${L('무드나잇', 'Moodnight')}` : L('성탄맨션 | 무드나잇', 'Christmas Mansion | Moodnight');
@@ -444,6 +452,18 @@ function openSansa() {
   openSheet(L('하늘에 뜬 연등', 'Lanterns in the sky'), `<div class="shop" style="background-color:#1B1B36"><h3>${L('무드나잇 산사', 'Moodnight Temple')}</h3><p>${L('밤하늘에 떠가는 연등은 무드나잇 산사에서 날린 소원이에요. 마음에 걸린 걸 적고 목탁을 두드려 흩어 보내고, 소원은 연등으로 띄울 수 있어요.', 'These lanterns were sent up from Moodnight Temple. Write down what weighs on you, tap the moktak to let it go, and float your wish up as a lantern.')}</p>
     <a class="btn" href="/sansa/?ref=mansion_lantern" data-door="${L('무드나잇 산사', 'Moodnight Temple')}">${L('연등 따라 산사 가기', 'Follow the lanterns')}</a></div>
     <p class="hint">${L('무드나잇의 또 다른 놀이, 무드나잇 산사로 연결돼요. 로그인 없이 바로 할 수 있어요.', "Takes you to Moodnight's other page, Moodnight Temple (Korean only). No login needed.")}</p>`);
+}
+function openSmash() {
+  window.mnTrack && mnTrack('act', 'b1');
+  openSheet(L('지하 1층', 'Basement'), `<div class="shop" style="background-color:#1E1424"><h3>${L('B1 박살방', 'B1 Smash Room')}</h3><p>${L('맨션 지하 창고예요. 오늘 빡친 일을 적어 붙이고 키보드, 모니터, 머그컵을 망치로 와장창 부숴도 돼요. 누른 자리가 그대로 깨져요.', 'The storage room under the mansion. Stick on whatever made you mad today, then smash the keyboard, monitor and mug with a hammer.')}</p>
+    <a class="btn" href="/smash/?ref=mansion_b1" data-door="${L('박살방', 'Smash Room')}">${L('지하로 내려가기', 'Head downstairs')}</a></div>
+    <p class="hint">${L('무드나잇의 또 다른 놀이, 박살방으로 연결돼요. 로그인 없이 바로 할 수 있어요.', "Takes you to Moodnight's Smash Room (Korean only). No login needed.")}</p>`);
+}
+function openCamp() {
+  window.mnTrack && mnTrack('act', 'camp_sign');
+  openSheet(L('숲속 캠핑장 가는 길', 'Path to the forest camp'), `<div class="shop" style="background-color:#1F2E22"><h3>MY LITTLE CAMP</h3><p>${L('마을 길 끝, 산사로 올라가는 숲길에 있는 캠핑장이에요. 12자리 중 한 곳에 내 텐트를 치고 꾸미고, 모닥불 옆 게시판에 이웃 캠퍼들과 쪽지를 남겨요.', 'A campsite at the end of the road, on the forest path up to the temple. Pitch your own tent on one of 12 sites, decorate it, and leave notes for your neighbors on the board by the campfire.')}</p>
+    <a class="btn" href="/camp/?ref=mansion_sign" data-door="${L('숲속 캠핑장', 'Forest camp')}">${L('숲길 따라가기', 'Follow the path')}</a></div>
+    <p class="hint">${L('무드나잇의 또 다른 놀이, 숲속 캠핑장으로 연결돼요.', "Takes you to Moodnight's forest camp (Korean only).")}</p>`);
 }
 function openShop() {
   openSheet(L('산타의 선물가게', "Santa's Gift Shop"), `<div class="shop"><h3>${L('산타의 선물가게', "Santa's Gift Shop")}</h3><p>${L('맨션 1층 모퉁이 가게예요. 친구에게 익명 선물과 편지를 맡겨 두면, 크리스마스에 열어 보고 누가 보냈는지 단서로 맞혀요.', 'The corner shop on the ground floor. Friends leave anonymous gifts and letters, and on Christmas you open them and guess who sent each one from the clues.')}</p>
