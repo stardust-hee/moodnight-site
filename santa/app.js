@@ -378,6 +378,19 @@ function openRemind() {
   $("#remG").onclick = () => { window.mnTrack && mnTrack("act", "remind"); };
 }
 
+// 창밖의 성탄맨션 (room3d.js의 창문·나무 팻말을 누르면)
+window.santaPeek = function () {
+  window.mnTrack && mnTrack("act", "peek");
+  if (MODE !== "host" && !sent && !isOpen()) { toast(L("창밖에 성탄맨션이 보여요 🏢 선물 두고 나서 구경 가 봐요", "That's Snow Mansion outside 🏢 Leave your gift first, then go take a look")); return; }
+  $("#overlay").hidden = false;
+  sheet(`<div><h2>${L("창밖에 보이는 성탄맨션 🏢", "Snow Mansion, right outside 🏢")}</h2>
+    <p class="sub">${L("내 이름이 붙은 도트 맨션 한 동을 만들고 링크를 보내면, 친구들이 빈 집에 하나씩 입주해서 창문에 불을 켜고 편지를 남겨요.", "Make a pixel mansion with your name on it and share the link. Friends move into the empty units one by one, turn on their lights and leave you a note.")}</p></div>
+    <a class="btn red wide" href="/mansion/${EN ? "en" : ""}?ref=santa_win">${L("성탄맨션 구경 가기", "Visit Snow Mansion")}</a>
+    <button class="btn ghost wide" id="peekNo">${L("닫기", "Close")}</button>`);
+  $("#peekNo").onclick = closeModal;
+};
+if (EN) { const tg = document.querySelector(".r3d .tag"); if (tg) tg.textContent = "🏢 Mansion"; const pk = document.querySelector(".r3d .peek"); if (pk) pk.setAttribute("aria-label", "Snow Mansion outside the window"); }
+
 function askDelete() {
   $("#overlay").hidden = false;
   sheet(`<div><h2>${L("선물가게를 삭제할까요?", "Delete your gift shop?")}</h2><p class="sub">${L(`받은 선물 ${room.boxes.length}개와 메시지, 단서, 맞히기 기록이 모두 지워지고 되돌릴 수 없어요. 친구들이 가진 링크도 더는 열리지 않아요.`, `All ${room.boxes.length} gifts, messages, clues and guesses will be deleted for good. Your friends' links will stop working.`)}</p></div>

@@ -8,6 +8,8 @@ const host = document.getElementById("sceneHost");
 const V = "?v=1";
 const FIRE = { l: 32.8, t: 57.75, w: 14.55, h: 12.15 };
 const WIN = { l: 11.08, t: 23.86, w: 17.93, h: 20.01 };
+// 창밖 오른쪽 아래 칸에 보이는 성탄맨션 (누르면 맨션 소개, app.js의 window.santaPeek)
+const PEEK = { l: 20.9, t: 35.2, w: 7.2, h: 8.3 };
 // [x%, y%, 반지름(배경 너비 대비 %), 종류] 0 전구 1 랜턴 2 별
 const BULBS = [[29.75,47.1,4.2,1],[50.18,47.03,4.2,1],[74.53,35.14,4.2,1],
   [8.37,11.91,3.2],[13.08,13.83,3.2],[17.69,14.52,3.2],[22.22,13.82,3.2],[26.72,11.9,3.2],
@@ -16,6 +18,7 @@ const BULBS = [[29.75,47.1,4.2,1],[50.18,47.03,4.2,1],[74.53,35.14,4.2,1],
   [63.24,59.46,2.4],[58.96,57.79,2.4],[54.68,57.62,2.4],[52.43,56.05,2.4],[50.8,54.38,2.4],
   [61.36,44.17,2.4],[59.82,43.34,2.4],[58.39,42.39,2.4],[55.46,39.15,2.4],[53.35,38.65,2.4],[52.63,36.15,2.4]];
 
+const PEEK_SVG = `<svg viewBox="0 0 36 42" aria-hidden="true"><rect x="0" y="35" width="36" height="7" fill="#e9eef5"/><rect x="6" y="9" width="24" height="27" fill="#3a3f63"/><rect x="6" y="9" width="24" height="2" fill="#2a2e4b"/><rect x="5" y="7" width="26" height="3" fill="#f4f7fb"/><rect x="24" y="3" width="3" height="5" fill="#2a2e4b"/><rect x="23" y="2" width="5" height="2" fill="#f4f7fb"/><g fill="#ffd27a"><rect class="lw" x="9" y="13" width="3" height="3"/><rect x="14" y="13" width="3" height="3"/><rect class="lw b" x="19" y="13" width="3" height="3"/><rect x="24" y="13" width="3" height="3" fill="#1f2340"/><rect x="9" y="19" width="3" height="3" fill="#1f2340"/><rect class="lw b" x="14" y="19" width="3" height="3"/><rect x="19" y="19" width="3" height="3"/><rect class="lw" x="24" y="19" width="3" height="3"/><rect class="lw" x="9" y="25" width="3" height="3"/><rect x="14" y="25" width="3" height="3"/><rect x="19" y="25" width="3" height="3" fill="#1f2340"/><rect class="lw b" x="24" y="25" width="3" height="3"/></g><rect x="15" y="30" width="6" height="6" fill="#7a4a26"/><rect x="16" y="31" width="4" height="5" fill="#ffb85c"/><rect x="12" y="29" width="12" height="1" fill="#f4f7fb"/><rect x="1" y="30" width="4" height="6" fill="#2e6e46"/><rect x="2" y="27" width="2" height="3" fill="#2e6e46"/><rect x="2" y="26" width="2" height="1" fill="#f4f7fb"/><rect x="31" y="31" width="4" height="5" fill="#2e6e46"/><rect x="32" y="28" width="2" height="3" fill="#2e6e46"/></svg>`;
 const css = `
 .r3d{position:absolute;inset:0;overflow:hidden;background:#5a1e16}
 .r3d img.bg{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:cover;user-select:none;-webkit-user-drag:none}
@@ -37,6 +40,17 @@ const css = `
 .r3d .win{position:absolute;left:${WIN.l}%;top:${WIN.t}%;width:${WIN.w}%;height:${WIN.h}%;overflow:hidden;pointer-events:none}
 .r3d .win i{position:absolute;top:-6%;width:3.2%;aspect-ratio:1;border-radius:50%;background:#fff;opacity:.9;animation:r3s linear infinite}
 @keyframes r3s{to{transform:translate(12px,var(--fall,160px))}}
+
+.r3d{container-type:inline-size}
+.r3d .peek{position:absolute;left:${PEEK.l}%;top:${PEEK.t}%;width:${PEEK.w}%;height:${PEEK.h}%;padding:0;border:0;background:none;cursor:pointer;pointer-events:auto;-webkit-tap-highlight-color:transparent}
+.r3d .peek svg{position:absolute;inset:0;width:100%;height:100%;shape-rendering:crispEdges;display:block}
+.r3d .peek .lw{animation:r3t 1.8s ease-in-out infinite alternate}
+.r3d .peek .lw.b{animation-delay:-.9s}
+.r3d .tag{position:absolute;left:13.2%;top:45.6%;transform-origin:50% -40%;animation:r3sw 3.2s ease-in-out infinite;pointer-events:auto;cursor:pointer;
+  font:400 max(10px,1.55cqw)/1 "Jua",sans-serif;color:#4a2c18;background:#f6e3bf;border:max(1.5px,.25cqw) solid #7a4a26;border-radius:.5em;padding:.35em .6em .3em;white-space:nowrap;box-shadow:0 .25em .5em rgba(40,15,5,.35)}
+.r3d .tag::before,.r3d .tag::after{content:"";position:absolute;bottom:100%;width:max(1px,.18cqw);height:.7em;background:#7a4a26}
+.r3d .tag::before{left:22%}.r3d .tag::after{right:22%}
+@keyframes r3sw{0%,100%{rotate:-3deg}50%{rotate:3deg}}
 @media (prefers-reduced-motion: reduce){.r3d *{animation:none!important}.r3d .win{display:none}}
 .w-red .spr{background-image:url(/santa/3d/gift-red.webp${V})}
 .w-green .spr{background-image:url(/santa/3d/gift-green.webp${V})}
@@ -58,11 +72,14 @@ function mount() {
   host.innerHTML = `<div class="r3d" aria-hidden="true">
     <img class="bg" src="/santa/3d/room-1600.webp${V}" srcset="/santa/3d/room-1000.webp${V} 1000w, /santa/3d/room-1600.webp${V} 1600w"
       sizes="(max-width:600px) 130vw, 720px" alt="" decoding="async" fetchpriority="high">
+    <button class="peek" type="button" aria-label="${(window.LANG === "en") ? "Snow Mansion outside the window" : "창밖의 성탄맨션"}">${PEEK_SVG}</button>
     <div class="win">${flakes}</div>
+    <button class="tag" type="button">${(window.LANG === "en") ? "🏢 Mansion" : "🏢 성탄맨션"}</button>
     <div class="hearth"></div>
     <div class="fire"><img src="/santa/3d/fire0.webp${V}" alt=""><img src="/santa/3d/fire1.webp${V}" alt=""><img src="/santa/3d/fire2.webp${V}" alt=""></div>
     ${glows}
   </div>`;
+  host.querySelectorAll(".peek,.tag").forEach(b => b.addEventListener("click", e => { e.stopPropagation(); if (window.santaPeek) window.santaPeek(); else location.href = "/mansion/?ref=santa_win"; }));
   const win = host.querySelector(".win");
   const setFall = () => win.style.setProperty("--fall", (win.clientHeight * 1.12 || 160) + "px");
   setFall(); addEventListener("resize", setFall);
