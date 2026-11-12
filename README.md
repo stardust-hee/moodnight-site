@@ -11,7 +11,12 @@
 | `/santa/` `santa/index.html` + `santa/app.js` | 산타의 선물가게 실제 서비스 (방 주인 화면) |
 | `/santa/r/<방코드>` | 친구가 받는 선물방 링크. `vercel.json` rewrite로 `santa/index.html`을 그대로 씀 |
 | `/santa/demo/` | 산타 체험판 (예시 데이터, 저장 안 됨) |
-| `/mansion/demo/` `mansion/demo/index.html` | 성탄맨션 체험판 (도트, 예시 데이터, 저장 안 됨). 글꼴은 `mansion/fonts/` |
+| `/mansion/` `mansion/index.html` + `mansion/app.js` | 성탄맨션 실제 서비스 (맨션 주인 화면: 로그인, 만들기, 공유, 퇴거, 벽보 떼기) |
+| `/mansion/r/<코드>` | 친구가 받는 맨션 링크 (로그인 없이 입주, 벽보). `vercel.json` rewrite |
+| `/mansion/demo/` `mansion/demo/index.html` | 성탄맨션 체험판 (도트, 예시 데이터, 저장 안 됨, 공개 링크 없음). 글꼴은 `mansion/fonts/` |
+| `/sansa/` `sansa/index.html` | 무드나잇 산사 (상시 서비스, 한 파일). 스님 인사 → 번뇌 목탁 → 스님 한마디 → 연등·기와. ☰ 메뉴로 어디서든 이동 |
+| `/smash/` `smash/index.html` | 박살방 (상시, 한 파일, 광고 없음). 도트 물건 부수기: 키보드·모니터·머그컵 |
+| `/tray/` `tray/` | Silver Tray Studio (상시, 이나님이 만든 원본 디자인 그대로, 광고 없음). 트레이 3종·소품 18종 꾸미기, PNG 저장, 브라우저 자동 저장, `#tray=` 공유 링크 |
 | `/blog/` | 읽을거리 (애드센스 심사용 글). 현재 2개: manitto, christmas-card |
 | `/privacy.html` `/terms.html` | 개인정보처리방침, 이용약관 (산타 + 성탄맨션 공통) |
 | `/auth-test.html` | 로그인 테스트용 (검색 차단) |
@@ -26,7 +31,17 @@
 ## 디자인
 
 - 무드나잇 홈/블로그: 겨울밤 다크 단일 테마 (`style.css` 토큰: night #151A2E, cream #F6EEDD, lamp #F2C46B, berry #E0574A, pine #5FB487)
-- 산타: 따뜻한 3D 디오라마 느낌 (크림 벽, 초록 문, 빨간 커튼, 트리, 선물 상자). 폰트 Jua(제목) + Gowun Dodum(본문)
+- 산타 (11/9 3D로 교체): 동물의숲 같은 3D 로우폴리 방. Three.js 장면(`tools/room3d/scene.html`)을 미리 구운 배경 `santa/3d/room-*.webp` 위에 `santa/room3d.js`가 불꽃(프레임 3장), 전구·랜턴·별 반짝임, 창밖 눈을 CSS로 얹음. 선물 상자는 `santa/3d/gift-색.webp`를 따로 두고 `app.js` SLOTS 자리에 데이터 수만큼 배치(앞줄일수록 크게, 처음 들어올 때 하나씩 떨어지는 등장 효과). 휴대폰은 양옆 11%씩 잘라 트리를 크게. 화면 UI는 도트 대신 원래 크림색(Jua 글꼴). 예전 도트 방 `santa/pixelroom.js`, `santa/pixel.css`, `santa/diorama.js`는 안 쓰지만 남겨 둠
+- 산타 공유 카드 (11/9): 주인 화면의 "내 선물가게 이미지 만들기"(크리스마스 전) / "결과 카드 만들기"(후) 버튼. `app.js` drawCard()가 1080×1350 캔버스에 3D 방 + 받은 선물 상자 + 숫자(받은 선물, 맞힌 친구, 칭호: 완벽한 명탐정·눈치 백단 탐정·새싹 탐정·비밀 산타들의 완승)를 그림. 메시지·이름은 안 들어감. 휴대폰은 공유 시트(파일 공유), 아니면 이미지 저장. 기록은 share/card, share/card_native
+- 산타 선물 목록 (11/9): 방 아래 "☰ 선물 목록" 버튼(주인만) → `list_my_gifts()` RPC. 크리스마스 전엔 상자와 흔든 소리만, 뒤엔 연 선물의 메시지와 보낸 사람(맞혔거나 공개된 경우). 누르면 원래 선물 창(단서·맞히기)으로. 방 아래 버튼 줄에 "📸 이미지 저장/결과 카드"도 같이
+- 맨션 인스타 공유 이미지 (11/9): "인스타 공유 이미지" 버튼 → saveImage() 1080×1350 도트 카드(맨션 그림, N집 불 켜짐, "빈 집 N채! 한 칸 골라서 불 켜 줘", 놀이 방법, 링크). 휴대폰은 공유 시트, 아니면 저장. 체험판(mansion/demo)에도 같은 함수 복사
+- 산타 영어판 (11/9): 화면 위 🌐 버튼으로 한국어/English. `santa/i18n.js`가 언어를 고름(?lang=en → localStorage mn_lang → 브라우저 언어), app.js는 `L("한국어", "English")`로 나란히 씀. 선물 이름·소리 영어는 i18n.js `GIFT_EN`. 영어에선 쿠팡 링크·카카오 공유 숨김, 구글 로그인 먼저, 방 링크에 ?lang=en 붙음. 방 이름은 영어 2~12자(DB 체크도 2~12로 넓힘). 서버 오류 문구는 코드(locked 등)로 영어 변환. 일본어는 원어민 검수 없이 보류
+- 맨션 영어판 (11/9): 언어 고르기·🌐 버튼은 공통 `/lang.js`(산타도 이걸 씀, 산타 선물 영어 데이터만 `santa/i18n.js`). 맨션 app.js도 `L()`로 나란히. HTML 고정 글자는 `data-en`, aria는 `data-en-label`, 탭 제목은 `<html data-en-title>`. 간판은 영어에서 GIFT SHOP / SOCK FACTORY / MANSION. 맨션 이름 DB 체크 2~12자. 맨션 체험판(mansion/demo)은 한국어만
+- 관리자 기기 제외 (11/9): 관리자로 로그인한 기기는 `admin_devices`에 표시돼 방문 기록이 안 남고 지난 기록도 지워짐 (mark_admin_device)
+- 광고 추적 (11/9): 링크에 `?ref=이름`(영문·숫자·_- 20자) → track.js가 방문 detail에 남김. 만들기·참여는 mnTrack("create", "santa"|"mansion"), mnTrack("act", "gift"|"movein"|"note"). 관리실 "광고.exe"(admin_ads)에 ref별 방문자·만든 방·참여 수
+- 영어 미리보기 (11/9): /santa/en, /mansion/en, 방 링크 ?lang=en → index.en.html (tools/make_en_pages.py로 생성, 원본 html 고치면 다시 돌리기)
+- 보관 기간 (11/17 시행, 11/10 공지): 시즌 뒤에도 보관, 주인 삭제·탈퇴·2년 미접속 때 파기. 주인 직접 삭제 `delete_my_room()`, `delete_my_mansion()`. rooms·mansions에 `season`(기본 2026) 열 추가 — 내년 보관함용. 홈 공지 띠는 12/1에 자동으로 사라짐
+- 맨션↔산타 이동: `door.js` 도트 문 전환 (링크에 `data-door="간판 글자"`)
 - 성탄맨션: 32bit 도트 겨울밤 (화면·버튼·창·글꼴까지 전부 도트). 색감 레퍼런스는 눈 내리는 유럽 밤거리 사진: 짙은 청록 밤 + 호박빛 창문 + 흐릿한 불빛 망울. 키워드 "고즈넉함". 글꼴 갈무리(Galmuri11/14, OFL) `mansion/fonts/`
 
 ### 두 번째 서비스 결정 과정 (2026-11-06 ~ 11-08)
@@ -66,6 +81,32 @@
 - `hide_gift`, `report_gift` 방 주인
 - 개봉 시각: `unlock_at()` = 2026-12-25 00:00 KST
 
+### 무드나잇 산사 (11/10 공개)
+- 시즌과 상관없는 상시 콘텐츠. 로그인 없음. 화면은 도트 밤 절(처마·풍경·달·별), 글꼴 Gowun Batang + 기와 글씨 Nanum Brush Script. 소리는 전부 Web Audio 합성(목탁, 풍경, 종)
+- 흐름: 산문 들어가기 → 스님 인사(시간대별) + 선택지 → 번뇌 적기 → 목탁(글자 수에 따라 8~20번, 글자가 흩어짐) → 스님 한마디(LINES 18개 랜덤) → 연등 / 기와
+- 연등 색 뜻: 빨강 복과 보호, 노랑 지혜와 평온, 초록 건강과 치유, 파랑 평화와 깨달음, 보라 성장과 수행, 흰색 "그리운 사람에게"(영가등에서 따옴, 문구·버튼이 바뀜). 분홍은 예전 호환용으로만 남김
+- 기와: 청·녹·적·흑 4색 수키와 + 암키와 골을 줄마다 겹친 물결 지붕(SVG 도트). 36장 = 지붕 한 채, 다 차면 다음 기와부터 새 지붕
+- 테이블: `sansa_items`(kind lantern/tile, color, text, device, hidden), `sansa_reports`, `sansa_bonnoe`(날짜별 번뇌 개수만, 글은 저장 안 함). 모두 RLS, 함수로만 접근
+- 함수: `sansa_list(kind)` 연등 최근 60개 / 기와는 지금 짓는 지붕만, `sansa_add(kind,color,text,device)` 한 기기 하루 10개·전체 분당 60개, `sansa_report(id,device)` 신고 접수만 수행, 신고자 화면에서 가림. 전체 숨김은 관리자 검토 후 처리, `sansa_bonnoe_add()`, `sansa_stats()`
+- 브라우저 저장: `mn_device`(track.js와 공유), `sansa-mine`(내가 올린 id), `sansa-hidden`(내가 신고한 id)
+- 관리: `/admin/#report`에서 신고 검토 · 전체 숨기기 · 공개 유지/복원. `admin_sansa_reports()`, `admin_review_sansa(id,hidden)`는 DB 관리자만 실행 가능. 방문 기록 page `sansa`, act `lantern`/`tile`/`bonnoe`
+- 공유 이미지 `sansa/og.png`, 홈 카드 썸네일 `sansa/preview.webp`
+
+### 박살방 (11/10 공개)
+- 이나님 1차 버전(라임색 SMASH ROOM)을 무드나잇 도트 톤으로 다시 만듦. 글꼴 갈무리(`/mansion/fonts/`), 아래 소개 글은 Pretendard
+- **광고 넣지 않기로 함** (연타 게임이라 실수 클릭 정책 위험). 대신 소개·놀이 방법·만든 이유·FAQ 글을 붙여 사이트 콘텐츠 역할
+- 180×230 저해상도 캔버스를 키워 도트처럼. 직접 만든 간단한 2D 물리(중력, 바닥 튕김, 긴 조각은 눕기)
+- 누른 자리가 깨짐, 꾹 누르면 힘 모으기(최대 3배). 빡친 일 쪽지(16자)는 화면에만, 저장 안 함
+- 물건: 키보드(키캡 튐, 몸체 조각), 모니터(엑셀 화면, 거미줄 금, 유리 파편, 지직, 유리 70조각), 머그컵(MONDAY 머그, 도자기 조각, 커피 웅덩이, 손잡이 이탈)
+- 기록은 내 브라우저 `smash-stats`만. 방문 기록 page `smash`, 박살 낼 때 act `smash_keyboard|monitor|mug`
+- 다음 후보: 상황형 물건(읽씹한 카톡 폰, 월요일 달력, 야근 서류), 결과 카드, 모두의 카운터
+
+### Silver Tray Studio (11/10 공개)
+- 이나님이 따로 만든 앱(ZIP)을 **디자인 그대로** `/tray/`에 넣음. 처음엔 별도 저장소·Vercel로 하려다 무드나잇 콘텐츠로 바꿈
+- 배포 전 고친 버그: 큰 사진 업로드 시 자동 저장 멈춤(사진을 긴 변 1000px로 줄임), 내 사진 비율 찌그러짐, 공유 링크로 연 뒤 새로고침하면 고친 내용 사라짐, 좁은 폰에서 버튼 글자 끊김
+- 무드나잇 연결: `<base href="/tray/">`(슬래시 없이 와도 이미지 경로 유지), og 태그, 왼쪽 아래 "← 무드나잇", track.js(page `tray`, 저장 act `tray_save`, 공유 share `tray`)
+- 11/10 소품 전부 고화질로 교체(GPT 제작, 1110×1200 투명 WebP, 브랜드 라벨 없음). 핸드크림 자리는 세럼 보틀로 바뀌고 립스틱·실버 콤팩트 추가해 **20종**. 트레이도 고화질 WebP 4종으로 교체: 사각(tray1)·로코코(tray2)·빈티지 물결(tray3)·하트(tray4, 새로 추가)
+
 ## 출시 일정 (2026-11-06 결정)
 
 | 시기 | 할 일 |
@@ -92,7 +133,7 @@
 - 맨션 왼쪽 아래 "산타의 선물가게" 간판 → `/santa/`로 연결. 산타 화면 상단 "← 무드나잇" 링크도 맨션 공개 후 "← 성탄맨션"으로 변경
 - 성탄맨션이 받는 정보가 정해지면 `index.html`, `privacy.html`, `terms.html`의 "눈망진창"을 "성탄맨션"으로 수정
 - 산타 화면 스타일 (11/8 최종): 따뜻한 3D 디오라마 방(`santa/diorama.js`, SVG 500×400). 빛·그림자·벽지 줄무늬·나무결, 창문 아래 벽난로와 양말, 큰 눈사람, 풍성한 트리, 3면 입체 선물 상자. 글꼴 Jua + Gowun Dodum. 도트 버전은 `santa/pixel-sample*.html`에 샘플로만 남김
-- 산타 체험판(`/santa/demo/`)은 예전 단순 디오라마 그림. 새 디오라마(diorama.js)로 교체 필요
+- 산타 체험판(`/santa/demo/`, 11/9 교체): 진짜 화면(app.js, diorama.js)을 그대로 쓰고 `santa/demo/demo-backend.js`가 서버 대신 예시 데이터(하린, 친구 7명)로 대답. 탭 "받는 사람 / 보내는 친구", "크리스마스로 미리 가 보기". 진짜 화면을 고치면 체험판도 같이 바뀜
 
 ## 남은 할 일
 
@@ -106,12 +147,40 @@
 - [ ] 결과 공유 카드 (맞힌 결과를 이미지로 저장/공유 + "나도 만들기")
 - [ ] santa.moodnight.co.kr 서브도메인을 쓸지 결정 (현재는 /santa/ 경로 사용)
 - [x] 성탄맨션 체험판 `/mansion/demo/`
-- [ ] 성탄맨션 개발: `/mansion/`, 같은 Supabase 프로젝트와 로그인 재사용. 테이블 mansions(주인당 1개), residents(호수, 꾸미기, 편지, 공개 범위), notes(벽보), bans(퇴거). 입주·벽보·퇴거·신고 함수
+- [x] 성탄맨션 개발 (11/9)
 - [ ] 산타의 선물가게 → '산타의 선물가게' 이름 변경 (페이지 제목, OG 이미지, 홈 카드, 약관)
-- [ ] 성탄맨션 공유 미리보기 이미지 `mansion/og.png`
+- [x] 성탄맨션 공유 미리보기 이미지 `mansion/og.png`
 - [ ] 공개 후: 증축 이벤트(꽉 찬 뒤 벽보가 쌓이면 5층 증축), 루돌프네 양말공장 기능
 
 ## 캐롤 (11/9)
 - `music/player.js`: 오른쪽 아래 "♪ 캐롤 켜기" 버튼, 기본 꺼짐, 켜면 랜덤 연속 재생 (같은 곡 연속 안 나옴). 산타·산타 체험판·성탄맨션 체험판에 `<script src="/music/player.js" defer>` 한 줄로 붙임 (맨션 경로에서는 도트 스타일). 성탄맨션 실서비스 페이지에도 같은 한 줄 추가
 - 음원 (11/9, 잔잔한 lo-fi·재즈 4곡): Pixabay "snowy window lofi" by Turning_Pages (455028), "christmas lofi chill beat" by Aventure (439850), "christmas jazz christmas holiday" by Tunetank (347485), "the last table by the window (special christmas mix)" by OpenMindAudio (628307). Pixabay Content License: 상업적 이용 가능, 출처 표시 불필요, 음원 단독 배포 금지. 128kbps로 줄여서 `music/`에 둠. 처음 넣었던 AtlasAudio 6곡은 너무 웅장해서 뺌
 - 공유마당 정부 캐럴(2019, 문체부·저작권위원회 14곡)도 후보. 곡별 이용 조건 확인 후 출처 표시하고 쓰기
+
+## 영어 버전 (11/9 결정)
+- 이름: **Who's My Santa?** (페이지 제목·설명에는 "Secret Santa"를 넣어 검색 챙기기)
+- 계획: 한국어 12/1 공개 후 12/5쯤 `/en/santa/`. 구글 로그인만, 카톡 대신 링크 복사·기본 공유, 쿠팡 대신 아마존 제휴(가입 필요) 또는 링크 없이, 약관·개인정보처리방침 영어판
+- 11/9: 체험판(`/santa/demo/`, `/mansion/demo/`)은 이나님 확인용으로만. 홈·산타 화면의 체험판 버튼 제거, 검색 차단(noindex), sitemap에서 뺌. 주소를 아는 사람만 들어갈 수 있음 (비밀번호는 없음)
+- 11/9: 홈 산타 카드에 실제 숫자 표시 ("지금까지 선물가게 N개, 맡겨진 선물 N개"). Supabase 함수 `public_stats()`(누구나 호출, 숨김 선물 제외)에서 진짜 개수를 가져옴. 선물이 30개(`index.html`의 MIN_GIFTS) 넘으면 자동으로 보임. 숫자를 지어내서 넣지 않기
+
+## 성탄맨션 실제 서비스 (11/9 공개)
+- 이 대화에서 만들고 바로 공개. 다른 대화의 맨션 작업은 멈춤
+- 테이블: `mansions`(주인당 1개, slug, display_name 2~3자), `residents`(호수 12개, 닉네임 1~8자, 꾸미기, 편지 60자, vis all/owner, device), `notes`(벽보 40자, hidden), `mansion_bans`(닉네임·기기), `mansion_reports`. 모두 RLS, 화면은 함수로만 읽고 씀
+- 함수: `get_mansion(slug, device)` (주인만보기 편지는 주인과 쓴 사람에게만), `move_in(...)` (한 기기 한 집, 닉네임 중복·주인 이름·퇴거자 막기), `post_note` (기기당 5장), `evict_resident(id, reason)`, `remove_note(id, reason)` (주인만)
+- 기기 구분: 브라우저 localStorage `mn_device` 무작위 값. 개인정보처리방침에 기재
+- 공유 이미지 `mansion/og.png`, 카톡 공유 제목 "○○의 성탄맨션에 빈 집이 N개 남았어요"
+- 그림 코드는 체험판에서 그대로 가져옴. 그림을 고치면 `mansion/app.js`와 체험판 둘 다 고쳐야 함
+- 12/8은 공개일이 아니라 맨션 홍보를 크게 하는 날로
+
+## 관리자 페이지 (11/9)
+- `/admin/` (검색 차단, robots Disallow). 이나님 카카오·구글 계정만 볼 수 있음 (`public.admins` 테이블에 두 계정 id). 다른 계정은 "관리자가 아니에요"
+- 숫자는 `admin_stats()` 함수 하나로: DB 용량, 회원(카카오/구글), 선물가게·선물·열어봄·맞힘, 맨션·입주·벽보·차단, 오늘/7일 방문자, 재방문, 공유 버튼, 링크 방문, 일간/주간/월간 표, 페이지별 방문, 신고 기록
+- 방문·공유 기록: `track.js`(홈, 읽을거리, 산타, 맨션에 붙음, 체험판·관리실 제외) → `log_event()` → `page_events` 테이블. 같은 기기·같은 페이지 10분 안 재방문은 한 번만. 개인정보처리방침에 기재
+- 관리자 추가: SQL로 `insert into public.admins values ('<user id>')`
+
+## 익명 악용 방지 (2026-11-10 추가)
+
+- 실제 DB에 `anonymous_abuse_quotas_and_manual_moderation` 적용. 소스: `security/anonymous-abuse.sql`.
+- 익명 기기 ID를 신뢰해 자동 숨김 처리하지 않음. 검토 목록은 `/admin/#report`.
+- 방/서비스 공통 저장 한도는 기기 ID·이름 변경과 무관하게 서버에서 적용. 단위 시간과 정확한 한도·운영 주의점: `security/ANONYMOUS_ABUSE.md`.
+- 전체 트래픽 차단이나 사람 인증은 아님. 분산 공격 또는 정상 사용자를 밀어내는 한도 소진 공격은 별도 게이트웨이/봇 방어가 필요.

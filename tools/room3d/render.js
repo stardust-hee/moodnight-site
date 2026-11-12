@@ -1,0 +1,11 @@
+const {chromium}=require('playwright');const fs=require('fs');
+const [,, query, outFile]=process.argv;
+(async()=>{const b=await chromium.launch({args:['--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader','--ignore-gpu-blocklist']});
+const q=new URLSearchParams(query);const w=+(q.get('w')||2000),h=+(q.get('h')||1600);
+const p=await b.newPage({viewport:{width:w,height:h}});p.on('pageerror',e=>console.log('ERR',e.message));p.on('console',m=>{if(m.type()==='error')console.log('CONSOLE',m.text())});
+await p.route('**/*',r=>{const u=new URL(r.request().url());if(u.pathname==='/scene')return r.fulfill({path:__dirname+'/scene.html',contentType:'text/html'});if(u.pathname.startsWith('/three/'))return r.fulfill({path:__dirname+'/node_modules'+u.pathname,contentType:'application/javascript'});return r.abort();});
+await p.goto('http://x.test/scene?'+query);await p.waitForFunction(()=>window.__done,null,{timeout:180000});
+const data=await p.evaluate(()=>document.querySelector('canvas').toDataURL('image/png'));
+fs.writeFileSync(outFile,Buffer.from(data.split(',')[1],'base64'));
+const o=await p.evaluate(()=>window.__out);fs.writeFileSync(outFile+'.json',JSON.stringify(o));
+await b.close();})();

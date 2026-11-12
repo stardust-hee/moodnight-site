@@ -21,8 +21,10 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23151A2E'/%3E%3Cpath d='M21 7a9 9 0 1 0 5 15A10 10 0 0 1 21 7z' fill='%23F2C46B'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&family=Gowun+Dodum&display=swap">
-<link rel="stylesheet" href="/style.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="/style.css?v=7">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2331460749309543" crossorigin="anonymous"></script>
 </head>
 <body>
 
@@ -34,6 +36,7 @@
     </a>
     <nav class="nav" aria-label="주요 메뉴">
       <a href="#services">서비스</a>
+      <a href="#mind">마음 챙기기</a>
       <a href="#how">이용 방법</a>
       <a href="#safety">안심하고 놀기</a>
       <a href="#faq">자주 묻는 질문</a>
@@ -44,6 +47,8 @@
 </header>
 
 <main>
+  <div class="notice-bar" id="policyNotice"><div class="wrap"><b>안내</b> 11월 17일부터 지난 크리스마스를 다시 볼 수 있도록 선물가게와 맨션을 시즌이 끝난 뒤에도 보관해요. 방 주인은 언제든 직접 삭제할 수 있어요. <a href="/privacy.html#history">개인정보처리방침 변경 보기</a></div></div>
+  <script>try{if(Date.now()>new Date("2026-12-01T00:00:00+09:00").getTime())document.getElementById("policyNotice").remove()}catch(e){}</script>
   <section class="hero">
     <div class="wrap">
       <div class="hero-copy">
@@ -51,7 +56,7 @@
         <h1>링크 하나로<br>친구들과 함께 여는 <em>겨울밤</em></h1>
         <p class="lead">무드나잇은 친구들이 함께 참여해야 완성되는 시즌 웹 놀이를 만듭니다. 앱 설치 없이 카카오톡이나 인스타그램으로 링크만 공유하면 바로 시작할 수 있어요.</p>
         <div class="btns">
-          <a class="btn" href="#services">서비스 보기</a>
+          <a class="btn" href="/santa/">내 선물가게 만들기</a>
           <a class="btn line" href="#how">어떻게 노나요?</a>
         </div>
       </div>
@@ -67,32 +72,81 @@
       <div class="sec-head">
         <span class="eyebrow">SERVICES</span>
         <h2>이번 겨울, 무드나잇에서 열리는 놀이</h2>
-        <p class="lead">두 서비스 모두 무료이며, 2026년 12월 크리스마스 시즌에 맞춰 순서대로 열립니다.</p>
+        <p class="lead">모두 무료이고, 지금 바로 만들 수 있어요. 친구들에게 링크만 보내면 시작돼요.</p>
       </div>
       <div class="services">
         <article class="svc santa">
-          <div class="svc-top"><h3>산타의 선물가게</h3><span class="badge">베타 오픈</span></div>
-          <a class="svc-shot" href="/santa/"><img src="/santa/thumb.jpg" alt="트리 아래 친구들이 맡긴 선물 상자가 쌓인 산타의 선물가게 방" width="800" height="640" loading="lazy"><span>선물가게 들어가기</span></a>
+          <div class="svc-top"><h3>산타의 선물가게</h3><span class="badge">지금 열려 있어요</span></div>
+          <a class="svc-shot" href="/santa/"><img src="/santa/thumb.jpg?v=5" alt="로우폴리 3D로 그린 아늑한 방, 큰 트리 아래 친구들이 맡긴 선물 상자가 쌓인 산타의 선물가게" width="800" height="640" loading="lazy"><span>선물가게 들어가기</span></a>
           <p>친구들이 내게 어울리는 선물 상자를 골라 익명으로 메시지를 남겨요. 크리스마스에 선물을 열고, 단서를 보며 누가 보냈는지 맞히는 추리 게임이에요.</p>
           <ul>
             <li>포장지와 상자 속 선물을 친구가 직접 골라요</li>
             <li>크리스마스 전에는 상자를 흔들어 소리만 들을 수 있어요</li>
             <li>양말부터 플스까지, 상자 속 선물은 실제 상품 중에서 골라요</li>
           </ul>
-          <div class="btns"><a class="btn" href="/santa/">내 선물가게 만들기</a><a class="btn line" href="/santa/demo/">체험판</a></div>
+          <p class="live-stats" id="liveStats" hidden></p>
+          <div class="btns"><a class="btn" href="/santa/">내 선물가게 만들기</a></div>
           <span class="addr">moodnight.co.kr/santa</span>
         </article>
         <article class="svc snow">
-          <div class="svc-top"><h3>성탄맨션</h3><span class="badge">오픈 준비 중</span></div>
-          <a class="svc-shot px" href="/mansion/demo/"><img src="/mansion/preview.webp" alt="성탄맨션 체험판 화면. 눈 내리는 밤, 창문마다 불이 켜진 도트 맨션과 1층 산타의 선물가게, 루돌프네 양말공장" width="960" height="720" loading="lazy"><span>체험판 화면</span></a>
+          <div class="svc-top"><h3>성탄맨션</h3><span class="badge">지금 열려 있어요</span></div>
+          <a class="svc-shot px" href="/mansion/"><img src="/mansion/preview.webp" alt="눈 내리는 밤, 창문마다 불이 켜진 도트 맨션과 1층 산타의 선물가게, 루돌프네 양말공장" width="960" height="720" loading="lazy"><span>맨션 들어가기</span></a>
           <p>눈 내리는 밤, 내 이름이 붙은 작은 맨션 한 동이 생겨요. 링크를 받은 친구가 빈 집에 입주해 창문에 불을 켜고, 베란다를 꾸미고, 말풍선으로 한마디를 남겨요.</p>
           <ul>
             <li>집은 딱 12채, 못 들어온 친구는 벽보에 한마디</li>
             <li>편지는 바로 읽고, 친구가 '주인만 보기'로 숨길 수도 있어요</li>
             <li>1층에는 산타의 선물가게가 있어요</li>
           </ul>
-          <a class="btn" href="/mansion/demo/">체험판 미리 보기</a>
-          <span class="addr">12월 8일쯤 오픈</span>
+          <div class="btns"><a class="btn" href="/mansion/">내 맨션 만들기</a></div>
+          <span class="addr">moodnight.co.kr/mansion</span>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="mind">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">MIND CARE</span>
+        <h2>무드나잇에서 마음 챙기기</h2>
+        <p class="lead">시즌이 지나도 늘 열려 있어요. 로그인 없이, 마음이 복잡한 밤엔 산사에서 비우고, 화가 나는 날엔 박살방에서 터뜨리고, 기분 전환이 필요할 땐 나만의 트레이를 꾸며 보세요.</p>
+      </div>
+      <div class="services">
+        <article class="svc sansa">
+          <div class="svc-top"><h3>무드나잇 산사</h3><span class="badge">늘 열려 있어요</span></div>
+          <a class="svc-shot px" href="/sansa/"><img src="/sansa/preview.webp" alt="밤하늘에 빨강, 노랑, 초록, 파랑, 보라, 흰색 도트 연등이 둥둥 떠 있는 무드나잇 산사" width="800" height="600" loading="lazy"><span>산사 들어가기</span></a>
+          <p>밤늦게 문을 여는 작은 온라인 절이에요. 마음에 걸린 걸 적고 목탁을 두드려 흩어 보내면, 스님이 한마디 건네요. 비운 자리엔 연등이나 기와에 소원을 남겨요.</p>
+          <ul>
+            <li>목탁 탁탁탁, 적은 번뇌는 어디에도 저장되지 않아요</li>
+            <li>색마다 뜻이 담긴 연등, 흰 등은 그리운 사람에게</li>
+            <li>모두의 기와가 모여 대웅전 지붕을 한 채씩 지어요</li>
+          </ul>
+          <div class="btns"><a class="btn" href="/sansa/">산사 들어가기</a></div>
+          <span class="addr">moodnight.co.kr/sansa</span>
+        </article>
+        <article class="svc smash">
+          <div class="svc-top"><h3>박살방</h3><span class="badge">늘 열려 있어요</span></div>
+          <a class="svc-shot px" href="/smash/"><img src="/smash/preview.webp" alt="야근 중인 엑셀 화면에 거미줄 금이 가고 유리 조각이 튀는 도트 모니터, 박살방" width="800" height="600" loading="lazy"><span>박살방 들어가기</span></a>
+          <p>오늘도 빡쳤다면 일단 부숴요. 키보드, 모니터, 머그컵을 망치로 내리치면 누른 자리가 깨지고, 마지막 한 방에 와장창 산산조각 나요.</p>
+          <ul>
+            <li>꾹 누르면 힘을 모아 더 세게 내리쳐요</li>
+            <li>키캡이 튀고, 유리가 갈라지고, 커피가 쏟아져요</li>
+            <li>오늘 빡친 일을 쪽지로 붙여 같이 부술 수 있어요</li>
+          </ul>
+          <div class="btns"><a class="btn" href="/smash/">박살방 들어가기</a></div>
+          <span class="addr">moodnight.co.kr/smash</span>
+        </article>
+        <article class="svc tray">
+          <div class="svc-top"><h3>Silver Tray Studio</h3><span class="badge">늘 열려 있어요</span></div>
+          <a class="svc-shot" href="/tray/"><img src="/tray/preview.webp" alt="빈티지 은 트레이 위에 시계, 핸드크림, 반지, 하트 오브제, 향수를 올려 둔 스틸 라이프" width="800" height="600" loading="lazy"><span>트레이 꾸미러 가기</span></a>
+          <p>조금씩 모아 둔 나의 취향을 은빛 트레이 위에 담아 보세요. 향수, 시계, 반지, 필름 사진 같은 소품을 올려 사진처럼 꾸미고 이미지로 저장해요.</p>
+          <ul>
+            <li>트레이 4종과 소품 20종, 내 사진도 올릴 수 있어요</li>
+            <li>끌어서 옮기고 크기와 각도를 자유롭게 바꿔요</li>
+            <li>완성한 트레이는 이미지로 저장하거나 링크로 공유해요</li>
+          </ul>
+          <div class="btns"><a class="btn" href="/tray/">트레이 꾸미기</a></div>
+          <span class="addr">moodnight.co.kr/tray</span>
         </article>
       </div>
     </div>
@@ -102,9 +156,16 @@
     <div class="wrap">
       <div class="sec-head">
         <span class="eyebrow">HOW IT WORKS</span>
-        <h2>산타의 선물가게는 이렇게 놀아요</h2>
+        <h2>이렇게 놀아요</h2>
       </div>
-      <ol class="steps">
+      <div class="how-tabs" role="tablist" aria-label="서비스별 이용 방법">
+        <button role="tab" class="santa" aria-selected="true" aria-controls="how-santa" id="tab-santa">산타의 선물가게</button>
+        <button role="tab" class="snow" aria-selected="false" aria-controls="how-mansion" id="tab-mansion">성탄맨션</button>
+        <button role="tab" class="sansa" aria-selected="false" aria-controls="how-sansa" id="tab-sansa">무드나잇 산사</button>
+        <button role="tab" class="smash" aria-selected="false" aria-controls="how-smash" id="tab-smash">박살방</button>
+        <button role="tab" class="tray" aria-selected="false" aria-controls="how-tray" id="tab-tray">Silver Tray Studio</button>
+      </div>
+      <ol class="steps" role="tabpanel" id="how-santa" aria-labelledby="tab-santa">
         <li>
           <h3>선물가게 만들기</h3>
           <p>카카오 로그인 한 번이면 나만의 선물가게 링크가 생겨요. 선물을 받는 사람만 로그인하면 돼요.</p>
@@ -116,6 +177,62 @@
         <li>
           <h3>크리스마스에 열고 맞히기</h3>
           <p>12월 25일 0시(한국 시간)에 모든 선물이 열려요. 메시지를 읽고 단서를 보며 보낸 친구를 맞혀 보세요.</p>
+        </li>
+      </ol>
+      <ol class="steps" role="tabpanel" id="how-mansion" aria-labelledby="tab-mansion" hidden>
+        <li>
+          <h3>맨션 만들기</h3>
+          <p>카카오나 구글로 로그인하면 내 이름이 붙은 맨션 한 동이 생겨요. 4층에 집이 딱 12채, 지금은 전부 빈 집이에요.</p>
+        </li>
+        <li>
+          <h3>링크 보내고 입주 받기</h3>
+          <p>링크를 받은 친구는 로그인 없이 빈 집을 골라 입주해요. 창문 불빛, 창에 비치는 그림자, 베란다 소품을 고르고 말풍선 편지를 남겨요. 집을 못 구한 친구는 1층 벽보에 한마디.</p>
+        </li>
+        <li>
+          <h3>불 켜진 창문 구경하기</h3>
+          <p>불이 켜진 창문을 누르면 집 안 모습과 편지가 보여요. 편지는 바로 읽을 수 있고, 친구가 '주인만 보기'로 남기면 집주인만 볼 수 있어요.</p>
+        </li>
+      </ol>
+      <ol class="steps" role="tabpanel" id="how-sansa" aria-labelledby="tab-sansa" hidden>
+        <li>
+          <h3>번뇌 적고 목탁 치기</h3>
+          <p>산문에 들어가 스님께 인사하고, 마음에 걸린 걸 적어요. 목탁을 탁탁 두드릴 때마다 글자가 하나씩 흩어져 사라져요. 적은 글은 어디에도 저장되지 않아요.</p>
+        </li>
+        <li>
+          <h3>스님 한마디 듣기</h3>
+          <p>번뇌를 다 내려놓으면 스님이 한마디 건네요. 마음이 놓이는 말일 때도, "일단 주무세요" 같은 현실 조언일 때도 있어요.</p>
+        </li>
+        <li>
+          <h3>연등이나 기와에 소원 남기기</h3>
+          <p>비운 자리에 연등을 띄우거나 기와에 소원을 적어 올려요. 연등은 색마다 뜻이 있고, 흰 등은 그리운 사람에게 띄워요. 로그인 없이 이름도 남지 않아요.</p>
+        </li>
+      </ol>
+      <ol class="steps" role="tabpanel" id="how-tray" aria-labelledby="tab-tray" hidden>
+        <li>
+          <h3>트레이 고르기</h3>
+          <p>사각, 로코코, 빈티지, 하트 트레이 중 하나를 골라요. 로그인 없이 바로 시작해요.</p>
+        </li>
+        <li>
+          <h3>소품 올리고 꾸미기</h3>
+          <p>소품을 누르면 트레이에 올라가요. 끌어서 옮기고 크기·각도·순서를 바꾸고, 내 사진도 올릴 수 있어요. 작업은 이 브라우저에 자동 저장돼요.</p>
+        </li>
+        <li>
+          <h3>저장하고 공유하기</h3>
+          <p>완성한 트레이를 이미지로 저장하거나, 링크를 복사해 친구에게 보내요. 링크를 열면 같은 배치가 그대로 보여요.</p>
+        </li>
+      </ol>
+      <ol class="steps" role="tabpanel" id="how-smash" aria-labelledby="tab-smash" hidden>
+        <li>
+          <h3>부술 물건 고르기</h3>
+          <p>키보드, 모니터, 머그컵 중 하나를 골라요. 오늘 빡친 일을 적으면 노란 쪽지로 물건에 붙어요.</p>
+        </li>
+        <li>
+          <h3>누른 자리를 내리치기</h3>
+          <p>화면을 누른 바로 그 자리가 깨져요. 꾹 누르고 있으면 힘이 모여서, 놓는 순간 훨씬 세게 내리쳐요.</p>
+        </li>
+        <li>
+          <h3>와장창</h3>
+          <p>내구도가 0이 되면 물건이 산산조각 나요. 로그인 없이, 적은 글은 어디에도 저장되지 않아요.</p>
         </li>
       </ol>
     </div>
@@ -134,8 +251,8 @@
           <p>받는 사람은 원하지 않는 선물을 바로 숨길 수 있어요. 욕설이나 괴롭힘은 신고 버튼으로 알려 주시면 운영자가 확인 후 삭제합니다.</p>
         </div>
         <div>
-          <h3>시즌이 끝나면 삭제</h3>
-          <p>선물가게, 메시지, 맨션 기록은 2027년 1월 31일에 모두 지워요. 필요한 정보만 받고, 오래 보관하지 않습니다.</p>
+          <h3>지우고 싶을 땐 언제든</h3>
+          <p>지난 크리스마스를 다시 볼 수 있도록 선물가게와 맨션은 시즌이 끝나도 보관해요. 방 주인이 직접 삭제하거나 2년 동안 쓰지 않으면 파기하고, 필요한 정보만 받습니다.</p>
         </div>
         <div>
           <h3>모든 기능 무료</h3>
@@ -174,7 +291,7 @@
         </details>
         <details>
           <summary>내 기록은 언제 지워지나요?</summary>
-          <p>시즌이 끝난 뒤 2027년 1월 31일에 모든 기록을 일괄 삭제해요. 그전에 직접 삭제하고 싶다면 설정 화면에서 지우거나 문의 메일로 요청해 주세요.</p>
+          <p>선물가게와 맨션은 지난 크리스마스를 다시 볼 수 있도록 시즌이 끝나도 보관해요. 방 주인이 설정 화면에서 직접 삭제하거나, 탈퇴하거나, 2년 동안 이용하지 않으면 파기해요. 친구로 참여해 남긴 메시지·편지나 산사의 연등·기와를 지우고 싶다면 moodnight@kakao.com으로 요청해 주세요.</p>
         </details>
       </div>
     </div>
@@ -245,6 +362,57 @@
     if(!still) requestAnimationFrame(draw);
   }
   draw(0);
+})();
+</script>
+<script>
+/* 실제 숫자 표시: 서버(public_stats)에서 진짜 개수를 가져와요. 선물이 MIN_GIFTS개 넘으면 보여요 */
+(function () {
+  const MIN_GIFTS = 30;
+  fetch("https://gbmlkyfguktjtroczqfw.supabase.co/rest/v1/rpc/public_stats", {
+    method: "POST",
+    headers: { "apikey": "sb_publishable_RO92ntdlSM5_Urctc5FD9w_4OHcZQzf", "Content-Type": "application/json" },
+    body: "{}"
+  }).then(r => r.ok ? r.json() : null).then(d => {
+    if (!d || d.gifts < MIN_GIFTS) return;
+    const el = document.getElementById("liveStats"), n = x => Number(x).toLocaleString("ko-KR");
+    el.innerHTML = `<span class="dot"></span><span>지금까지 선물가게 <b>${n(d.rooms)}</b>개, 맡겨진 선물 <b>${n(d.gifts)}</b>개</span>`;
+    el.hidden = false;
+  }).catch(() => {});
+})();
+</script>
+<script>
+(function(){
+  var tabs=[].slice.call(document.querySelectorAll('.how-tabs [role=tab]'));
+  function pick(t){ tabs.forEach(function(x){ var on=x===t; x.setAttribute('aria-selected',on); x.tabIndex=on?0:-1; document.getElementById(x.getAttribute('aria-controls')).hidden=!on; }); }
+  tabs.forEach(function(t,i){
+    t.addEventListener('click',function(){ pick(t); });
+    t.addEventListener('keydown',function(e){ var d=e.key==='ArrowRight'?1:e.key==='ArrowLeft'?-1:0; if(d){ var n=tabs[(i+d+tabs.length)%tabs.length]; pick(n); n.focus(); } });
+  });
+  // 서비스 카드의 '들어가기' 근처에서 온 해시(#how-sansa 등)로 바로 열기
+  var h=location.hash.replace('#','');
+  tabs.forEach(function(t){ if(t.getAttribute('aria-controls')===h) pick(t); });
+})();
+</script>
+<script src="/track.js?v=3" defer></script>
+<script>
+/* 관리자(이나님)로 로그인돼 있을 때만 메뉴에 '관리실' 링크를 보여 줘요. 로그인 기록이 없으면 아무것도 안 불러와요 */
+(function () {
+  let has = false; try { has = !!localStorage.getItem("sb-gbmlkyfguktjtroczqfw-auth-token"); } catch (e) {}
+  if (!has) return;
+  const s = document.createElement("script");
+  s.src = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js";
+  s.onload = async () => {
+    try {
+      const sb = supabase.createClient("https://gbmlkyfguktjtroczqfw.supabase.co", "sb_publishable_RO92ntdlSM5_Urctc5FD9w_4OHcZQzf");
+      const { data: { session } } = await sb.auth.getSession(); if (!session) return;
+      const { data } = await sb.rpc("is_admin"); if (data !== true) return;
+      try { const d = localStorage.getItem("mn_device"); if (d) sb.rpc("mark_admin_device", { p_device: d }).then(() => {}, () => {}); } catch (e) {}
+      const nav = document.querySelector(".site-head .nav"); if (!nav || nav.querySelector("[data-admin]")) return;
+      const a = document.createElement("a"); a.href = "/admin/"; a.textContent = "관리실"; a.dataset.admin = "1"; a.style.color = "var(--lamp)";
+      nav.appendChild(a);
+    } catch (e) {}
+  };
+  document.head.appendChild(s);
 })();
 </script>
 </body>

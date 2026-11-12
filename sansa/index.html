@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<title>무드나잇 산사 | 무드나잇</title>
+<meta name="description" content="밤늦게 문을 여는 작은 온라인 절. 목탁을 두드려 번뇌를 흩어 보내고, 스님 한마디를 듣고, 연등과 기와에 소원을 남겨요. 로그인 없이 1분.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="무드나잇">
+<meta property="og:title" content="무드나잇 산사">
+<meta property="og:description" content="목탁 탁탁탁, 번뇌는 흩어 보내고 소원은 연등에. 그리운 사람에게 닿지 못한 말도 등불에 실어 보내요.">
+<meta property="og:image" content="https://www.moodnight.co.kr/sansa/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://www.moodnight.co.kr/sansa/">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 11 14' shape-rendering='crispEdges'%3E%3Crect width='11' height='14' fill='%230a0e1d'/%3E%3Crect x='5' y='0' width='1' height='3' fill='%233a2418'/%3E%3Crect x='2' y='3' width='7' height='7' fill='%23e0553f'/%3E%3Crect x='3' y='4' width='1' height='4' fill='%23ffb199'/%3E%3Crect x='3' y='10' width='5' height='1' fill='%23a8342a'/%3E%3Crect x='4' y='11' width='3' height='2' fill='%23e3c27a'/%3E%3C/svg%3E">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2331460749309543" crossorigin="anonymous"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Nanum+Brush+Script&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sky1:#0a0e1d; --sky2:#141b33; --gold:#e3c27a; --paper:#f3e6c8;
+    --ink:#e9e3d3; --dim:#8d93a8; --wood:#a0612b; --red:#b8433a;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:'Gowun Batang',serif; color:var(--ink);
+    background:linear-gradient(180deg,var(--sky1) 0%,var(--sky2) 70%,#1d1a2a 100%);
+    overflow:hidden; touch-action:manipulation; -webkit-user-select:none; user-select:none;
+    -webkit-tap-highlight-color:transparent;
+  }
+  #app{position:relative; max-width:480px; height:100dvh; margin:0 auto; overflow:hidden}
+  svg{display:block; image-rendering:pixelated}
+
+  /* sky */
+  .star{position:absolute; width:2px; height:2px; background:#fff8dc; opacity:.6; animation:tw 3s infinite}
+  .star.b{width:3px;height:3px}
+  @keyframes tw{0%,100%{opacity:.25}50%{opacity:.9}}
+  #moon{position:absolute; width:44px; left:24px; top:23%; filter:drop-shadow(0 0 14px rgba(243,230,200,.35))}
+
+  /* roof + chime */
+  #roof{position:absolute; top:0; left:-4%; width:108%; aspect-ratio:60/14; z-index:3}
+  #chime{position:absolute; left:88%; top:38%; width:26px; transform-origin:50% 0; z-index:4}
+  #chime.swing{animation:swing 2.4s ease-out}
+  @keyframes swing{0%{transform:rotate(0)}15%{transform:rotate(9deg)}35%{transform:rotate(-7deg)}55%{transform:rotate(4deg)}75%{transform:rotate(-2deg)}100%{transform:rotate(0)}}
+
+  #soundBtn{
+    position:absolute; z-index:10; right:14px; bottom:calc(14px + env(safe-area-inset-bottom));
+    background:rgba(255,255,255,.07); color:var(--dim); border:1px solid rgba(255,255,255,.12);
+    font:inherit; font-size:14px; padding:8px 13px; border-radius:20px; cursor:pointer;
+  }
+  #counter{
+    position:absolute; z-index:10; left:14px; bottom:calc(18px + env(safe-area-inset-bottom));
+    font-size:14px; color:var(--dim);
+  }
+  #counter b{color:var(--gold); font-weight:700}
+
+  /* screens */
+  .screen{position:absolute; inset:0; z-index:5; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    padding:90px 26px 70px; text-align:center; opacity:0; pointer-events:none; transition:opacity .6s;
+    overflow-y:auto; -webkit-overflow-scrolling:touch}
+  .screen > :first-child{margin-top:auto} .screen > :last-child{margin-bottom:auto}
+  .screen.on{opacity:1; pointer-events:auto}
+  h1{font-size:33px; font-weight:700; letter-spacing:2px; color:var(--paper)}
+  .sub{margin-top:10px; color:var(--dim); font-size:17px; line-height:1.6}
+  .btn{
+    margin-top:28px; font:inherit; font-size:16px; font-weight:700; color:#2a1a0c; background:var(--gold);
+    border:none; padding:14px 26px; border-radius:4px; cursor:pointer;
+    box-shadow:0 4px 0 #8a6a2c; transition:transform .08s, box-shadow .08s;
+  }
+  .btn:active{transform:translateY(3px); box-shadow:0 1px 0 #8a6a2c}
+  .btn:disabled{opacity:.35; cursor:default}
+  .btn.ghost{background:transparent; color:var(--paper); box-shadow:none; border:1px solid rgba(243,230,200,.3); font-weight:400}
+  .hint{margin-top:16px; font-size:14px; color:var(--dim)}
+
+  /* write */
+  .label{font-size:21px; color:var(--paper); line-height:1.5}
+  textarea{
+    margin-top:20px; width:100%; height:130px; resize:none; font:inherit; font-size:16px; line-height:1.6;
+    color:#3a2a18; background:var(--paper); border:none; border-radius:3px; padding:14px 16px;
+    box-shadow:inset 0 0 0 3px #d6c49c; outline:none; -webkit-user-select:text; user-select:text;
+  }
+  .count{align-self:flex-end; margin-top:6px; font-size:14px; color:var(--dim)}
+
+  /* moktak */
+  #worry{
+    min-height:60px; max-width:100%; font-size:18px; line-height:1.7; color:var(--paper);
+    word-break:keep-all; overflow-wrap:anywhere; margin-bottom:22px;
+  }
+  #worry span{display:inline-block; transition:transform 1.1s ease-out, opacity 1.1s ease-out, filter 1.1s}
+  #worry span.sp{width:.3em}
+  #worry span.gone{opacity:0; filter:blur(2px); transform:translate(var(--dx),-70px) rotate(var(--r)) scale(.6)}
+  #stage{position:relative; width:230px; height:200px; cursor:pointer}
+  #stage.shake{animation:shk .12s}
+  @keyframes shk{0%{transform:translate(0)}30%{transform:translate(-3px,2px)}60%{transform:translate(3px,-1px)}100%{transform:translate(0)}}
+  #moktak{position:absolute; left:15px; bottom:0; width:190px; filter:drop-shadow(0 10px 18px rgba(0,0,0,.5))}
+  #mallet{position:absolute; right:-6px; top:-10px; width:96px; transition:transform .07s}
+  #mallet.hit{transform:translate(-16px,18px)}
+  .tak{position:absolute; font-weight:700; font-size:26px; color:var(--gold); pointer-events:none;
+    text-shadow:0 2px 0 #5a3d12; animation:pop .7s ease-out forwards}
+  @keyframes pop{0%{opacity:0; transform:translateY(0) scale(.6)}20%{opacity:1; transform:translateY(-8px) scale(1.15)}100%{opacity:0; transform:translateY(-46px) scale(1)}}
+  #beads{display:flex; flex-wrap:wrap; justify-content:center; gap:6px; margin-top:26px; max-width:280px}
+  .bead{width:11px; height:11px; border-radius:50%; background:#2b2f45; box-shadow:inset 0 -2px 0 rgba(0,0,0,.4); transition:background .2s}
+  .bead.on{background:#8a4f22; box-shadow:inset 0 -2px 0 #4d2a10, 0 0 6px rgba(227,194,122,.5)}
+  #tapHint{margin-top:14px; font-size:16px; color:var(--dim)}
+
+  /* done */
+  #doneTitle{font-size:21px; color:var(--paper)}
+  #monk{width:72px; margin-top:26px}
+  .bubble{
+    position:relative; margin-top:16px; width:100%; background:var(--paper); color:#3a2a18; border-radius:4px;
+    padding:18px 18px 14px; font-size:18px; line-height:1.7; min-height:96px; word-break:keep-all; text-align:left;
+    box-shadow:inset 0 0 0 3px #d6c49c;
+  }
+  .bubble:before{content:''; position:absolute; top:-10px; left:50%; margin-left:-8px; border:8px solid transparent; border-top:0; border-bottom:10px solid #d6c49c}
+  .sign{display:block; text-align:right; margin-top:8px; font-size:13px; color:#8b7550; opacity:0; transition:opacity .6s}
+  .sign.on{opacity:1}
+  .row{display:flex; gap:10px; margin-top:24px; flex-wrap:wrap; justify-content:center}
+  .row .btn{margin-top:0}
+  .soon{font-size:11px; display:block; font-weight:400; opacity:.8}
+
+  /* 연등 쓰기 */
+  #lPreview{width:84px; margin-top:18px; transition:filter .3s}
+  #colors{display:flex; gap:12px; margin-top:18px}
+  .cbtn{width:30px; height:30px; border-radius:50%; border:2px solid transparent; cursor:pointer; box-shadow:inset 0 -3px 0 rgba(0,0,0,.25)}
+  .cbtn.sel{border-color:var(--paper); transform:scale(1.12)}
+  #cMean{margin-top:12px; font-size:17px; color:var(--paper); display:flex; align-items:center; gap:8px; justify-content:center}
+  #cMean i{display:inline-block; width:10px; height:10px; border-radius:50%}
+  #colors{flex-wrap:wrap; justify-content:center}
+  #wishInput{
+    margin-top:18px; width:100%; font:inherit; font-size:16px; color:#3a2a18; background:var(--paper);
+    border:none; border-radius:3px; padding:12px 14px; box-shadow:inset 0 0 0 3px #d6c49c; outline:none;
+    -webkit-user-select:text; user-select:text; text-align:center;
+  }
+
+  /* 연등 하늘 */
+  #s-sky{justify-content:flex-start; padding:0}
+  #skyHead{position:relative; z-index:6; margin-top:96px; font-size:16px; color:var(--dim); line-height:1.6}
+  #skyHead b{color:var(--paper); font-size:18px; font-weight:700; display:block}
+  #lanterns{position:absolute; inset:0; z-index:5}
+  .lantern{position:absolute; width:30px; cursor:pointer; transform:translate(-50%,-50%); padding:6px; box-sizing:content-box}
+  .lantern .bob{animation:bob var(--dur,5s) ease-in-out infinite; animation-delay:var(--delay,0s)}
+  .lantern svg{filter:drop-shadow(0 0 8px var(--glow)) drop-shadow(0 0 18px var(--glow))}
+  .lantern.mine svg{filter:drop-shadow(0 0 10px var(--glow)) drop-shadow(0 0 26px var(--glow)) brightness(1.15)}
+  .lantern.rise{animation:rise 3.6s cubic-bezier(.2,.7,.3,1) both}
+  @keyframes bob{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-7px) rotate(2deg)}}
+  @keyframes rise{0%{opacity:0; transform:translate(-50%, calc(-50% + 70vh)) scale(1.3)}15%{opacity:1}100%{opacity:1; transform:translate(-50%,-50%) scale(1)}}
+  #skyBtns{position:absolute; z-index:7; left:0; right:0; bottom:calc(58px + env(safe-area-inset-bottom)); display:flex; gap:10px; justify-content:center}
+  #skyBtns .btn{margin-top:0; font-size:14px; padding:11px 18px}
+  #demoNote{position:absolute; z-index:6; left:0; right:0; bottom:calc(118px + env(safe-area-inset-bottom)); font-size:11px; color:#5d6380}
+
+  #card{position:absolute; inset:0; z-index:20; display:flex; align-items:center; justify-content:center; background:rgba(5,7,15,.55);
+    opacity:0; pointer-events:none; transition:opacity .3s}
+  #card.on{opacity:1; pointer-events:auto}
+  #cardIn{width:78%; max-width:320px; background:var(--paper); color:#3a2a18; border-radius:4px; padding:22px 20px 16px; text-align:center;
+    box-shadow:inset 0 0 0 3px #d6c49c, 0 20px 50px rgba(0,0,0,.5); transform:translateY(10px) scale(.96); transition:transform .3s}
+  #card.on #cardIn{transform:none}
+  #cardIcon{width:40px; margin:0 auto 12px}
+  #cardText{font-size:18px; line-height:1.6; word-break:keep-all}
+  #cardWho{margin-top:12px; font-size:14px; color:#8b7550}
+  #cardText.brush{font-family:'Nanum Brush Script',cursive; font-size:30px; line-height:1.3}
+
+  /* 기와 쓰기 */
+  .row .btn{padding:12px 16px; font-size:15px}
+  #bigTile{position:relative; margin-top:18px; width:168px; height:216px; display:flex; align-items:center; justify-content:center; padding-top:44px;
+    filter:drop-shadow(0 14px 18px rgba(0,0,0,.5))}
+  #bigTileArt{position:absolute; inset:0}
+  #bigTileArt svg{width:100%; height:100%}
+  #tcolors{display:flex; gap:12px; margin-top:18px}
+  #tileText{position:relative; z-index:1; font-family:'Nanum Brush Script',cursive; font-size:34px; color:#f7efda; padding:0 14px; line-height:1.15; word-break:keep-all;
+    text-shadow:0 1px 0 rgba(0,0,0,.4)}
+  #tileText.empty{color:rgba(242,233,211,.28)}
+  #tileInput{
+    margin-top:22px; width:100%; font:inherit; font-size:16px; color:#3a2a18; background:var(--paper);
+    border:none; border-radius:3px; padding:12px 14px; box-shadow:inset 0 0 0 3px #d6c49c; outline:none;
+    -webkit-user-select:text; user-select:text; text-align:center;
+  }
+
+  /* 기와 지붕 */
+  #s-roof{justify-content:center; padding-top:80px}
+  #roofHead{font-size:16px; color:var(--dim); line-height:1.6; margin-bottom:16px}
+  #roofHead b{color:var(--paper); font-size:18px; font-weight:700; display:block}
+  #roofWrap{width:100%; max-width:340px; display:flex; flex-direction:column; align-items:center}
+  #roofWrap.thud{animation:shk .14s}
+  #ridge{width:100%; height:12px; background:#1d1f25; border-top:3px solid #3a3e48; position:relative; z-index:1}
+  #ridge:before,#ridge:after{content:''; position:absolute; top:-9px; width:10px; height:16px; background:#c9a35a; border:2px solid #1d1f25}
+  #ridge:before{left:-8px} #ridge:after{right:-8px}
+  #tiles{display:flex; flex-direction:column; align-items:center}
+  #tiles{width:100%; background:#0d0f14; box-shadow:0 0 0 3px #1d1f25}
+  #tiles svg{width:100%; height:auto}
+  #tiles g.tg:not(.empty){cursor:pointer}
+  #tiles g.drop{animation:drop2 .7s cubic-bezier(.3,1.4,.6,1) both}
+  @keyframes drop2{0%{transform:translateY(-40px); opacity:0}40%{opacity:1}100%{transform:none; opacity:1}}
+  #tiles g.mine{animation:glint 2.4s ease-in-out infinite}
+  @keyframes glint{0%,100%{opacity:1}50%{opacity:.78}}
+  .trow{display:flex; margin-top:-9px; position:relative}
+  .chan{width:18px; flex:none}
+  .trow:first-child{margin-top:0}
+  .tile{width:36px; flex:none; cursor:pointer; position:relative; margin:0 -1px}
+  .tile svg{filter:drop-shadow(0 3px 0 rgba(0,0,0,.5))}
+  .tile.empty{opacity:.14; cursor:default}
+  .tile.mine{z-index:2}
+  .tile.mine svg{filter:drop-shadow(0 3px 0 rgba(0,0,0,.45)) drop-shadow(0 0 7px rgba(240,207,124,.9))}
+  .tile.drop{animation:drop .7s cubic-bezier(.3,1.4,.6,1) both}
+  @keyframes drop{0%{transform:translateY(-140px); opacity:0}40%{opacity:1}100%{transform:none; opacity:1}}
+  #eave{width:100%; height:10px; margin-top:-3px; background:repeating-linear-gradient(90deg,#6b3a17 0 10px,#8a4f22 10px 14px); border-bottom:3px solid #3a1d0e}
+  #roofCount{margin-top:14px; font-size:15px; color:var(--dim)}
+  #roofCount b{color:var(--gold)}
+  .demo2{margin-top:6px; font-size:11px; color:#5d6380}
+
+  /* 스님 인사 */
+  #monk2{width:64px; animation:bow 3.2s ease-in-out infinite}
+  @keyframes bow{0%,80%,100%{transform:none}88%{transform:translateY(3px) scaleY(.96)}}
+  #s-greet .bubble{margin-top:14px; min-height:80px}
+  #choices{width:100%; margin-top:16px; display:flex; flex-direction:column; gap:8px; opacity:0; transform:translateY(8px); transition:opacity .5s, transform .5s; pointer-events:none}
+  #choices.on{opacity:1; transform:none; pointer-events:auto}
+  .choice{display:flex; flex-direction:column; align-items:flex-start; gap:2px; width:100%; text-align:left; font:inherit; color:var(--paper);
+    background:rgba(255,255,255,.05); border:1px solid rgba(243,230,200,.18); border-radius:4px; padding:11px 14px; cursor:pointer}
+  .choice:active{background:rgba(227,194,122,.15)}
+  .choice b{font-size:18px} .choice small{font-size:14px; color:#a7adc2}
+
+  /* 햄버거 메뉴 */
+  #menuBtn{position:absolute; z-index:30; left:12px; top:calc(10px + env(safe-area-inset-top)); width:40px; height:40px; border-radius:6px;
+    background:rgba(10,14,29,.75); border:1px solid rgba(243,230,200,.25); display:flex; flex-direction:column; justify-content:center; align-items:center; gap:4px; cursor:pointer}
+  #menuBtn i{display:block; width:18px; height:3px; background:var(--paper)}
+  #drawer{position:absolute; inset:0; z-index:40; background:rgba(5,7,15,.6); opacity:0; pointer-events:none; transition:opacity .3s}
+  #drawer.on{opacity:1; pointer-events:auto}
+  #drawerIn{position:absolute; left:0; top:0; bottom:0; width:74%; max-width:300px; background:#10142a; border-right:2px solid #3a3420;
+    padding:calc(64px + env(safe-area-inset-top)) 14px 20px; display:flex; flex-direction:column; gap:2px; transform:translateX(-100%); transition:transform .3s; overflow-y:auto}
+  #drawer.on #drawerIn{transform:none}
+  .dTitle{font-size:18px; font-weight:700; color:var(--gold); margin:0 6px 12px}
+  #drawerIn button{font:inherit; font-size:17px; color:var(--ink); text-align:left; background:none; border:none; padding:11px 8px; border-radius:4px; cursor:pointer}
+  #drawerIn button:active{background:rgba(227,194,122,.12)}
+  .dLink{color:var(--gold); text-decoration:none; padding:11px 8px; font-size:15px}
+  .dFoot{margin-top:auto; padding:16px 8px 0; font-size:11px; color:var(--dim); line-height:1.8}
+  .dFoot a{color:var(--dim)}
+  #reportBtn{margin-top:10px; font:inherit; font-size:11px; color:#a08c66; background:none; border:none; text-decoration:underline; cursor:pointer}
+  #reportBtn[hidden]{display:none}
+  #reportMsg{font-size:12px; color:#8b5a3a; margin-top:4px; min-height:0}
+  .err{color:#ffb199 !important}
+  #emptySky{position:absolute; z-index:6; left:0; right:0; top:44%; font-size:14px; color:var(--dim); line-height:1.7}
+  #drawerIn hr{border:none; border-top:1px solid rgba(243,230,200,.1); margin:6px 0}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="sky"></div>
+  <div id="moon"></div>
+  <div id="roof"><div id="chime"></div></div>
+
+  <!-- 1. 입장 -->
+  <section class="screen on" id="s-intro">
+    <h1>무드나잇 산사</h1>
+    <p class="sub">밤늦게 문을 여는 작은 절<br>스님이 기다리고 계세요</p>
+    <button class="btn" id="enterBtn">산문 들어가기</button>
+    <p class="hint">🔈 소리를 켜면 풍경 소리와 목탁 소리가 들려요</p>
+  </section>
+
+  <!-- 1-1. 스님과 인사 -->
+  <section class="screen" id="s-greet">
+    <div id="monk2"></div>
+    <div class="bubble"><span id="greetText"></span></div>
+    <div id="choices">
+      <button class="choice" data-go="moktak"><b>🪵 번뇌 내려놓기</b><small>목탁으로 마음 비우기</small></button>
+      <button class="choice" data-go="lantern"><b>🏮 연등 띄우기</b><small>소원 하나 밝히기</small></button>
+      <button class="choice" data-go="miss"><b>🤍 그리운 사람에게</b><small>닿지 못한 말 띄워 보내기</small></button>
+      <button class="choice" data-go="tile"><b>🏯 기와에 소원 쓰기</b><small>대웅전 지붕에 소원 올리기</small></button>
+      <div class="row" style="margin-top:10px">
+        <button class="btn ghost" id="skyOnlyBtn">✨ 연등 하늘 구경</button>
+        <button class="btn ghost" id="roofOnlyBtn">🏛 기와 지붕 구경</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. 번뇌 적기 -->
+  <section class="screen" id="s-write">
+    <p class="label">오늘 마음에 걸린 걸<br>적어 주세요</p>
+    <textarea id="worryInput" maxlength="80" placeholder="예) 내일 발표가 너무 걱정돼요"></textarea>
+    <span class="count"><span id="cnt">0</span> / 80</span>
+    <button class="btn" id="toMoktak" disabled>번뇌로 올려두기</button>
+    <p class="hint">적은 내용은 어디에도 저장되지 않아요</p>
+  </section>
+
+  <!-- 3. 목탁 -->
+  <section class="screen" id="s-moktak">
+    <div id="worry"></div>
+    <div id="stage" role="button" aria-label="목탁 두드리기">
+      <div id="moktak"></div>
+      <div id="mallet"></div>
+    </div>
+    <div id="beads"></div>
+    <p id="tapHint">목탁을 두드려 번뇌를 흩어 보세요</p>
+  </section>
+
+  <!-- 4. 스님 한마디 -->
+  <section class="screen" id="s-done">
+    <p id="doneTitle">번뇌 하나를 내려놓았습니다</p>
+    <div id="monk"></div>
+    <div class="bubble"><span id="monkText"></span><span class="sign" id="sign">— 무드 스님</span></div>
+    <div class="row">
+      <button class="btn ghost" id="againBtn">하나 더 내려놓기</button>
+      <button class="btn" id="lanternBtn">🏮 연등 띄우기</button>
+      <button class="btn" id="tileBtn">🏯 기와에 소원 쓰기</button>
+    </div>
+  </section>
+
+  <!-- 7. 기와 소원 쓰기 -->
+  <section class="screen" id="s-gwrite">
+    <p class="label">기와 한 장에<br>소원을 적어 올려 보세요</p>
+    <div id="bigTile"><div id="bigTileArt"></div><span id="tileText" class="empty">소원을 적어주세요</span></div>
+    <div id="tcolors"></div>
+    <input id="tileInput" maxlength="20" placeholder="예) 가족 모두 건강">
+    <button class="btn" id="raiseBtn" disabled>기와 올리기</button>
+    <p class="hint" id="tHint">기와는 모두가 함께 짓는 지붕에 익명으로 올라가요. 이름·연락처는 적지 말아 주세요</p>
+  </section>
+
+  <!-- 8. 기와 지붕 -->
+  <section class="screen" id="s-roof">
+    <p id="roofHead"><b>대웅전 지붕</b>기와를 누르면 소원이 보여요</p>
+    <div id="roofWrap">
+      <div id="ridge"></div>
+      <div id="tiles"></div>
+      <div id="eave"></div>
+    </div>
+    <p id="roofCount"></p>
+    <div class="row" style="margin-top:14px">
+      <button class="btn ghost" id="roofHomeBtn">다른 것 하기</button>
+      <button class="btn" id="roofAgainBtn">번뇌 하나 더 내려놓기</button>
+    </div>
+  </section>
+
+  <!-- 5. 연등 소원 쓰기 -->
+  <section class="screen" id="s-lwrite">
+    <p class="label" id="lLabel">비운 자리에<br>소원 하나 밝혀 볼까요</p>
+    <div id="lPreview"></div>
+    <div id="colors"></div>
+    <p id="cMean"></p>
+    <input id="wishInput" maxlength="40" placeholder="예) 내년엔 덜 불안하게">
+    <button class="btn" id="releaseBtn" disabled>연등 띄우기</button>
+    <p class="hint" id="lHint">연등은 모두의 밤하늘에 익명으로 떠요. 이름·연락처는 적지 말아 주세요</p>
+  </section>
+
+  <!-- 6. 연등 하늘 -->
+  <section class="screen" id="s-sky">
+    <div id="lanterns"></div>
+    <p id="skyHead"><b>오늘 밤의 연등</b>연등을 누르면 소원이 보여요</p>
+    <div id="skyBtns">
+      <button class="btn ghost" id="skyHomeBtn">다른 것 하기</button>
+      <button class="btn" id="skyAgainBtn">번뇌 하나 더 내려놓기</button>
+    </div>
+  </section>
+
+  <div id="card"><div id="cardIn"><div id="cardIcon"></div><p id="cardText"></p><p id="cardWho"></p><button id="reportBtn" type="button">신고하기</button><p id="reportMsg"></p></div></div>
+
+  <button id="menuBtn" aria-label="메뉴 열기"><i></i><i></i><i></i></button>
+  <div id="drawer">
+    <nav id="drawerIn">
+      <p class="dTitle">무드나잇 산사</p>
+      <button data-go="home">⛩️ 산문 (처음으로)</button>
+      <button data-go="greet">🧘 스님께 인사드리기</button>
+      <hr>
+      <button data-go="moktak">🪵 번뇌 내려놓기</button>
+      <button data-go="lantern">🏮 연등 띄우기</button>
+      <button data-go="miss">🤍 그리운 사람에게</button>
+      <button data-go="tile">🏯 기와에 소원 쓰기</button>
+      <hr>
+      <button data-go="sky">✨ 연등 하늘 보기</button>
+      <button data-go="roof">🏛 기와 지붕 보기</button>
+      <hr>
+      <a class="dLink" href="/">← 무드나잇 홈</a>
+      <p class="dFoot"><a href="/privacy.html">개인정보처리방침</a> · <a href="/terms.html">이용약관</a><br>문의 moodnight@kakao.com</p>
+    </nav>
+  </div>
+
+  <div id="counter">오늘 모두가 내려놓은 번뇌 <b id="cntToday">0</b>개</div>
+  <button id="soundBtn">🔔 소리 켜짐</button>
+</div>
+
+<script>
+/* ---------- pixel art ---------- */
+function grid(rows, pal){
+  const h = rows.length, w = rows[0].length; let r = '';
+  rows.forEach((row,y)=>[...row].forEach((c,x)=>{ if(pal[c]) r += `<rect x="${x}" y="${y}" width="1.03" height="1.03" fill="${pal[c]}"/>`; }));
+  return `<svg viewBox="0 0 ${w} ${h}" shape-rendering="crispEdges" xmlns="http://www.w3.org/2000/svg">${r}</svg>`;
+}
+const MOKTAK = [
+  ".....oooooooo.....",
+  "...oollllllbboo...",
+  "..olllbbbbbbbbdo..",
+  ".olllbbbbbbbbbbdo.",
+  ".ollbbbbbbbbbbbdo.",
+  ".olbbssssssssbbdo.",
+  ".olbbbbbbbbbbbbdo.",
+  ".obbbbbbbbbbbbddo.",
+  "..obbbbbbbbbbddo..",
+  "...oddddddddddo...",
+  "..ppPPPPPPPPPPpp..",
+  ".pPPPPPPPPPPPPPPp.",
+  ".pPPgPPPPPPPPgPPp.",
+  "..pppppppppppppp..",
+];
+const MOKTAK_PAL = {o:'#3a1d0e', l:'#d39a5a', b:'#a8662d', d:'#6b3a17', s:'#1c0d05', p:'#5c1c18', P:'#a3342c', g:'#e3c27a'};
+const MALLET = [
+  "..........ss",
+  ".........ss.",
+  "........ss..",
+  ".......ss...",
+  "......ss....",
+  ".....ss.....",
+  ".kkkks......",
+  "kKKKKk......",
+  "kKKKKk......",
+  "kKKKKk......",
+  ".kkkk.......",
+];
+const MALLET_PAL = {s:'#7a4a22', k:'#3a1d0e', K:'#c98a4b'};
+const CHIME = [
+  "...o...",
+  "...o...",
+  "..ooo..",
+  ".obbbo.",
+  "obbbbbo",
+  "obbbbbo",
+  "ooooooo",
+  "...o...",
+  "...o...",
+  "...o...",
+  "..fff..",
+  ".fFfff.",
+  "..fff..",
+  "..f.f..",
+];
+const CHIME_PAL = {o:'#2a2418', b:'#b88a3e', f:'#6f8fa8', F:'#1b2433'};
+const MONK = [
+  "....hhhh....",
+  "...hHHHHh...",
+  "..hHHHHHHh..",
+  "..hHeHHeHh..",
+  "..hHcHHcHh..",
+  "...hHmmHh...",
+  "....hhhh....",
+  "...gggggg...",
+  "..gGGGGGGg..",
+  ".gGGGyGGGGg.",
+  ".gGGGyGGGGg.",
+  ".gGGGGyGGGg.",
+  "gGGGGGGyGGGg",
+  "gggggggggggg",
+];
+const MONK_PAL = {h:'#3b2a20', H:'#ecc9a3', e:'#3b2a20', c:'#e8a08c', m:'#a8604a', g:'#25252e', G:'#6c6875', y:'#c9a35a'};
+
+function roofRows(){
+  const W=60, H=14, rows=[];
+  for(let y=0;y<H;y++){
+    let s='';
+    for(let x=0;x<W;x++){
+      const t = x/(W-1), lift = Math.round(Math.pow(t,4)*7), bottom = 10-lift;
+      let c='.';
+      if(y<=bottom) c = y===bottom ? (x%3===0?'e':'t') : (y===bottom-1 ? 'u' : ((x+y)%4===0?'v':'r'));
+      s+=c;
+    }
+    rows.push(s);
+  }
+  return rows;
+}
+function moonRows(){
+  const N=12, rows=[];
+  for(let y=0;y<N;y++){ let s=''; for(let x=0;x<N;x++){
+    const d=Math.hypot(x-5.5,y-5.5); s += d<5.6 ? ((x===3&&y===4)||(x===7&&y===7)||(x===8&&y===3)?'c':'m') : '.';
+  } rows.push(s);} return rows;
+}
+
+document.getElementById('moktak').innerHTML = grid(MOKTAK, MOKTAK_PAL);
+document.getElementById('mallet').innerHTML = grid(MALLET, MALLET_PAL);
+document.getElementById('chime').innerHTML = grid(CHIME, CHIME_PAL);
+document.getElementById('monk').innerHTML  = grid(MONK, MONK_PAL);
+document.getElementById('monk2').innerHTML = grid(MONK, MONK_PAL);
+document.getElementById('roof').insertAdjacentHTML('afterbegin', grid(roofRows(), {r:'#161c30', v:'#1b2238', u:'#232c47', t:'#2c3656', e:'#c9a35a'}));
+document.getElementById('moon').innerHTML = grid(moonRows(), {m:'#f3e6c8', c:'#ddcca6'});
+
+// stars
+(function(){
+  const sky = document.getElementById('sky');
+  for(let i=0;i<46;i++){
+    const s=document.createElement('div');
+    s.className='star'+(Math.random()<.2?' b':'');
+    s.style.left=(Math.random()*100)+'%';
+    s.style.top=(8+Math.random()*80)+'%';
+    s.style.animationDelay=(Math.random()*3)+'s';
+    s.style.animationDuration=(2+Math.random()*3)+'s';
+    sky.appendChild(s);
+  }
+})();
+
+/* ---------- sound (Web Audio, 합성음) ---------- */
+let ac=null, soundOn=true;
+function ctx(){
+  if(!ac){ try{ ac = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){ ac=null; } }
+  if(ac && ac.state==='suspended'){ try{ ac.resume(); }catch(e){} }
+  return ac;
+}
+function tak(){
+  const a=ctx(); if(!a||!soundOn) return;
+  const t=a.currentTime, v=0.96+Math.random()*0.08;
+  [[560*v,0.55,0.16],[1130*v,0.18,0.08],[1720*v,0.06,0.05]].forEach(([f,g,d])=>{
+    const o=a.createOscillator(), gn=a.createGain();
+    o.type='sine';
+    o.frequency.setValueAtTime(f*1.12,t); o.frequency.exponentialRampToValueAtTime(f,t+0.025);
+    gn.gain.setValueAtTime(0.0001,t); gn.gain.exponentialRampToValueAtTime(g,t+0.003); gn.gain.exponentialRampToValueAtTime(0.0001,t+d);
+    o.connect(gn).connect(a.destination); o.start(t); o.stop(t+d+0.02);
+  });
+  const len=Math.floor(a.sampleRate*0.025), buf=a.createBuffer(1,len,a.sampleRate), ch=buf.getChannelData(0);
+  for(let i=0;i<len;i++) ch[i]=(Math.random()*2-1)*Math.pow(1-i/len,3);
+  const n=a.createBufferSource(); n.buffer=buf;
+  const bp=a.createBiquadFilter(); bp.type='bandpass'; bp.frequency.value=2400; bp.Q.value=1.4;
+  const ng=a.createGain(); ng.gain.value=0.4;
+  n.connect(bp).connect(ng).connect(a.destination); n.start(t);
+}
+function bell(base, vol){
+  const a=ctx(); if(!a||!soundOn) return;
+  const t=a.currentTime;
+  [[1,0.10*vol,2.8],[2.76,0.045*vol,1.6],[5.4,0.02*vol,0.9]].forEach(([m,g,d])=>{
+    const o=a.createOscillator(), gn=a.createGain();
+    o.type='sine'; o.frequency.value=base*m;
+    gn.gain.setValueAtTime(0.0001,t); gn.gain.exponentialRampToValueAtTime(g,t+0.006); gn.gain.exponentialRampToValueAtTime(0.0001,t+d);
+    o.connect(gn).connect(a.destination); o.start(t); o.stop(t+d+0.05);
+  });
+}
+const chimeEl=document.getElementById('chime');
+function windChime(vol){
+  chimeEl.classList.remove('swing'); void chimeEl.offsetWidth; chimeEl.classList.add('swing');
+  const notes=[1047,1175,1319,1568,1760];
+  bell(notes[Math.floor(Math.random()*notes.length)], vol||1);
+  if(Math.random()<.45) setTimeout(()=>bell(notes[Math.floor(Math.random()*notes.length)], (vol||1)*.6), 260+Math.random()*300);
+}
+let ambientStarted=false;
+function ambient(){
+  windChime(0.8);
+  setTimeout(ambient, 7000+Math.random()*9000);
+}
+const soundBtn=document.getElementById('soundBtn');
+soundBtn.addEventListener('click',()=>{
+  soundOn=!soundOn; soundBtn.textContent = soundOn ? '🔔 소리 켜짐' : '🔕 소리 꺼짐';
+  if(soundOn){ ctx(); windChime(); }
+});
+
+/* ---------- 서버 (Supabase RPC, 공개용 키) ---------- */
+const SB_URL='https://gbmlkyfguktjtroczqfw.supabase.co/rest/v1/rpc/';
+const SB_KEY='sb_publishable_RO92ntdlSM5_Urctc5FD9w_4OHcZQzf';
+async function rpc(fn, args){
+  const r=await fetch(SB_URL+fn,{method:'POST',headers:{apikey:SB_KEY,'Content-Type':'application/json'},body:JSON.stringify(args||{})});
+  const t=await r.text(); let j=null; try{ j=t?JSON.parse(t):null; }catch(e){}
+  if(!r.ok){ const m=(j&&j.message)||'잠시 뒤에 다시 해 주세요'; throw new Error(m.indexOf(':')>-1 ? m.split(':').slice(1).join(':').trim() : '잠시 뒤에 다시 해 주세요'); }
+  return j;
+}
+const DEVICE=(()=>{ const make=()=>Array.from(crypto.getRandomValues(new Uint8Array(12)),b=>(b%36).toString(36)).join('')+Date.now().toString(36);
+  try{ let d=localStorage.getItem('mn_device'); if(!d||!/^[a-z0-9]{16,40}$/.test(d)){ d=make(); localStorage.setItem('mn_device',d); } return d; }catch(e){ return make(); } })();
+function lsGet(k){ try{ return JSON.parse(localStorage.getItem(k)||'[]'); }catch(e){ return []; } }
+function lsAdd(k,v){ try{ const a=lsGet(k); a.push(v); localStorage.setItem(k, JSON.stringify(a.slice(-200))); }catch(e){} }
+const MINE='sansa-mine', HIDDEN='sansa-hidden';
+const track=(k,d)=>{ try{ window.mnTrack && window.mnTrack(k,d); }catch(e){} };
+
+/* ---------- 오늘 모두의 번뇌 수 ---------- */
+let todayCount=0;
+function renderCount(){ document.getElementById('cntToday').textContent=todayCount.toLocaleString('ko-KR'); }
+let stats={tiles_total:0, lanterns_total:0};
+async function loadStats(){ try{ const j=await rpc('sansa_stats'); stats=j||stats; todayCount=(j&&j.bonnoe_today)||0; renderCount(); }catch(e){} }
+async function addToday(){ todayCount++; renderCount(); try{ const c=await rpc('sansa_bonnoe_add'); if(typeof c==='number'){ todayCount=c; renderCount(); } }catch(e){} track('act','bonnoe'); }
+loadStats();
+
+/* ---------- screens ---------- */
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('on', s.id===id));
+}
+function ensureAudio(){ ctx(); if(!ambientStarted){ ambientStarted=true; setTimeout(ambient, 6000); } }
+let greetTimer=null;
+function greet(){
+  ensureAudio();
+  const h=new Date().getHours();
+  const hello = h<5 ? '이 늦은 밤에 오셨군요. 잠이 안 오시나 봐요.'
+              : h<11 ? '아침 일찍 오셨네요. 공기가 맑지요.'
+              : h<17 ? '어서 오세요. 잠깐 쉬었다 가세요.'
+              : h<21 ? '어서 오세요. 오늘 하루도 고생 많으셨어요.'
+              : '밤이 깊었네요. 어서 들어오세요.';
+  const line = hello+' 오늘은 무엇을 하고 가시겠어요?';
+  const el=document.getElementById('greetText'), ch=document.getElementById('choices');
+  el.textContent=''; ch.classList.remove('on');
+  show('s-greet');
+  setTimeout(()=>{ bell(784,.8); setTimeout(()=>bell(1175,.5),140); }, 300);
+  clearInterval(greetTimer);
+  const arr=[...line]; let i=0;
+  setTimeout(()=>{
+    greetTimer=setInterval(()=>{
+      el.textContent+=arr[i++];
+      if(i>=arr.length){ clearInterval(greetTimer); ch.classList.add('on'); }
+    }, 55);
+  }, 600);
+}
+document.getElementById('enterBtn').addEventListener('click',()=>{ windChime(); greet(); });
+
+const input=document.getElementById('worryInput'), toMoktak=document.getElementById('toMoktak');
+input.addEventListener('input',()=>{
+  document.getElementById('cnt').textContent=input.value.length;
+  toMoktak.disabled = input.value.trim().length===0;
+});
+
+/* ---------- moktak ---------- */
+let chars=[], need=0, taps=0, busy=false;
+const worryEl=document.getElementById('worry'), beadsEl=document.getElementById('beads'), stage=document.getElementById('stage');
+toMoktak.addEventListener('click',()=>{
+  const text=input.value.trim().replace(/\s+/g,' ');
+  if(!text) return;
+  input.blur();
+  worryEl.innerHTML='';
+  chars=[...text].map(c=>{
+    const s=document.createElement('span');
+    if(c===' ') s.className='sp'; else s.textContent=c;
+    s.style.setProperty('--dx',(Math.random()*80-40)+'px');
+    s.style.setProperty('--r',(Math.random()*60-30)+'deg');
+    worryEl.appendChild(s); return s;
+  });
+  need=Math.min(20, Math.max(8, Math.ceil(chars.length/2)));
+  taps=0; busy=false;
+  beadsEl.innerHTML='';
+  for(let i=0;i<need;i++){ const b=document.createElement('div'); b.className='bead'; beadsEl.appendChild(b); }
+  document.getElementById('tapHint').textContent='목탁을 두드려 번뇌를 흩어 보세요';
+  show('s-moktak');
+});
+
+function hit(e){
+  if(busy || taps>=need) return;
+  if(e) e.preventDefault();
+  taps++;
+  tak();
+  try{ navigator.vibrate && navigator.vibrate(12); }catch(_){}
+  // mallet + shake
+  const mallet=document.getElementById('mallet');
+  mallet.classList.add('hit'); setTimeout(()=>mallet.classList.remove('hit'), 80);
+  stage.classList.remove('shake'); void stage.offsetWidth; stage.classList.add('shake');
+  // 탁 popup
+  const p=document.createElement('div'); p.className='tak'; p.textContent='탁';
+  p.style.left=(40+Math.random()*110)+'px'; p.style.top=(10+Math.random()*50)+'px';
+  stage.appendChild(p); setTimeout(()=>p.remove(), 750);
+  // beads
+  beadsEl.children[taps-1].classList.add('on');
+  // scatter chars
+  const target=Math.round(chars.length*taps/need);
+  let left=chars.filter(c=>!c.classList.contains('gone'));
+  while(chars.length-left.length < target && left.length){
+    const i=Math.floor(Math.random()*left.length);
+    left[i].classList.add('gone'); left.splice(i,1);
+  }
+  if(taps>=need){
+    busy=true;
+    document.getElementById('tapHint').textContent='…';
+    setTimeout(()=>{ bell(784,1.4); setTimeout(()=>bell(1175,.8),120); chimeEl.classList.remove('swing'); void chimeEl.offsetWidth; chimeEl.classList.add('swing'); }, 500);
+    setTimeout(finish, 1500);
+  }
+}
+stage.addEventListener('pointerdown', hit);
+document.addEventListener('keydown', e=>{
+  if(document.getElementById('s-moktak').classList.contains('on') && (e.code==='Space'||e.code==='Enter')) hit(e);
+});
+
+/* ---------- 스님 한마디 ---------- */
+const LINES = [
+  "마음은 하늘 같아서, 구름이 지나가도 하늘은 그대로입니다.",
+  "걱정해서 풀릴 일이었으면 벌써 풀렸겠지요. 일단 주무세요.",
+  "물 한 잔 드세요. 번뇌도 목이 마르면 커집니다.",
+  "오늘 못 한 일은 내일의 당신이 합니다. 그 사람을 조금 믿어 보세요.",
+  "폰 내려놓고 자는 것도 훌륭한 수행입니다.",
+  "바람이 불면 풍경이 울리고, 바람이 그치면 고요해집니다. 이것도 지나갑니다.",
+  "절도 하루 만에 짓지 않았습니다. 다 잘하려 하지 마세요.",
+  "배가 고파서 서러운 걸 수도 있습니다. 따뜻한 것 드세요.",
+  "내려놓는다는 건 잊는 게 아니라, 계속 들고 있지 않는 겁니다.",
+  "남의 마음은 남의 절에 두고 오세요.",
+  "카톡 답장은 내일 해도 세상이 무너지지 않습니다.",
+  "숨을 세 번만 길게 쉬어 보세요. 스님도 그렇게 버팁니다.",
+  "번뇌가 백여덟 개라는데, 방금 하나 줄었으니 순조롭습니다.",
+  "오늘은 이불 속에서 수행하세요. 이불 밖은 위험합니다.",
+  "괜찮다는 말, 오늘은 남보다 스스로에게 먼저 해 주세요.",
+  "산은 서두르지 않아도 다 자랍니다.",
+  "새벽 감성으로 내린 결정은 아침에 한 번 더 보세요.",
+  "흘러간 물은 다시 물레방아를 돌리지 않습니다. 오늘 일은 오늘에 두고 가세요.",
+];
+let typeTimer=null;
+function finish(){
+  addToday();
+  const line=LINES[Math.floor(Math.random()*LINES.length)];
+  const el=document.getElementById('monkText'), sign=document.getElementById('sign');
+  el.textContent=''; sign.classList.remove('on');
+  show('s-done');
+  clearInterval(typeTimer);
+  let i=0; const arr=[...line];
+  setTimeout(()=>{
+    typeTimer=setInterval(()=>{
+      el.textContent+=arr[i++];
+      if(i>=arr.length){ clearInterval(typeTimer); sign.classList.add('on'); }
+    }, 65);
+  }, 700);
+}
+function goWrite(){
+  input.value=''; document.getElementById('cnt').textContent='0'; toMoktak.disabled=true;
+  show('s-write');
+  setTimeout(()=>input.focus(), 500);
+}
+document.getElementById('againBtn').addEventListener('click', goWrite);
+
+/* ---------- 연등 ---------- */
+// 색마다 담기는 마음 (사찰 연등색 해석 참고)
+const COLORS = {
+  red:   {P:'#e0553f', p:'#a8342a', L:'#ffb199', glow:'rgba(255,120,80,.75)',  name:'빨강', mean:'복과 보호'},
+  yellow:{P:'#f2c14e', p:'#b8862a', L:'#fff1b8', glow:'rgba(255,210,100,.75)', name:'노랑', mean:'지혜와 평온'},
+  green: {P:'#6cbf7a', p:'#3f8a50', L:'#c9f2c8', glow:'rgba(130,230,150,.6)',  name:'초록', mean:'건강과 치유'},
+  blue:  {P:'#6c9fe0', p:'#3f68a8', L:'#cfe2ff', glow:'rgba(130,180,255,.65)', name:'파랑', mean:'평화와 깨달음'},
+  purple:{P:'#a07ad6', p:'#6d4ca6', L:'#e2d2ff', glow:'rgba(180,140,255,.65)', name:'보라', mean:'성장과 수행'},
+  white: {P:'#f1ece0', p:'#bdb5a2', L:'#ffffff', glow:'rgba(255,248,225,.7)',  name:'흰색', mean:'그리운 사람에게', miss:true},
+  pink:  {P:'#ef7fa6', p:'#b84f78', L:'#ffd0e0', glow:'rgba(255,140,190,.7)',  name:'분홍', mean:'인연', hidden:true}, // 예전에 띄운 연등 호환용
+};
+const LANTERN = [
+  ".....o.....",
+  ".....o.....",
+  "...ooooo...",
+  "..pPPpPPp..",
+  ".pPLPpPLPp.",
+  "pPPLPpPLPPp",
+  "pPPPPpPPPPp",
+  "pPPPPpPPPPp",
+  ".pPPPpPPPp.",
+  "..ppppppp..",
+  "...ooooo...",
+  "....yyy....",
+  ".....y.....",
+  "....y.y....",
+];
+function lanternSvg(c){ const k=COLORS[c]||COLORS.red; return grid(LANTERN,{o:'#3a2418', P:k.P, p:k.p, L:k.L, y:'#e3c27a'}); }
+
+function hashPos(id, salt){ let h=2166136261; const str=id+salt; for(let i=0;i<str.length;i++){ h^=str.charCodeAt(i); h=Math.imul(h,16777619); } return ((h>>>0)%10000)/10000; }
+function spotOf(id){ return {x: 9+hashPos(id,'x')*82, y: 26+hashPos(id,'y')*52}; }
+let skyItems=[];
+async function loadLanterns(){
+  const mine=new Set(lsGet(MINE)), hid=new Set(lsGet(HIDDEN));
+  const rows=await rpc('sansa_list',{p_kind:'lantern'});
+  skyItems=(rows||[]).filter(r=>!hid.has(r.id)).map(r=>({id:r.id, c:r.color, t:r.text, me:mine.has(r.id), ...spotOf(r.id)}));
+}
+
+// 색 고르기
+let pickColor='red';
+const colorsEl=document.getElementById('colors'), lPreview=document.getElementById('lPreview');
+Object.keys(COLORS).filter(c=>!COLORS[c].hidden).forEach(c=>{
+  const b=document.createElement('button'); b.className='cbtn'+(c===pickColor?' sel':''); b.style.background=COLORS[c].P;
+  b.dataset.c=c; b.setAttribute('aria-label',COLORS[c].name+' · '+COLORS[c].mean);
+  b.addEventListener('click',()=>{ pickColor=c; [...colorsEl.children].forEach(x=>x.classList.toggle('sel',x===b)); renderPreview(); tak(); });
+  colorsEl.appendChild(b);
+});
+function renderPreview(){
+  const k=COLORS[pickColor];
+  lPreview.innerHTML=lanternSvg(pickColor); lPreview.style.filter=`drop-shadow(0 0 14px ${k.glow})`;
+  document.getElementById('cMean').innerHTML=`<i style="background:${k.P}"></i>${k.name} · ${k.mean}`;
+  document.getElementById('lLabel').innerHTML = k.miss ? '닿지 못한 말을<br>등불에 실어 보내요' : '비운 자리에<br>소원 하나 밝혀 볼까요';
+  wishInput.placeholder = k.miss ? '예) 할머니, 보고 싶어요' : '예) 내년엔 덜 불안하게';
+  releaseBtn.textContent = k.miss ? '그리운 사람에게 연등 띄우기' : '연등 띄우기';
+}
+const wishInput=document.getElementById('wishInput'), releaseBtn=document.getElementById('releaseBtn');
+renderPreview();
+wishInput.addEventListener('input',()=>{ releaseBtn.disabled = wishInput.value.trim().length===0; });
+wishInput.addEventListener('focus',()=>setTimeout(()=>{ try{ releaseBtn.scrollIntoView({block:'center', behavior:'smooth'}); }catch(e){} }, 350));
+document.getElementById('lanternBtn').addEventListener('click',()=>openLantern(null));
+
+// 하늘 그리기
+const lanternsEl=document.getElementById('lanterns');
+function addLantern(l, opts){
+  const el=document.createElement('div');
+  el.className='lantern'+(l.me?' mine':'')+(opts&&opts.rise?' rise':'');
+  el.style.left=l.x+'%'; el.style.top=l.y+'%';
+  el.style.setProperty('--glow',(COLORS[l.c]||COLORS.red).glow);
+  const bob=document.createElement('div'); bob.className='bob';
+  bob.style.setProperty('--dur',(4+Math.random()*3)+'s'); bob.style.setProperty('--delay',(-Math.random()*5)+'s');
+  bob.innerHTML=lanternSvg(l.c); el.appendChild(bob);
+  el.addEventListener('click',e=>{ e.stopPropagation(); openCard(l); });
+  lanternsEl.appendChild(el);
+  return el;
+}
+function drawSky(newId){
+  lanternsEl.innerHTML='';
+  skyItems.forEach(l=>addLantern(l, {rise: l.id===newId}));
+  const head=document.getElementById('skyHead');
+  head.innerHTML = skyItems.length ? '<b>오늘 밤의 연등</b>연등을 누르면 소원이 보여요' : '<b>오늘 밤의 연등</b>아직 밤하늘이 비어 있어요. 첫 연등을 띄워 주세요';
+}
+async function openSky(newId){
+  show('s-sky');
+  if(!newId){ lanternsEl.innerHTML=''; document.getElementById('skyHead').innerHTML='<b>오늘 밤의 연등</b>연등을 불러오는 중…'; }
+  try{ await loadLanterns(); drawSky(newId); }
+  catch(e){ document.getElementById('skyHead').innerHTML='<b>오늘 밤의 연등</b>연등을 불러오지 못했어요. 잠시 뒤 다시 와 주세요'; }
+}
+let cardItem=null;
+function setReport(item){
+  cardItem=item; const b=document.getElementById('reportBtn'), m=document.getElementById('reportMsg');
+  b.hidden = !item || item.me; b.textContent='신고하기'; b.dataset.step='0'; m.textContent='';
+}
+function openCard(l){
+  setReport(l);
+  document.getElementById('cardIcon').innerHTML=lanternSvg(l.c);
+  document.getElementById('cardText').textContent=l.t;
+  const miss=(COLORS[l.c]||{}).miss;
+  document.getElementById('cardWho').textContent= miss ? (l.me ? '— 내가 그리운 사람에게 띄운 등' : '— 누군가의 그리운 마음') : (l.me ? '— 내가 밝힌 연등' : '— 누군가의 연등');
+  document.getElementById('card').classList.add('on');
+  bell(1319,.5);
+}
+document.getElementById('card').addEventListener('click',e=>{ if(e.target.closest('#reportBtn')) return; document.getElementById('card').classList.remove('on'); });
+document.getElementById('reportBtn').addEventListener('click',async e=>{
+  e.stopPropagation();
+  const b=e.currentTarget, m=document.getElementById('reportMsg');
+  if(!cardItem) return;
+  if(b.dataset.step!=='1'){ b.dataset.step='1'; b.textContent='정말 신고할까요? 한 번 더 누르면 신고돼요'; return; }
+  b.disabled=true;
+  try{
+    await rpc('sansa_report',{p_id:cardItem.id, p_device:DEVICE});
+    lsAdd(HIDDEN, cardItem.id);
+    m.textContent='내 화면에서 가렸어요. 전체 숨김은 관리자가 검토해요';
+    b.hidden=true;
+    skyItems=skyItems.filter(x=>x.id!==cardItem.id); roofItems=roofItems.filter(x=>x.id!==cardItem.id);
+    setTimeout(()=>{ document.getElementById('card').classList.remove('on'); if(document.getElementById('s-sky').classList.contains('on')) drawSky(null); else if(document.getElementById('s-roof').classList.contains('on')) drawRoof(null); }, 1200);
+  }catch(err){ m.textContent=err.message; }
+  b.disabled=false;
+});
+
+releaseBtn.addEventListener('click',async ()=>{
+  const t=wishInput.value.trim(); if(!t || releaseBtn.disabled) return;
+  wishInput.blur();
+  const hint=document.getElementById('lHint'), label=releaseBtn.textContent;
+  releaseBtn.disabled=true; releaseBtn.textContent='띄우는 중…';
+  let id;
+  try{ id=await rpc('sansa_add',{p_kind:'lantern', p_color:pickColor, p_text:t, p_device:DEVICE}); }
+  catch(e){ hint.textContent=e.message; hint.classList.add('err'); releaseBtn.disabled=false; releaseBtn.textContent=label; return; }
+  hint.classList.remove('err'); hint.textContent='연등은 모두의 밤하늘에 익명으로 떠요. 이름·연락처는 적지 말아 주세요';
+  releaseBtn.textContent=label;
+  lsAdd(MINE, id); track('act','lantern');
+  await openSky(id);
+  bell(659,1); setTimeout(()=>bell(988,.8),180); setTimeout(()=>bell(1319,.6),380);
+  chimeEl.classList.remove('swing'); void chimeEl.offsetWidth; chimeEl.classList.add('swing');
+});
+document.getElementById('skyOnlyBtn').addEventListener('click',()=>{
+  ctx(); windChime();
+  if(!ambientStarted){ ambientStarted=true; setTimeout(ambient, 6000); }
+  openSky(null);
+});
+document.getElementById('skyHomeBtn').addEventListener('click',greet);
+
+/* ---------- 기와 ---------- */
+// 수키와(볼록) + 암키와 골(오목)을 줄마다 겹쳐 그려서 물결 지붕을 만든다
+const TCOL = {
+  blue:  {D:'#2b4a6e', M:'#3f6a96', L:'#5a88b5', H:'#9cc0de', S:'#16263a', name:'청'},
+  green: {D:'#2a574b', M:'#3d7d69', L:'#58a088', H:'#97cdb6', S:'#15302a', name:'녹'},
+  brown: {D:'#4a2c20', M:'#8a5238', L:'#b06d4b', H:'#dca07a', S:'#2a1811', name:'적'},
+  slate: {D:'#33363f', M:'#525764', L:'#6f7584', H:'#a3a9b6', S:'#1b1d22', name:'흑'},
+};
+const R=(x,y,w,h,f)=> (w>0&&h>0) ? `<rect x="${x}" y="${y}" width="${w}" height="${h+0.03}" fill="${f}"/>` : '';
+function shadeKey(i,w){ const t=Math.abs((i+0.5)/w-0.42); return t<0.07?'H':t<0.19?'L':t<0.33?'M':'D'; }
+function archTop(i,w,ah){ const u=((i+0.5)/w)*2-1; return Math.round(ah*(1-Math.sqrt(Math.max(0,1-u*u)))); }
+// 볼록 기와 한 장: 위는 반달 모양, 아래 sh줄은 다음 줄 그림자
+function tileRects(x,y,w,h,k,o,sh){
+  let s=''; const ah=Math.max(2,Math.round(w/2.6));
+  for(let i=0;i<w;i++){
+    const t=archTop(i,w,ah), edge=(i===0||i===w-1), end=h-sh;
+    s+=R(x+i,y+t,1,1,o);
+    s+=R(x+i,y+t+1,1,end-t-1, edge?o:k[shadeKey(i,w)]);
+    if(i>0&&i<w-1&&t+2<end) s+=R(x+i,y+t+1,1,1, k.H);  // 턱의 반짝임
+    if(sh) s+=R(x+i,y+end,1,sh, edge?o:k.S);
+  }
+  return s;
+}
+// 오목한 골: 위가 U자로 패이고 가운데가 어두움
+function chanRects(x,y,w,h){
+  let s='';
+  for(let i=0;i<w;i++){
+    const u=((i+0.5)/w)*2-1, t=Math.round(2.5*(1-u*u));
+    const c = Math.abs(u)<0.5 ? '#14161c' : '#1d2028';
+    s+=R(x+i,y+t,1,1,'#272a34');
+    s+=R(x+i,y+t+1,1,h-t-3,c);
+    s+=R(x+i,y+h-2,1,2,'#0c0d11');
+  }
+  return s;
+}
+function tileSvg(written, mine, c){
+  const k=TCOL[c]||TCOL.blue;
+  return `<svg viewBox="0 0 16 18" shape-rendering="crispEdges" xmlns="http://www.w3.org/2000/svg">${tileRects(1,1,14,16,k, mine?'#f0cf7c':'#14161b',0)}</svg>`;
+}
+const COLS=6, NROWS=6, SLOTS=COLS*NROWS;   // 36장
+// 처마(아래) 줄부터 차곡차곡 — 가운데에서 바깥으로
+const FILL=[]; (()=>{ const mid=(COLS-1)/2; const order=[...Array(COLS).keys()].sort((a,b)=>Math.abs(a-mid)-Math.abs(b-mid)||a-b);
+  for(let r=NROWS-1;r>=0;r--) order.forEach(i=>FILL.push(r*COLS+i)); })();
+
+let roofItems=[];
+async function loadTiles(){
+  const mine=new Set(lsGet(MINE)), hid=new Set(lsGet(HIDDEN));
+  const rows=await rpc('sansa_list',{p_kind:'tile'});
+  roofItems=(rows||[]).filter(r=>!hid.has(r.id)).map(r=>({id:r.id, c:r.color, t:r.text, me:mine.has(r.id)}));
+}
+
+function drawRoof(newId){
+  const all=roofItems;
+  const bySlot={}; all.forEach((x,i)=>{ if(i<SLOTS) bySlot[FILL[i]]={...x, last: newId && x.id===newId}; });
+  const CW=14, GW=4, RP=10, TH=15, SH=4, W=GW+COLS*(CW+GW), H=(NROWS-1)*RP+TH;
+  let s='';
+  for(let r=0;r<NROWS;r++){
+    const y=r*RP;
+    for(let k=0;k<=COLS;k++) s+=chanRects(k*(CW+GW), y, GW, TH);
+    for(let k=0;k<COLS;k++){
+      const i=r*COLS+k, d=bySlot[i], x=GW+k*(CW+GW)-1;
+      const col=TCOL[d?d.c:'slate']||TCOL.blue;
+      const cls='tg'+(d?(d.me?' mine':''):' empty')+(d&&d.last?' drop':'');
+      s+=`<g class="${cls}" data-i="${i}"${d?'':' opacity="0.13"'}>${tileRects(x,y,CW+2,TH,col, d&&d.me?'#f0cf7c':'#101217', SH)}</g>`;
+    }
+  }
+  const wrap=document.getElementById('tiles');
+  wrap.innerHTML=`<svg viewBox="0 0 ${W} ${H}" shape-rendering="crispEdges" xmlns="http://www.w3.org/2000/svg">${s}</svg>`;
+  wrap.onclick=e=>{ const g=e.target.closest && e.target.closest('g.tg'); if(!g) return; const d=bySlot[g.getAttribute('data-i')]; if(d) openTileCard(d); };
+  const filled=Math.min(all.length,SLOTS), total=stats.tiles_total||filled;
+  const done=Math.max(0, Math.floor((total-1)/SLOTS));
+  const built = done>0 ? ` · 지금까지 지은 대웅전 <b>${done}</b>채` : '';
+  document.getElementById('roofCount').innerHTML = filled>=SLOTS ? `지붕이 소원으로 <b>가득</b> 찼어요! 다음 기와부터 새 지붕을 올려요${built}`
+    : filled===0 ? '아직 기와가 없어요. 첫 기와를 올려 주세요' : `지붕에 올라간 기와 <b>${filled}</b> / ${SLOTS}${built}`;
+}
+function openTileCard(d){
+  setReport(d);
+  document.getElementById('cardIcon').innerHTML=tileSvg(true, d.me, d.c);
+  const ct=document.getElementById('cardText'); ct.textContent=d.t; ct.classList.add('brush');
+  document.getElementById('cardWho').textContent= d.me ? '— 내가 올린 기와' : '— 누군가의 기와';
+  document.getElementById('card').classList.add('on');
+  tak();
+}
+// 연등 카드에서는 붓글씨 해제
+const _openCard=openCard;
+openCard=function(l){ document.getElementById('cardText').classList.remove('brush'); _openCard(l); };
+
+const tileInput=document.getElementById('tileInput'), raiseBtn=document.getElementById('raiseBtn'), tileText=document.getElementById('tileText');
+tileInput.addEventListener('input',()=>{
+  const v=tileInput.value.trim();
+  tileText.textContent = v || '소원을 적어주세요';
+  tileText.classList.toggle('empty', !v);
+  tileText.style.fontSize = v.length>12 ? '26px' : v.length>6 ? '30px' : '36px';
+  raiseBtn.disabled=!v;
+});
+let pickTile='blue';
+const tcolorsEl=document.getElementById('tcolors'), bigTile=document.getElementById('bigTile');
+function applyTileColor(){ document.getElementById('bigTileArt').innerHTML=`<svg viewBox="0 0 28 36" preserveAspectRatio="none" shape-rendering="crispEdges" xmlns="http://www.w3.org/2000/svg">${tileRects(0,0,28,36,TCOL[pickTile],'#101217',0)}</svg>`; }
+Object.keys(TCOL).forEach(c=>{
+  const b=document.createElement('button'); b.className='cbtn'+(c===pickTile?' sel':''); b.style.background=TCOL[c].M;
+  b.setAttribute('aria-label',TCOL[c].name+'기와');
+  b.addEventListener('click',()=>{ pickTile=c; [...tcolorsEl.children].forEach(x=>x.classList.toggle('sel',x===b)); applyTileColor(); tak(); });
+  tcolorsEl.appendChild(b);
+});
+applyTileColor();
+document.getElementById('tileBtn').addEventListener('click',()=>{
+  tileInput.value=''; tileInput.dispatchEvent(new Event('input')); show('s-gwrite');
+  setTimeout(()=>tileInput.focus(), 500);
+});
+async function openRoof(newId){
+  show('s-roof');
+  if(!newId){ document.getElementById('tiles').innerHTML=''; document.getElementById('roofCount').textContent='기와를 불러오는 중…'; }
+  try{ await Promise.all([loadTiles(), loadStats()]); if(!newId) drawRoof(null); return true; }
+  catch(e){ document.getElementById('roofCount').textContent='기와를 불러오지 못했어요. 잠시 뒤 다시 와 주세요'; return false; }
+}
+raiseBtn.addEventListener('click',async ()=>{
+  const t=tileInput.value.trim(); if(!t || raiseBtn.disabled) return;
+  tileInput.blur();
+  const hint=document.getElementById('tHint');
+  raiseBtn.disabled=true; raiseBtn.textContent='올리는 중…';
+  let id;
+  try{ id=await rpc('sansa_add',{p_kind:'tile', p_color:pickTile, p_text:t, p_device:DEVICE}); }
+  catch(e){ hint.textContent=e.message; hint.classList.add('err'); raiseBtn.disabled=false; raiseBtn.textContent='기와 올리기'; return; }
+  hint.classList.remove('err'); hint.textContent='기와는 모두가 함께 짓는 지붕에 익명으로 올라가요. 이름·연락처는 적지 말아 주세요';
+  raiseBtn.textContent='기와 올리기';
+  lsAdd(MINE, id); track('act','tile');
+  await openRoof(id);
+  setTimeout(()=>{
+    drawRoof(id);
+    setTimeout(()=>{
+      tak(); setTimeout(tak,90);
+      const w=document.getElementById('roofWrap'); w.classList.remove('thud'); void w.offsetWidth; w.classList.add('thud');
+      setTimeout(()=>{ bell(523,1); setTimeout(()=>bell(784,.7),160); }, 250);
+    }, 480);
+  }, 350);
+});
+document.getElementById('roofOnlyBtn').addEventListener('click',()=>{
+  ctx(); windChime();
+  if(!ambientStarted){ ambientStarted=true; setTimeout(ambient, 6000); }
+  openRoof(null);
+});
+document.getElementById('roofHomeBtn').addEventListener('click',greet);
+
+/* ---------- 메뉴 / 이동 ---------- */
+function setPick(c){
+  pickColor=c;
+  [...colorsEl.children].forEach(x=>x.classList.toggle('sel', x.dataset.c===c));
+  renderPreview();
+}
+function openLantern(c){
+  ensureAudio();
+  if(c) setPick(c); else if(COLORS[pickColor].miss) setPick('red');
+  wishInput.value=''; releaseBtn.disabled=true; show('s-lwrite');
+  setTimeout(()=>wishInput.focus(), 500);
+}
+const GO = {
+  home:   ()=>show('s-intro'),
+  greet:  greet,
+  moktak: ()=>{ ensureAudio(); goWrite(); },
+  lantern:()=>openLantern(null),
+  miss:   ()=>openLantern('white'),
+  tile:   ()=>{ ensureAudio(); document.getElementById('tileBtn').click(); },
+  sky:    ()=>document.getElementById('skyOnlyBtn').click(),
+  roof:   ()=>document.getElementById('roofOnlyBtn').click(),
+};
+const drawer=document.getElementById('drawer');
+document.getElementById('menuBtn').addEventListener('click',()=>{ drawer.classList.add('on'); tak(); });
+drawer.addEventListener('click',e=>{ if(e.target===drawer) drawer.classList.remove('on'); });
+document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>{
+  drawer.classList.remove('on');
+  document.getElementById('card').classList.remove('on');
+  clearInterval(typeTimer);
+  const f=GO[b.dataset.go]; if(f) f();
+}));
+document.getElementById('roofAgainBtn').addEventListener('click', goWrite);
+document.getElementById('skyAgainBtn').addEventListener('click', goWrite);
+</script>
+<script src="/track.js?v=3" defer></script>
+</body>
+</html>

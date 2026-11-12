@@ -2,6 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>성탄맨션 체험판 | 무드나잇</title>
 <meta name="description" content="친구가 내 맨션 빈 집에 입주해 창문에 불을 켜고 말풍선 편지를 남기는 겨울밤 도트 놀이, 성탄맨션을 미리 체험해 보세요.">
@@ -162,6 +163,7 @@ button{cursor:pointer}
 .btn.danger:hover{background:#D86650}
 .btn.sm{font-size:12px;padding:7px 10px 9px}
 .note .rm{position:absolute;top:2px;right:2px;border:0;background:#2A1C14;color:#FFF4DE;font-size:10px;line-height:1;padding:2px 4px;cursor:pointer}
+a.btn{display:block;text-align:center;text-decoration:none}
 .shot{width:100%;display:block;image-rendering:pixelated}
 .notes{display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:12px;padding:14px;background:#8A6A4A;box-shadow:0 -3px #5C3E2A,0 3px #5C3E2A,-3px 0 #5C3E2A,3px 0 #5C3E2A,inset 0 0 0 3px #A78560;margin:3px;
   background-image:radial-gradient(#7A5A3C 1px,transparent 1.5px);background-size:6px 6px}
@@ -200,7 +202,7 @@ button{cursor:pointer}
       </div>
       <div class="ctas">
         <button class="btn" id="moveBtn">빈 집에 입주하기</button>
-        <button class="btn ghost" id="saveBtn">맨션 저장하기</button>
+        <button class="btn ghost" id="saveBtn">인스타 공유 이미지</button>
       </div>
     </section>
 
@@ -524,24 +526,48 @@ function openShop(){
 }
 
 /* ── 저장 ── */
-async function saveImage(){
-  try{await document.fonts.load('30px Galmuri14');await document.fonts.load('24px Galmuri11')}catch(e){}
-  const c=document.createElement('canvas');c.width=1080;c.height=1350;const g=c.getContext('2d');g.imageSmoothingEnabled=false;
-  g.fillStyle='#0F1B28';g.fillRect(0,0,1080,1350);
-  const snap=document.createElement('canvas');snap.width=240;snap.height=264;const sg=snap.getContext('2d');sg.drawImage(base,0,0);C=sg;
-  BOK.forEach(b=>glow(b.x,b.y,b.r*2,b.c,.2));drawOverlay(sg,0,true);FL.forEach(f=>{if(f.y<226){sg.fillStyle='#fff';sg.fillRect(Math.round(f.x),Math.round(f.y),f.s,f.s)}});
-  g.drawImage(snap,60,150,960,1056);
-  const FX=60,FY=150,FW=960,FH=1056;
-  const tag=(text,x,y,w,bg,fg,line,size)=>{g.font=`700 ${size}px Galmuri11`;const tw=w||g.measureText(text).width+24,h=size+12,lx=Math.round(x-tw/2),ly=Math.round(y);
-    if(line){g.fillStyle=line;g.fillRect(lx-4,ly-4,tw+8,h+8)}g.fillStyle=bg;g.fillRect(lx,ly,tw,h);g.fillStyle=fg;g.textAlign='center';g.textBaseline='middle';g.fillText(text,lx+tw/2,ly+h/2+1)};
-  tag('산타의 선물가게',FX+FW*.116,FY+FH*.692,FW*.2,'#C8553D','#FFF4DE','#FFD27A',22);
-  tag('루돌프네 양말공장',FX+FW*.881,FY+FH*.692,FW*.21,'#5A3A2A','#FFF4DE','#C8423A',22);
-  tag('성탄맨션',FX+FW*.5,FY+FH*.79,0,'#F3D9A4','#3A2418','#7A4A2A',20);
-  tag('벽보',FX+FW*.64,FY+FH*.862,0,'#F3D9A4','#3A2418',null,16);
-  g.textAlign='center';g.textBaseline='middle';g.fillStyle='#FFD27A';g.font='30px Galmuri14';g.fillText(`성탄맨션`,540,70);
-  const n=Object.keys(S.res).length;g.fillStyle='#A9BACB';g.font='24px Galmuri11';g.fillText(`12집 중 ${n}집에 불이 켜졌어요`,540,120);
-  g.fillStyle='#FFD27A';g.font='24px Galmuri11';g.fillText('moodnight.co.kr',540,1270);
-  openSheet('맨션 저장하기',`<img class="shot" alt="맨션 이미지" src="${c.toDataURL('image/png')}"><p class="hint">이미지를 꾹 눌러 저장하세요. 편지 내용은 이미지에 들어가지 않아요.</p>`);
+/* ── 인스타 공유 이미지 (1080×1350) ── 맨션 그림 + 몇 집 불 켜졌는지 + 놀이 방법. 편지 내용은 안 들어가요 */
+async function saveImage() {
+  try { await Promise.all(['56px Galmuri14', '30px Galmuri11', '700 30px Galmuri11'].map(f => document.fonts.load(f))); } catch (e) {}
+  const W = 1080, H = 1350, c = document.createElement('canvas'); c.width = W; c.height = H; const g = c.getContext('2d'); g.imageSmoothingEnabled = false;
+  const n = typeof order === 'function' ? order().length : Object.keys(S.res).length, left = 12 - n;
+  const name = S.name || '', link = (S.slug ? `${location.origin}/mansion/r/${S.slug}` : `${location.origin}/mansion/`).replace(/^https?:\/\//, '');
+  g.fillStyle = '#0F1B28'; g.fillRect(0, 0, W, H);
+  g.fillStyle = 'rgba(255,255,255,.03)'; for (let x = 0; x < W; x += 6) g.fillRect(x, 0, 1, H); for (let y = 0; y < H; y += 6) g.fillRect(0, y, W, 1);
+  // 맨션 그림 (눈송이만, 흐린 빛 번짐은 빼고)
+  const snap = document.createElement('canvas'); snap.width = 240; snap.height = 264; const sg = snap.getContext('2d'); sg.drawImage(base, 0, 0); C = sg;
+  drawOverlay(sg, 0, true); FL.forEach(f => { if (f.y < 226) { sg.fillStyle = '#fff'; sg.fillRect(Math.round(f.x), Math.round(f.y), f.s, f.s); } });
+  const SH = 240, FW = 840, FH = Math.round(924 * SH / 264), FX = (W - FW) / 2, FY = 200;
+  g.fillStyle = '#060C14'; g.fillRect(FX - 9, FY - 9, FW + 18, FH + 18); g.fillStyle = 'rgba(0,0,0,.45)'; g.fillRect(FX + 9, FY + FH + 9, FW + 9, 9); g.fillRect(FX + FW + 9, FY + 9, 9, FH + 9);
+  g.drawImage(snap, 0, 0, 240, SH, FX, FY, FW, FH);
+  const tag = (text, x, y, bg, fg, line, size) => { g.font = `700 ${size}px Galmuri11`; const tw = g.measureText(text).width + 20, h = size + 10, lx = Math.round(x - tw / 2), ly = Math.round(y);
+    if (line) { g.fillStyle = line; g.fillRect(lx - 3, ly - 3, tw + 6, h + 6); } g.fillStyle = bg; g.fillRect(lx, ly, tw, h); g.fillStyle = fg; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(text, lx + tw / 2, ly + h / 2 + 1); };
+  tag('산타의 선물가게', FX + FW * .116, FY + FH * .692 * 264 / SH, '#C8553D', '#FFF4DE', '#FFD27A', 19);
+  tag('루돌프네 양말공장', FX + FW * .881, FY + FH * .692 * 264 / SH, '#5A3A2A', '#FFF4DE', '#C8423A', 19);
+  tag('성탄맨션', FX + FW * .5, FY + FH * .79 * 264 / SH, '#F3D9A4', '#3A2418', '#7A4A2A', 18);
+  // 글자
+  g.textAlign = 'center'; g.textBaseline = 'middle';
+  g.fillStyle = '#7A2E26'; g.font = '56px Galmuri14'; g.fillText(name ? `${name}의 성탄맨션` : '성탄맨션', W / 2 + 4, 78 + 4);
+  g.fillStyle = '#FFD27A'; g.fillText(name ? `${name}의 성탄맨션` : '성탄맨션', W / 2, 78);
+  g.fillStyle = '#C9D6E3'; g.font = '30px Galmuri11'; g.fillText(`12집 중 ${n}집에 불이 켜졌어요`, W / 2, 146);
+  const msg = left ? `빈 집 ${left}채! 한 칸 골라서 불 켜 줘` : '12집 모두 불이 켜졌어요!';
+  g.font = '44px Galmuri14'; const mw = g.measureText(msg).width + 56;
+  g.fillStyle = '#060C14'; g.fillRect(W / 2 - mw / 2 - 4, 1110 - 4, mw + 8, 76 + 8); g.fillStyle = '#C8553D'; g.fillRect(W / 2 - mw / 2, 1110, mw, 76);
+  g.fillStyle = '#7A2E26'; g.fillRect(W / 2 - mw / 2, 1110 + 70, mw, 6);
+  g.fillStyle = '#FFF4DE'; g.fillText(msg, W / 2, 1146);
+  g.fillStyle = '#9FB2C6'; g.font = '26px Galmuri11'; g.fillText('빈 집 고르기 · 창문 꾸미기 · 집주인에게 편지 남기기', W / 2, 1236);
+  g.fillStyle = '#FFD27A'; g.font = '26px Galmuri11'; g.fillText(link, W / 2, 1290);
+  // 창
+  const url = c.toDataURL('image/png');
+  const blob = await new Promise(ok => c.toBlob(ok, 'image/png'));
+  const file = blob && new File([blob], 'moodnight-mansion.png', { type: 'image/png' });
+  const canFile = file && navigator.canShare && navigator.canShare({ files: [file] });
+  window.mnTrack && mnTrack('share', 'card');
+  openSheet('인스타 공유 이미지', `<img class="shot" alt="맨션 공유 이미지" src="${url}">
+    ${canFile ? '<button class="btn wide" id="cardShare">인스타·카톡으로 공유하기</button>' : ''}
+    <a class="btn ${canFile ? 'ghost ' : ''}wide" id="cardSave" href="${url}" download="moodnight-mansion.png">이미지 저장하기</a>
+    <p class="hint">편지 내용은 이미지에 들어가지 않아요. 휴대폰에서 저장이 안 되면 이미지를 꾹 눌러 저장해 주세요. 인스타 스토리에는 링크 스티커로 <b>${link}</b>를 붙여 주세요.</p>`);
+  if ($('#cardShare')) $('#cardShare').onclick = () => { window.mnTrack && mnTrack('share', 'card_native'); navigator.share({ files: [file], text: `${left ? `내 성탄맨션에 빈 집이 ${left}채 남았어. 하나 골라서 불 켜 줘!` : '내 성탄맨션이 꽉 찼어!'}\n${location.protocol}//${link}` }).catch(() => {}); };
 }
 
 /* ── 공통 ── */
@@ -563,6 +589,6 @@ render();requestAnimationFrame(frame);
 })();
 </script>
 
-<script src="/music/player.js?v=2" defer></script>
+<script src="/music/player.js?v=7" defer></script>
 </body>
 </html>
