@@ -64,6 +64,28 @@
   .hint small{display:block;font-size:11px;color:var(--dim);font-weight:500;margin-top:3px}
   .proto{position:fixed;left:12px;top:calc(62px + env(safe-area-inset-top));z-index:4;font-size:12px;color:#5d6e54;text-decoration:none;background:#fbf6eacc;padding:4px 10px;border-radius:999px}
   .vol{position:fixed;right:12px;top:calc(60px + env(safe-area-inset-top));z-index:9;background:var(--cream);border-radius:16px;padding:14px;box-shadow:0 10px 30px #0003;display:grid;gap:10px;width:230px}
+  .marsh{position:fixed;inset:0;z-index:15;background:#2a33244d;display:grid;place-items:center;padding:14px}
+  .marsh[hidden],.mbody[hidden]{display:none}
+  .mframe{width:min(100%,420px);max-height:calc(100dvh - 28px);overflow:auto;background:#9b6b45;border-radius:18px;padding:10px;box-shadow:inset 0 -6px 0 #7d5435,0 16px 40px #0004;border:3px solid #7d5435}
+  .mbody{background:var(--cream);border-radius:12px;padding:14px;display:grid;gap:12px}
+  .mtxt{font-size:14px;line-height:1.7;color:var(--ink);text-align:center}
+  .mhud{display:flex;justify-content:space-between;font-size:15px}.mhud b{font-family:Jua,sans-serif;font-weight:400;font-size:20px}
+  .mstage{position:relative;height:230px;border-radius:12px;background:linear-gradient(#2c3550,#4a4870 60%,#5a4636);overflow:hidden;touch-action:none}
+  .mfire{position:absolute;left:50%;bottom:6px;font-size:64px;line-height:1;transform:translateX(-50%) scale(1);transform-origin:50% 100%;filter:drop-shadow(0 0 18px #ff8a30)}
+  .mstick{position:absolute;left:50%;top:0;width:0;height:0;transition:transform .18s ease-out;transform:translate(60px,26px) rotate(-18deg)}
+  .mstick.down{transform:translate(0,108px) rotate(0deg)}
+  .mstick i{position:absolute;left:8px;top:-4px;width:150px;height:6px;border-radius:3px;background:#c9a06a}
+  .mm{position:absolute;left:-26px;top:-22px;width:52px;height:42px;border-radius:14px;background:#fffaf0;box-shadow:inset -5px -6px 0 #0000001f;transition:transform .15s}
+  .mm.pop{transform:scale(1.25)}.mm.burn{transform:scale(.85) rotate(12deg)}
+  .mmsg{position:absolute;left:0;right:0;top:10px;text-align:center;color:#fff;font-family:Jua,sans-serif;font-size:20px;text-shadow:0 2px 4px #0006;pointer-events:none}
+  .mgauge{position:relative;height:16px;border-radius:8px;background:linear-gradient(90deg,#fffaf0,#f0c98a 55%,#d9a05a 72%,#8a5a30 86%,#2a1c14)}
+  .mzone{position:absolute;left:60%;width:22%;top:-3px;bottom:-3px;border:3px solid #ffd75e;border-radius:8px;box-shadow:0 0 8px #ffd75e}
+  .mneedle{position:absolute;top:-6px;bottom:-6px;width:4px;margin-left:-2px;background:var(--ink);border-radius:2px;left:0}
+  .mhold{padding:18px;font-size:18px;touch-action:none;user-select:none;-webkit-user-select:none}.mhold.on{transform:translateY(3px);filter:brightness(.92)}
+  .mres{text-align:center;font-size:15px;line-height:1.6}.mres b{font-family:Jua,sans-serif;font-weight:400;font-size:26px}
+  .mrank{display:grid;gap:4px;max-height:38vh;overflow:auto;font-size:14px}
+  .mrank div{display:flex;gap:8px;align-items:center;padding:7px 10px;border-radius:9px;background:#fff}.mrank div.me{background:#fff3c9;font-weight:700}
+  .mrank i{font-style:normal;width:26px;text-align:center;font-family:Jua,sans-serif}.mrank span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.mrank small{color:var(--dim)}
   .board{position:fixed;inset:0;z-index:15;background:#2a33244d;display:grid;place-items:center;padding:14px}
   .bframe{width:min(100%,560px);max-height:calc(100dvh - 28px);display:flex;flex-direction:column;background:#6f8f60;border-radius:18px;padding:10px;box-shadow:inset 0 -6px 0 #58744c,0 16px 40px #0004;border:3px solid #58744c}
   .bhead{display:flex;align-items:center;gap:8px;color:#fbf6ea;padding:4px 6px 10px}.bhead b{font-family:Jua,sans-serif;font-weight:400;font-size:20px}.bhead span{font-size:12px;opacity:.85}
@@ -118,6 +140,24 @@
 
 <div class="sheet"><div class="card" id="card"></div></div>
 <div class="toast" id="toast"></div>
+<div class="marsh" id="marsh" hidden><div class="mframe">
+  <div class="bhead"><b>🔥 마시멜로 굽기</b><button class="bx" id="mClose" aria-label="닫기">✕</button></div>
+  <div class="mbody" id="mIntro">
+    <p class="mtxt">버튼을 <b>꾹 누르면</b> 마시멜로가 불 위로 내려가요.<br>노릇노릇한 <b>황금색 칸</b>에서 손을 떼면 성공!<br>너무 오래 구우면 타 버려요. 40초 동안 몇 개 구울 수 있을까요?</p>
+    <div class="row"><button class="btn ghost" id="mRankBtn">🏆 랭킹</button><button class="btn" id="mStart">굽기 시작</button></div>
+  </div>
+  <div class="mbody" id="mPlay" hidden>
+    <div class="mhud"><span>⏱ <b id="mTime">40</b>초</span><span>🍡 <b id="mCount">0</b>개</span></div>
+    <div class="mstage" id="mStage"><div class="mstick" id="mStick"><i></i><div class="mm" id="mM"></div></div><div class="mfire" id="mFire">🔥</div><div class="mmsg" id="mMsg"></div></div>
+    <div class="mgauge"><div class="mzone"></div><div class="mneedle" id="mNeedle"></div></div>
+    <button class="btn mhold" id="mHold">꾹 눌러 굽기</button>
+  </div>
+  <div class="mbody" id="mEnd" hidden>
+    <p class="mres" id="mRes"></p>
+    <div class="mrank" id="mRank"></div>
+    <div class="row"><button class="btn ghost" id="mBack">닫기</button><button class="btn" id="mAgain">다시 굽기</button></div>
+  </div>
+</div></div>
 <div class="board" id="board" hidden><div class="bframe">
   <div class="bhead"><b>📌 캠핑장 게시판</b><span id="bCamp"></span><button class="bx" id="bClose" aria-label="닫기">✕</button></div>
   <div class="cork" id="cork"></div>
@@ -141,7 +181,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script src="/track.js?v=5" defer></script>
 <script type="module">
-const fires=[]; let boardHit=null, boardArrow=null;
+const fires=[]; let boardHit=null, boardArrow=null, fireHit=null, fireArrow=null;
 // 밤이 되면 빛나는 것들: 모닥불·랜턴·조명에 은은한 빛무리(스프라이트)를 붙이고, 가까운 몇 개에는 진짜 빛도 비춰요
 const glows=[]; let nightK=0;
 const glowTex=(()=>{ const c=document.createElement('canvas'); c.width=c.height=64; const x=c.getContext('2d'); const g=x.createRadialGradient(32,32,0,32,32,32);
@@ -353,6 +393,10 @@ function makeLandmark(t){
       b.rotation.y=Math.PI/2; b.position.set(sg*2.05,0,0); g.add(b); });
     
     g.userData.big=true;
+    { const fh=new THREE.Mesh(new THREE.CylinderGeometry(1.5,1.5,2.4,10),new THREE.MeshBasicMaterial({visible:false})); fh.position.y=1.2; fh.userData.fireHit=true; g.add(fh);
+      const fa=new THREE.Group(); fa.userData.fireArrow=true; const ac=new THREE.Mesh(new THREE.ConeGeometry(.22,.42,4),new THREE.MeshBasicMaterial({color:0xffb52e,depthTest:false})); ac.rotation.x=Math.PI; ac.renderOrder=6; fa.add(ac);
+      const lb=new THREE.Sprite(new THREE.SpriteMaterial({map:textTexture('마시멜로 굽기',400,96,'#4a3f35',50,'#fbf6ea'),depthTest:false})); lb.scale.set(1.5,.36,1); lb.position.y=.5; lb.renderOrder=6; fa.add(lb);
+      fa.scale.setScalar(2.6); fa.position.set(0,3.4,0); g.add(fa); }
   
     return g; }
   if(t==='pine') return pine(rnd(2.4,3.4));
@@ -365,8 +409,9 @@ const COMMON_ITEMS=[['m_campfire','모닥불 ✨','🔥'],['m_stonefire','돌 �
 const COMMON_DEFAULT=[['sign',CENTER.x-1.6,CENTER.z-2.3,0.79,1],['board',CENTER.x-3.5,CENTER.z-.2,0.79,1],['bigfire',CENTER.x+1,CENTER.z+.6,0.79,1],
   ['m_lantern',CENTER.x-4.3,CENTER.z+1.5,0.79,1],['m_lantern',CENTER.x+4.6,CENTER.z-1.2,0.3,1],['m_stump',CENTER.x-1.6,CENTER.z+2.9,1.6,1],['m_campfire',CENTER.x+4.2,CENTER.z+2.3,0.5,1]];
 const common=new THREE.Group(); common.position.y=Y0; world.add(common); let isAdmin=false, commonSaved=null, commonDirty=false;
-function buildCommon(list){ common.clear(); boardHit=null; boardArrow=null;
+function buildCommon(list){ common.clear(); boardHit=null; boardArrow=null; fireHit=null; fireArrow=null;
   list.forEach(([t,x,z,r,sc])=>{ const o=makeLandmark(t); if(!o) return; o.position.set(x,0,z); o.rotation.y=r||0; o.scale.setScalar(sc||1); o.userData.type=t; o.userData.item=true; common.add(o);
+    if(t==='bigfire'&&!fireHit){ o.traverse(m=>{ if(m.userData.fireHit) fireHit=m; if(m.userData.fireArrow) fireArrow=m; }); }
     if(t==='board'&&!boardHit){ o.traverse(m=>{ if(m.userData.boardHit) boardHit=m; if(m.userData.boardArrow) boardArrow=m; }); } }); }
 buildCommon(COMMON_DEFAULT);
 
@@ -563,7 +608,7 @@ const tentIcon={bell:'<svg viewBox="0 0 52 38"><path d="M6 34h40l-4-14H10z" fill
   aframe:'<svg viewBox="0 0 52 38"><path d="M6 34L26 4l20 30z" fill="#e8d8b8"/><path d="M20 34l6-12 6 12z" fill="#5a4636"/></svg>',
   dome:'<svg viewBox="0 0 52 38"><path d="M6 34a20 22 0 0 1 40 0z" fill="#e8d8b8"/><path d="M20 34a6 9 0 0 1 12 0z" fill="#5a4636"/></svg>'};
 
-function campNav(){ return `<div class="campnav"><button id="cPrev" ${campNo<=1?'disabled':''}>‹</button><span>${campNo}번 캠핑장${campCount>1?` · 전체 ${campCount}곳`:''}</span><button id="cNext" ${campNo>=campCount?'disabled':''}>›</button><button id="oBoard" style="width:auto;padding:0 12px">📌 게시판</button>${isAdmin?'<button id="oAdmin" style="width:auto;padding:0 12px">🛠 꾸미기</button>':''}</div>`; }
+function campNav(){ return `<div class="campnav"><button id="cPrev" ${campNo<=1?'disabled':''}>‹</button><span>${campNo}번 캠핑장${campCount>1?` · 전체 ${campCount}곳`:''}</span><button id="cNext" ${campNo>=campCount?'disabled':''}>›</button><button id="oBoard" style="width:auto;padding:0 12px">📌 게시판</button><button id="oMarsh" style="width:auto;padding:0 12px">🍡 굽기</button>${isAdmin?'<button id="oAdmin" style="width:auto;padding:0 12px">🛠 꾸미기</button>':''}</div>`; }
 async function switchCamp(no){ select(null); if(!(await loadCamp(no))) return; buildAll(); focusWorld(); showWorldCard(); }
 function showWorldCard(){
   mode='world'; hideTool();
@@ -574,7 +619,7 @@ function showWorldCard(){
   setTimeout(()=>{ const b=$('goMine'); if(b) b.onclick=()=>enterOutside(me.site);
     const h=$('goHome'); if(h) h.onclick=()=>switchCamp(myLoc.camp);
     const sh=$('share'); if(sh) sh.onclick=shareCamp;
-    const ob=$('oBoard'); if(ob) ob.onclick=()=>Board.open(); const oa=$('oAdmin'); if(oa) oa.onclick=enterAdmin; const p=$('cPrev'), n=$('cNext'); if(p) p.onclick=()=>switchCamp(campNo-1); if(n) n.onclick=()=>switchCamp(campNo+1); },140);
+    const ob=$('oBoard'); if(ob) ob.onclick=()=>Board.open(); const oa=$('oAdmin'); if(oa) oa.onclick=enterAdmin; const om=$('oMarsh'); if(om) om.onclick=()=>Marsh.open(); const p=$('cPrev'), n=$('cNext'); if(p) p.onclick=()=>switchCamp(campNo-1); if(n) n.onclick=()=>switchCamp(campNo+1); },140);
 }
 async function shareCamp(){ const url=`${location.origin}/camp/?c=${campNo}${me?`&s=${me.site}`:''}`; track('share','camp');
   try{ if(navigator.share){ await navigator.share({title:'MY LITTLE CAMP',text:'내 텐트 구경 와 ⛺',url}); return; } }catch(e){ return; }
@@ -711,6 +756,7 @@ function tap(e){
   if(mode==='outside' && selected){ select(null); }
   setNdc(e); if(mode!=='outside'&&boardHit&&ray.intersectObject(boardHit,false).length){ Board.open(); return; }
   if(mode==='world'&&ray.intersectObjects(wayHits,false).length){ openWay(ray.intersectObjects(wayHits,false)[0].object.userData.way); return; }
+  if(mode!=='outside'&&fireHit&&ray.intersectObject(fireHit,false).length){ Marsh.open(); return; }
   const hits=ray.intersectObjects(hitMeshes,false); if(!hits.length) return;
   const no=hits[0].object.userData.site;
   if(me && me.site===no){ if(mode!=='outside') enterOutside(no); return; }
@@ -760,6 +806,7 @@ function loop(){
   updateGlows(t);
   if(scene===world){ const tg=controls.target; tg.x=Math.max(-16,Math.min(16,tg.x)); tg.z=Math.max(-12,Math.min(12,tg.z)); }
   if(marker.parent){ marker.userData.arrow.position.y=marker.userData.top+Math.sin(t*5)*.12; marker.userData.arrow.rotation.y=t*2; marker.userData.ring.material.opacity=.65+.3*Math.sin(t*5); }
+  if(fireArrow){ fireArrow.position.y=3.4+Math.abs(Math.sin(t*3+1))*.4; fireArrow.children[0].rotation.y=t*1.5; }
   if(boardArrow){ boardArrow.position.y=3.6+Math.abs(Math.sin(t*3))*.45; boardArrow.children[0].rotation.y=t*1.5; }
   fires.forEach((f,i)=>{ f.scale.y=1+Math.sin(t*12+i)*.12; f.scale.x=f.scale.z=1+Math.cos(t*9+i)*.06; });
   Object.values(siteObjs).forEach(s=>{ const p=s.root.userData.pulse; if(p){ const k=1+Math.sin(t*3)*.08; p[0].scale.set(k,k,k); p[1].position.y=.9+Math.sin(t*3)*.12; } });
@@ -851,6 +898,44 @@ const Board=(()=>{
     btn.disabled=false; if(error){ toast(errMsg(error)); return; } notes=data||[]; render(); $('bComp').hidden=true; $('bFoot').hidden=false; toast('쪽지를 붙였어요 📌'); track('act','camp_note'); };
   return {open};
 })();
+/* ================= 마시멜로 굽기 ================= */
+const Marsh=(()=>{
+  const ROUND=40, LO=.6, HI=.82, STOPS=[[0,[255,250,240]],[.55,[240,201,138]],[.72,[217,160,90]],[.86,[138,90,48]],[1,[42,28,20]]];
+  let raf=0, t0=0, last=0, r=0, speed=.35, holding=false, count=0, locked=false, running=false, flareSeed=0;
+  const esc=t=>String(t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const col=v=>{ let i=0; while(i<STOPS.length-2&&v>STOPS[i+1][0]) i++; const [a,ca]=STOPS[i],[b,cb]=STOPS[i+1], k=Math.max(0,Math.min(1,(v-a)/(b-a))); return `rgb(${ca.map((x,j)=>Math.round(x+(cb[j]-x)*k)).join(',')})`; };
+  const show=id=>['mIntro','mPlay','mEnd'].forEach(k=>$(k).hidden=k!==id);
+  const say=(m)=>{ $('mMsg').textContent=m; clearTimeout(say.t); say.t=setTimeout(()=>$('mMsg').textContent='',900); };
+  function fresh(){ r=0; speed=rnd(.3,.5); locked=false; const m=$('mM'); m.className='mm'; m.style.background=col(0); $('mNeedle').style.left='0%'; }
+  function finish(ok){ locked=true; holding=false; $('mStick').classList.remove('down'); $('mHold').classList.remove('on'); const m=$('mM');
+    if(ok){ count++; $('mCount').textContent=count; m.classList.add('pop'); say(['노릇노릇! 🍡','완벽해요!','맛있겠다!'][count%3]); } else { m.classList.add('burn'); m.style.background=col(1); say('앗, 탔어요 💨'); }
+    setTimeout(()=>{ if(running) fresh(); },550); }
+  function down(e){ e.preventDefault(); if(!running||locked) return; holding=true; $('mStick').classList.add('down'); $('mHold').classList.add('on'); }
+  function up(){ if(!running||locked||!holding) return; holding=false; $('mStick').classList.remove('down'); $('mHold').classList.remove('on');
+    if(r>=LO&&r<=HI) finish(true); else if(r>HI) finish(false); else say('아직 덜 익었어요'); }
+  function frame(now){ if(!running) return; const dt=Math.min(.05,(now-last)/1000); last=now; const el=(now-t0)/1000, left=Math.max(0,ROUND-el);
+    $('mTime').textContent=Math.ceil(left);
+    const flare=1+.45*Math.sin(el*2.3+flareSeed)+.3*Math.sin(el*5.1+flareSeed*2); $('mFire').style.transform=`translateX(-50%) scale(${(.8+flare*.35).toFixed(2)})`;
+    if(holding&&!locked){ r=Math.min(1,r+dt*speed*Math.max(.45,flare)); $('mM').style.background=col(r); $('mNeedle').style.left=(r*100)+'%'; if(r>=1) finish(false); }
+    if(left<=0){ end(); return; } raf=requestAnimationFrame(frame); }
+  function start(){ show('mPlay'); count=0; $('mCount').textContent='0'; running=true; flareSeed=Math.random()*10; fresh(); t0=last=performance.now(); raf=requestAnimationFrame(frame); track('act','camp_marsh'); }
+  function rankHTML(d){ const top=(d&&d.top)||[]; if(!top.length) return '<div><span>아직 기록이 없어요. 첫 번째로 구워 보세요!</span></div>';
+    const medal=['🥇','🥈','🥉']; let h=top.map((x,i)=>`<div class="${x.mine?'me':''}"><i>${medal[i]||i+1}</i><span>${esc(x.name)}</span><b>${x.total}개</b><small>최고 ${x.best}</small></div>`).join('');
+    if(d.me&&!top.some(x=>x.mine)) h+=`<div class="me"><i>${d.me.rank}</i><span>나</span><b>${d.me.total}개</b><small>최고 ${d.me.best}</small></div>`; return h; }
+  async function end(){ running=false; holding=false; cancelAnimationFrame(raf); show('mEnd'); $('mRank').innerHTML='<div><span>랭킹 불러오는 중…</span></div>';
+    let note='', d=null;
+    if(user&&count>0){ const r=await sb.rpc('camp_marsh_add',{p_count:count,p_name:(user.user_metadata&&(user.user_metadata.name||user.user_metadata.full_name))||''}); if(r.error) note=`<br><small>기록하지 못했어요: ${esc(errMsg(r.error))}</small>`; else d=r.data; }
+    else if(!user) note='<br><small>로그인하면 랭킹에 기록돼요</small>';
+    if(!d){ const r=await sb.rpc('camp_marsh_top'); d=r.data; }
+    $('mRes').innerHTML=`이번 판 <b>${count}개</b> 구웠어요!${d&&d.me?`<br>지금까지 모두 ${d.me.total}개 · ${d.me.rank}등`:''}${note}`; $('mRank').innerHTML=rankHTML(d); }
+  async function ranking(){ show('mEnd'); $('mRes').innerHTML='🏆 <b>마시멜로 랭킹</b><br><small>지금까지 구운 개수 순서예요</small>'; $('mRank').innerHTML='<div><span>불러오는 중…</span></div>'; const r=await sb.rpc('camp_marsh_top'); $('mRank').innerHTML=rankHTML(r.data); }
+  function close(){ running=false; cancelAnimationFrame(raf); $('marsh').hidden=true; }
+  ['mHold','mStage'].forEach(id=>{ $(id).addEventListener('pointerdown',down); });
+  addEventListener('pointerup',up); addEventListener('pointercancel',up);
+  $('mStart').onclick=start; $('mAgain').onclick=start; $('mRankBtn').onclick=ranking; $('mBack').onclick=close; $('mClose').onclick=close;
+  $('marsh').onclick=e=>{ if(e.target.id==='marsh'&&!running) close(); };
+  return {open(){ show('mIntro'); $('marsh').hidden=false; }};
+})();
 /* ================= 소리 =================
    '캠핑 시작하기'를 눌러야 재생돼요(브라우저 자동재생 제한).
    음악: 캠핑장=Campfire, 꾸미기·텐트 안=Mellow Moments (HTMLAudio → Web Audio 게인으로 크로스페이드)
@@ -921,7 +1006,7 @@ const Sound=(()=>{
   showWorldCard();
 })();
 setTimeout(()=>$('loading').classList.add('hide'),200);
-window.__camp={marker,get selected(){return selected},get mode(){return mode},get me(){return me},SITES,enterOutside,addItem,enterInside,showPlaceCard,camera,controls,visitOutside};
+window.__camp={Marsh,marker,get selected(){return selected},get mode(){return mode},get me(){return me},SITES,enterOutside,addItem,enterInside,showPlaceCard,camera,controls,visitOutside};
 </script>
 </body>
 </html>
