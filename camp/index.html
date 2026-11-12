@@ -142,6 +142,12 @@
 <script src="/track.js?v=5" defer></script>
 <script type="module">
 const fires=[]; let boardHit=null, boardArrow=null;
+// 밤이 되면 빛나는 것들: 모닥불·랜턴·조명에 은은한 빛무리(스프라이트)를 붙이고, 가까운 몇 개에는 진짜 빛도 비춰요
+const glows=[]; let nightK=0;
+const glowTex=(()=>{ const c=document.createElement('canvas'); c.width=c.height=64; const x=c.getContext('2d'); const g=x.createRadialGradient(32,32,0,32,32,32);
+  g.addColorStop(0,'rgba(255,255,255,1)'); g.addColorStop(.25,'rgba(255,255,255,.55)'); g.addColorStop(1,'rgba(255,255,255,0)'); x.fillStyle=g; x.fillRect(0,0,64,64); const t=new THREE.CanvasTexture(c); return t; })();
+function glow(obj,color,size,kind,y){ const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:glowTex,color,transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false}));
+  sp.position.y=y||0; sp.scale.setScalar(size); sp.renderOrder=3; obj.add(sp); glows.push({sp,color,size,kind,seed:Math.random()*10}); return sp; }
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
@@ -283,7 +289,8 @@ function modelThumb(k){ if(thumbCache[k]) return thumbCache[k]; return thumbCach
   thumbR.render(sc,cam); return thumbR.domElement.toDataURL('image/png'); }); }
 function makeModel(k){ const [file,sc,fireY]=MODELS[k], holder=new THREE.Group();
   loadModel(k).then(src=>{ holder.add(fitModel(src,sc)); if(selected===holder) attachMarker(holder); }).catch(()=>toast('모델을 불러오지 못했어요'));
-  if(fireY){ const a=new THREE.Object3D(), b=new THREE.Object3D(); a.position.y=b.position.y=fireY; holder.add(a,b); fires.push(a,b); }
+  if(fireY){ const a=new THREE.Object3D(), b=new THREE.Object3D(); a.position.y=b.position.y=fireY; holder.add(a,b); fires.push(a,b); glow(holder,0xff9a40,3,'fire',fireY); }
+  if(k==='m_lantern') glow(holder,0xffd27a,1.8,'lamp',.35); if(k==='m_lights'||k==='m_garland') glow(holder,0xffe0a0,4.5,'lamp',.7); if(k==='m_grill') glow(holder,0xff7a30,1.4,'fire',1.0);
   return holder; }
 function makeLandmark(t){
   if(MODELS[t]) return makeModel(t);
@@ -315,7 +322,7 @@ function makeLandmark(t){
     const ash=mesh(new THREE.CylinderGeometry(.6,.62,.06,10),0x5a4a40); ash.position.y=.05; ash.castShadow=false; g.add(ash);
     for(let k=0;k<6;k++){ const a=k/6*Math.PI*2; const st=mesh(new THREE.CylinderGeometry(.05,.07,1.1,5),0x6b4a2f); st.position.set(Math.cos(a)*.22,.5,Math.sin(a)*.22); st.rotation.set(Math.sin(a)*-.45,0,Math.cos(a)*.45); g.add(st); }
     const fl=(rad,h,c,e,y,ei)=>{ const m=mesh(new THREE.ConeGeometry(rad,h,7),c,{emissive:e,emissiveIntensity:ei}); m.position.y=y; m.castShadow=false; g.add(m); return m; };
-    const f1=fl(.42,1.15,0xff7a2e,0xff5a10,.75,1.3), f2=fl(.24,.8,0xffd36a,0xffc040,.7,1.5); fires.push(f1,f2);
+    const f1=fl(.42,1.15,0xff7a2e,0xff5a10,.75,1.3), f2=fl(.24,.8,0xffd36a,0xffc040,.7,1.5); fires.push(f1,f2); glow(g,0xff8a30,5,'fire',.9);
     const f3=fl(.2,.6,0xff9a40,0xff6a1a,.6,1.2); f3.position.x=.25; const f4=fl(.18,.55,0xff9a40,0xff6a1a,.6,1.2); f4.position.x=-.22; fires.push(f3,f4);
     // 양옆 통나무 벤치(반 가른 통나무 + 다리)
     [-1,1].forEach(sg=>{ const b=new THREE.Group(); const top=mesh(new THREE.CylinderGeometry(.32,.32,2.4,10,1,false,0,Math.PI),0xc99a68); top.rotation.z=Math.PI/2; top.rotation.x=-Math.PI/2; top.position.y=.42; b.add(top);
@@ -401,9 +408,9 @@ function makeProp(t){
     case 'campfire': for(let i=0;i<7;i++){ const a=i/7*Math.PI*2; add(new THREE.DodecahedronGeometry(.17,0),PAL.rock,[Math.cos(a)*.48,.1,Math.sin(a)*.48]); }
       for(let i=0;i<3;i++){ add(new THREE.CylinderGeometry(.07,.07,.75,5),PAL.trunk,[0,.13,0],[Math.PI/2.4,i*2.1,0]); }
       { const f1=add(new THREE.ConeGeometry(.24,.62,6),0xff8a3d,[0,.42,0],null,{emissive:0xff6a1a,emissiveIntensity:1.2}); const f2=add(new THREE.ConeGeometry(.13,.42,5),0xffd36a,[0,.42,0],null,{emissive:0xffc040,emissiveIntensity:1.4});
-        f1.castShadow=f2.castShadow=false; fires.push(f1,f2); } break;
+        f1.castShadow=f2.castShadow=false; fires.push(f1,f2); glow(g,0xff9a40,2.2,'fire',.45); } break;
     case 'lantern': add(new THREE.CylinderGeometry(.16,.18,.06,8),0x3f4a42,[0,.03,0]); add(new THREE.CylinderGeometry(.13,.13,.3,8),0xffe7a8,[0,.21,0],null,{emissive:0xffc560,emissiveIntensity:1.1});
-      add(new THREE.ConeGeometry(.18,.12,8),0x3f4a42,[0,.42,0]); add(new THREE.TorusGeometry(.08,.015,4,10),0x3f4a42,[0,.52,0]); break;
+      add(new THREE.ConeGeometry(.18,.12,8),0x3f4a42,[0,.42,0]); add(new THREE.TorusGeometry(.08,.015,4,10),0x3f4a42,[0,.52,0]); glow(g,0xffd27a,1.4,'lamp',.22); break;
     case 'plant': add(new THREE.CylinderGeometry(.22,.16,.32,8),0xc97b56,[0,.16,0]); for(let i=0;i<4;i++) add(new THREE.IcosahedronGeometry(.2,0),PAL.pine2,[rnd(-.12,.12),.42+i*.07,rnd(-.12,.12)]); break;
     case 'tree': { const p=pine(2.2); g.add(p); } break;
     case 'rug': { const r=add(new THREE.CylinderGeometry(.9,.9,.03,16),0xe9c7a0,[0,.015,0]); r.castShadow=false; r.scale.z=.7; const r2=add(new THREE.CylinderGeometry(.62,.62,.035,16),0xc98f6b,[0,.02,0]); r2.scale.z=.7; r2.castShadow=false; } break;
@@ -414,7 +421,7 @@ function makeProp(t){
     case 'cushion': { const c=add(new THREE.SphereGeometry(.34,10,6),0xe3a9a6,[0,.14,0]); c.scale.y=.45; const c2=add(new THREE.SphereGeometry(.28,10,6),0xf3d9a4,[.42,.12,.22]); c2.scale.y=.45; } break;
     case 'rug2': { const r=add(new THREE.BoxGeometry(1.8,.03,1.2),0xd8b98f,[0,.015,0]); r.castShadow=false; for(let i=0;i<3;i++){ const s=add(new THREE.BoxGeometry(1.8,.035,.12),0xb0805a,[0,.02,-.35+i*.35]); s.castShadow=false; } } break;
     case 'lamp': add(new THREE.CylinderGeometry(.18,.2,.05,8),0x5a4636,[0,.025,0]); add(new THREE.CylinderGeometry(.025,.025,1.1,5),0x5a4636,[0,.57,0]);
-      add(new THREE.CylinderGeometry(.18,.3,.32,10,1,true),0xfff0cc,[0,1.2,0],null,{emissive:0xffd890,emissiveIntensity:.9,side:THREE.DoubleSide}); break;
+      add(new THREE.CylinderGeometry(.18,.3,.32,10,1,true),0xfff0cc,[0,1.2,0],null,{emissive:0xffd890,emissiveIntensity:.9,side:THREE.DoubleSide}); glow(g,0xffd890,1.6,'lamp',1.15); break;
     case 'books': [[0xb35d4a,.0],[0x6f8f60,.09],[0xe2b65e,.17],[0x7f8fb0,.25]].forEach(([c,y],i)=>add(new THREE.BoxGeometry(.5-i*.04,.08,.36),c,[0,.04+y,0],[0,i*.25,0])); break;
     case 'shelf': [[0,.02],[0,.5],[0,.98]].forEach(([x,y])=>add(new THREE.BoxGeometry(1.1,.05,.36),PAL.woodL,[x,y,0])); add(new THREE.BoxGeometry(.05,1.02,.36),PAL.wood,[-.55,.5,0]); add(new THREE.BoxGeometry(.05,1.02,.36),PAL.wood,[.55,.5,0]);
       add(new THREE.CylinderGeometry(.08,.07,.18,8),0xc97b56,[-.3,.62,0]); add(new THREE.IcosahedronGeometry(.12,0),PAL.pine2,[-.3,.78,0]); add(new THREE.BoxGeometry(.3,.22,.2),0x7f8fb0,[.25,.63,0]); add(new THREE.BoxGeometry(.4,.16,.24),0xe2b65e,[.1,1.09,0]); break;
@@ -712,10 +719,21 @@ function focusInside(){ controls.minAzimuthAngle=-0.45; controls.maxAzimuthAngle
 
 /* ================= 그리기 ================= */
 const clock=new THREE.Clock();
+const lightPool=[0,1,2,3,4].map(()=>{ const l=new THREE.PointLight(0xffb060,0,7,1.6); world.add(l); return l; }); let poolT=0; const _gp=new THREE.Vector3();
+function rootOf(o){ while(o.parent) o=o.parent; return o; }
+function updateGlows(t){ const k=nightK, inT=scene===inside;
+  for(const g of glows){ const fl=g.kind==='fire'?(.82+Math.sin(t*9+g.seed)*.1+Math.sin(t*23+g.seed*3)*.08):(.95+Math.sin(t*2+g.seed)*.05);
+    const kk=inT&&rootOf(g.sp)===inside?Math.max(.45,k):k; g.sp.material.opacity=Math.min(1,kk*(g.kind==='fire'?.85:.7))*fl; g.sp.visible=kk>.02; g.sp.scale.setScalar(g.size*(.85+.25*fl)*(.6+.4*kk)); }
+  if(t-poolT>.25){ poolT=t; const tg=controls.target; const list=[];
+    if(k>.05) for(const g of glows){ if(rootOf(g.sp)!==world) continue; g.sp.getWorldPosition(_gp); list.push({p:_gp.clone(),g,d:Math.hypot(_gp.x-tg.x,_gp.z-tg.z)}); }
+    list.sort((a,b)=>a.d-b.d); lightPool.forEach((l,i)=>{ const it=list[i]; if(it){ l.position.copy(it.p); l.position.y+=.4; l.color.setHex(it.g.color); l.userData.base=(it.g.kind==='fire'?9:5)*k; l.userData.fire=it.g.kind==='fire'; l.userData.seed=it.g.seed; } else l.userData.base=0; }); }
+  lightPool.forEach(l=>{ const b=l.userData.base||0; l.intensity=b*(l.userData.fire?(.8+Math.sin(t*11+l.userData.seed)*.12+Math.sin(t*27)*.08):1); });
+}
 function loop(){
   const dt=Math.min(.05,clock.getDelta()), t=clock.elapsedTime;
   if(tween){ tween.t=Math.min(1,tween.t+dt*1.8); const k=1-Math.pow(1-tween.t,3); const prev=controls.target.clone(); controls.target.lerpVectors(tween.from,tween.to,k); camera.position.add(controls.target.clone().sub(prev)); camera.zoom=tween.z0+(tween.z1-tween.z0)*k; camera.updateProjectionMatrix(); if(tween.t>=1) tween=null; }
   if(window.__sky) window.__sky.tick(dt);
+  updateGlows(t);
   if(scene===world){ const tg=controls.target; tg.x=Math.max(-16,Math.min(16,tg.x)); tg.z=Math.max(-12,Math.min(12,tg.z)); }
   if(marker.parent){ marker.userData.arrow.position.y=marker.userData.top+Math.sin(t*5)*.12; marker.userData.arrow.rotation.y=t*2; marker.userData.ring.material.opacity=.65+.3*Math.sin(t*5); }
   if(boardArrow){ boardArrow.position.y=3.6+Math.abs(Math.sin(t*3))*.45; boardArrow.children[0].rotation.y=t*1.5; }
@@ -770,7 +788,7 @@ const Sky=(()=>{
     document.body.style.background='#'+S.bg.getHexString(); world.background.copy(S.bg); if(world.fog) world.fog.color.copy(S.bg);
     worldLights.hemi.color.copy(S.sky); worldLights.hemi.groundColor.copy(S.gnd); worldLights.hemi.intensity=S.hi*(1-dim*.25);
     worldLights.sun.color.copy(S.sc); worldLights.sun.intensity=S.si*(1-dim*.7);
-    const night=S.si<1?1-S.si:0; plazaLight.intensity=4+night*28;
+    const night=S.si<1?1-S.si:0; plazaLight.intensity=4+night*28; nightK=Math.min(1,Math.max(0,(1.6-S.si)/1.2)+dim*.25);
     rain.visible=k==='rain'||k==='sleet'; snow.visible=k==='snow'||k==='sleet';
     Sound.setRain(rain.visible?(k==='sleet'?.6:1):0);
     const ico=k==='rain'?'🌧️':k==='sleet'?'🌨️':k==='snow'?'❄️':k==='overcast'?'☁️':k==='cloudy'?'⛅':(h<6||h>=19?'🌙':'☀️');
