@@ -244,12 +244,42 @@
   .err{color:#ffb199 !important}
   #emptySky{position:absolute; z-index:6; left:0; right:0; top:44%; font-size:14px; color:var(--dim); line-height:1.7}
   #drawerIn hr{border:none; border-top:1px solid rgba(243,230,200,.1); margin:6px 0}
+  /* 산 아래 마을·캠핑장 불빛 (첫 화면) */
+  #valley{position:absolute; z-index:6; left:0; right:0; bottom:0; height:min(30%,230px); pointer-events:none; display:none}
+  #app[data-scr="s-intro"] #valley{display:block}
+  #valley svg{position:absolute; left:0; bottom:0; width:100%; height:100%; image-rendering:auto}
+  #valley .wl{animation:tw 2.6s infinite}
+  #valley .fire{animation:vfire .5s steps(2) infinite}
+  @keyframes vfire{50%{opacity:.55}}
+  #valley .vgo{position:absolute; pointer-events:auto; background:rgba(20,18,40,.55); color:var(--dim); border:1px solid rgba(243,230,200,.18);
+    font:inherit; font-size:12px; line-height:1; padding:6px 9px; border-radius:20px; cursor:pointer; white-space:nowrap}
+  #valley .vgo:hover{color:var(--paper)}
+  #valley .v1{left:7%; bottom:calc(50px + env(safe-area-inset-bottom))}
+  #valley .v2{right:7%; bottom:calc(56px + env(safe-area-inset-bottom))}
 </style>
 </head>
 <body>
-<div id="app">
+<div id="app" data-scr="s-intro">
   <div id="sky"></div>
   <div id="moon"></div>
+  <div id="valley" aria-label="산 아래 마을과 캠핑장">
+    <svg viewBox="0 0 360 160" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+      <defs><radialGradient id="vg"><stop offset="0" stop-color="#ffb35c" stop-opacity=".55"/><stop offset="1" stop-color="#ffb35c" stop-opacity="0"/></radialGradient>
+        <radialGradient id="vf"><stop offset="0" stop-color="#ff8a3a" stop-opacity=".8"/><stop offset="1" stop-color="#ff8a3a" stop-opacity="0"/></radialGradient></defs>
+      <g transform="translate(0,-34)">
+      <path d="M0 92 Q60 70 120 86 T240 78 T360 70 V160 H0Z" fill="#221f38"/>
+      <ellipse cx="78" cy="104" rx="70" ry="22" fill="url(#vg)"/>
+      <g fill="#171428"><rect x="52" y="86" width="16" height="22"/><rect x="70" y="80" width="22" height="28"/><rect x="94" y="90" width="14" height="18"/><rect x="40" y="94" width="10" height="14"/><rect x="110" y="95" width="12" height="13"/></g>
+      <g fill="#ffd27a"><rect class="wl" x="74" y="84" width="3" height="3"/><rect x="80" y="84" width="3" height="3"/><rect x="86" y="90" width="3" height="3"/><rect class="wl" x="74" y="96" width="3" height="3" style="animation-delay:-1.2s"/><rect x="86" y="96" width="3" height="3"/><rect x="56" y="92" width="3" height="3"/><rect class="wl" x="62" y="98" width="3" height="3" style="animation-delay:-.6s"/><rect x="98" y="95" width="3" height="3"/><rect x="44" y="99" width="2" height="2"/><rect x="114" y="100" width="2" height="2"/></g>
+      <g fill="#14201c"><path d="M232 112 l8 -26 l8 26z"/><path d="M246 116 l10 -34 l10 34z"/><path d="M262 112 l7 -22 l7 22z"/><path d="M296 114 l9 -30 l9 30z"/><path d="M312 116 l8 -24 l8 24z"/></g>
+      <ellipse cx="282" cy="110" rx="26" ry="12" fill="url(#vf)" class="fire"/>
+      <path d="M276 112 l6 -8 l6 8z" fill="#e8d9b0" opacity=".85"/><rect class="fire" x="288" y="109" width="3" height="3" fill="#ffb35c"/>
+      <path d="M0 122 Q90 104 180 118 T360 112 V200 H0Z" fill="#1a1730"/>
+      </g>
+    </svg>
+    <button class="vgo v1" id="toMansion">🏢 산 아래 마을</button>
+    <button class="vgo v2" id="toCamp">🔥 숲속 캠핑장</button>
+  </div>
   <div id="roof"><div id="chime"></div></div>
 
   <!-- 1. 입장 -->
@@ -563,6 +593,9 @@ function lsGet(k){ try{ return JSON.parse(localStorage.getItem(k)||'[]'); }catch
 function lsAdd(k,v){ try{ const a=lsGet(k); a.push(v); localStorage.setItem(k, JSON.stringify(a.slice(-200))); }catch(e){} }
 const MINE='sansa-mine', HIDDEN='sansa-hidden';
 const track=(k,d)=>{ try{ window.mnTrack && window.mnTrack(k,d); }catch(e){} };
+// 산 아래 불빛: 성탄맨션 마을, 숲속 캠핑장
+document.getElementById('toMansion').onclick=()=>{ track('act','to_mansion'); location.href='/mansion/?ref=sansa_valley'; };
+document.getElementById('toCamp').onclick=()=>{ track('act','to_camp'); location.href='/camp/?ref=sansa_valley'; };
 
 /* ---------- 오늘 모두의 번뇌 수 ---------- */
 let todayCount=0;
@@ -575,6 +608,7 @@ loadStats();
 /* ---------- screens ---------- */
 function show(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('on', s.id===id));
+  document.getElementById('app').dataset.scr=id;
 }
 function ensureAudio(){ ctx(); if(!ambientStarted){ ambientStarted=true; setTimeout(ambient, 6000); } }
 let greetTimer=null;
