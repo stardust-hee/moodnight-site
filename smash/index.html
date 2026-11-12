@@ -125,7 +125,7 @@
   <div class="picker" role="group" aria-label="부술 물건">
     <button type="button" data-obj="keyboard" aria-pressed="true">⌨ 키보드</button>
     <button type="button" data-obj="monitor" aria-pressed="false">🖥 모니터</button>
-    <button type="button" data-obj="mug" aria-pressed="false">☕ 머그컵</button>
+    <button type="button" data-obj="mug" aria-pressed="false">☕ 머그컵 3잔</button>
   </div>
 
   <div class="stage" id="stage">
@@ -152,14 +152,14 @@
       <li><b>부술 물건 고르기</b> 키보드, 모니터, 머그컵 중 하나를 골라요. 물건마다 깨지는 모양이 달라요.</li>
       <li><b>빡친 일 붙이기 (선택)</b> "월요일 출근", "야근 지시"처럼 오늘 화난 일을 적으면 노란 쪽지로 물건에 붙어요. 때릴 때마다 글자가 한 자씩 떨어져 나가요.</li>
       <li><b>누른 자리를 내리치기</b> 화면을 누른 바로 그 자리가 깨져요. 꾹 누르고 있으면 힘이 모여서, 놓는 순간 훨씬 세게 내리쳐요.</li>
-      <li><b>와장창</b> 내구도가 0이 되면 물건이 산산조각 나요. 새 물건을 가져와서 또 부술 수 있어요.</li>
+      <li><b>와장창</b> 내구도가 0이 되면 물건이 산산조각 나요. 잠시 뒤 새 물건이 저절로 들어와서 계속 부술 수 있어요.</li>
     </ol>
 
     <h2>물건마다 다르게 부서져요</h2>
     <ul>
       <li><b>⌨ 키보드</b> 맞은 자리 근처 키캡이 튀어 올라 책상 위로 굴러떨어지고, 빈 구멍과 금이 남아요. 마지막엔 몸체가 금 간 모양 그대로 조각나요.</li>
       <li><b>🖥 모니터</b> 야근 중인 엑셀 화면에 거미줄 같은 금이 가고 유리 파편이 튀어요. 많이 맞을수록 화면이 지직거리다가, 마지막엔 유리가 우수수 쏟아져요.</li>
-      <li><b>☕ 머그컵</b> 도자기에 실금이 가고 이가 빠지듯 조각이 떨어져요. 커피가 출렁이며 책상에 고이고, 손잡이만 따로 떨어뜨릴 수도 있어요.</li>
+      <li><b>☕ 머그컵 3잔</b> MOOD, MONDAY, NO 세 잔이 나란히 있어요. 한 잔씩 따로 깨지고, 도자기에 실금이 가고 이가 빠지듯 조각이 떨어져요. 커피가 출렁이며 책상에 고이고, 손잡이만 따로 떨어뜨릴 수도 있어요.</li>
     </ul>
 
     <h2>왜 만들었냐면요</h2>
@@ -442,12 +442,13 @@ function slosh(){ const a=A(); if(!a) return; noise(a,0.18,'lowpass',600,1,0.35,
 function ceramicCrash(){ const a=A(); if(!a) return; noise(a,0.5,'bandpass',2000,0.8,0.9); noise(a,0.3,'lowpass',450,0.7,0.8);
   for(let i=0;i<12;i++){ const t=a.currentTime+Math.random()*0.8; tone(a,rnd(700,2600),rnd(.05,.12),0.05,t); } noise(a,0.5,'lowpass',500,1,0.5,a.currentTime+0.15); }
 
-const mug=(()=>{
-  const MG={x:58, y:98, w:54, h:78};          // 몸통
-  const HD={x:MG.x+MG.w-2, y:MG.y+16, w:20, h:40}; // 손잡이
+/* 머그컵 한 잔 (세 잔을 나란히 놓아요) */
+function makeMug(MX,MY,MW,MH,WORD,GLAZE){
+  const MG={x:MX, y:MY, w:MW, h:MH};          // 몸통
+  const HD={x:MG.x+MG.w-2, y:MG.y+Math.round(MH*.2), w:Math.round(MW*.37), h:Math.round(MH*.5)}; // 손잡이
   const RIM=MG.y;
   let art, ag, cracks=[], handleOn=true, coffee=1, t=0;
-  const C={o:'#2b2620', S:'#9c917a', D:'#bfb399', M:'#e3d9c1', L:'#f2ead6', H:'#ffffff'};
+  const C=Object.assign({o:'#2b2620', S:'#9c917a', D:'#bfb399', M:'#e3d9c1', L:'#f2ead6', H:'#ffffff'}, GLAZE||{});
   const shadeOf=(i,w)=>{ const u=(i+0.5)/w; return u<0.08||u>0.92?'S': u<0.2||u>0.78?'D': u<0.32||u>0.62?'M': u<0.4||u>0.52?'L':'H'; };
   const FONT={M:['101','111','101','101','101'],O:['111','101','101','101','111'],N:['101','111','111','111','101'],D:['110','101','101','101','110'],A:['010','101','111','101','101'],Y:['101','101','010','010','010']};
   function paint(){
@@ -463,9 +464,9 @@ const mug=(()=>{
       g.fillStyle=C.o; g.fillRect(x+i,y,1,h-r); g.fillStyle=C[shadeOf(i,w)]; if(i>0&&i<w-1) g.fillRect(x+i,y+1,1,h-r-2); }
     g.fillStyle=C.S; g.fillRect(x+3,y+h-4,w-6,2);
     // 프린트: MONDAY + 찡그린 얼굴
-    const word='MONDAY', wx=x+((w-word.length*4+1)/2|0), wy=y+40; g.fillStyle='#e0574a';
+    const word=WORD, wx=x+((w-word.length*4+1)/2|0), wy=y+Math.round(h*.52); g.fillStyle='#e0574a';
     [...word].forEach((ch,k)=>FONT[ch].forEach((row,ry)=>[...row].forEach((v,rx)=>{ if(v==='1') g.fillRect(wx+k*4+rx,wy+ry,1,1); })));
-    g.fillStyle='#2b2620'; const fx=x+w/2|0, fy=y+24; g.fillRect(fx-7,fy,2,2); g.fillRect(fx+5,fy,2,2);
+    g.fillStyle='#2b2620'; const fx=x+w/2|0, fy=y+Math.round(h*.28); g.fillRect(fx-7,fy,2,2); g.fillRect(fx+5,fy,2,2);
     g.fillRect(fx-4,fy+8,8,1); g.fillRect(fx-5,fy+9,1,1); g.fillRect(fx+4,fy+9,1,1);
     g.fillStyle='#e8a08c'; g.fillRect(fx-10,fy+4,3,1); g.fillRect(fx+7,fy+4,3,1);
     // 입구 (타원) 안쪽은 캔버스 위에서 매 프레임 그림
@@ -486,7 +487,7 @@ const mug=(()=>{
     name:'머그컵', maxHp:8, box:MG, note:{x:MG.x+MG.w/2, y:MG.y-16},
     end:['커피는 다시 타면 돼요.','월요일 머그가 은퇴했습니다.','카페인 대신 해방감 충전 완료.'],
     words:['쨍!','깡!','챙!','와작!','쩍!'],
-    build(){ paint(); cracks=[]; handleOn=true; coffee=1; drops=[]; puddles=[]; },
+    build(){ paint(); cracks=[]; handleOn=true; coffee=1; },
     draw(){
       ctx.fillStyle='rgba(0,0,0,.35)'; ctx.fillRect(MG.x+3,MG.y+MG.h,MG.w+(handleOn?10:0),3);
       ctx.drawImage(art,0,0); if(!handleOn){ ctx.fillStyle='#161b33'; }
@@ -496,7 +497,7 @@ const mug=(()=>{
         ctx.fillStyle='#e3d9c1'; ctx.fillRect(MG.x+MG.w,HD.y+3,2,2); ctx.fillRect(MG.x+MG.w,HD.y+HD.h-5,2,2); }
       drawRim(ctx); drawCracks(ctx);
       // 김
-      t++; if(coffee>0.05){ ctx.fillStyle='rgba(243,234,214,.35)'; for(let k=0;k<3;k++){ const bx=MG.x+14+k*12;
+      t++; if(coffee>0.05){ ctx.fillStyle='rgba(243,234,214,.35)'; for(let k=0;k<3;k++){ const bx=MG.x+Math.round(MG.w*.24)+k*Math.round(MG.w*.24);
         for(let j=0;j<12;j++){ const yy=MG.y-6-j*2-((t/3+k*7)%6); const xx=bx+Math.round(Math.sin((yy+t/4+k*3)/4)*2); if(j%2===0) ctx.fillRect(xx,yy|0,1,2); } } }
     },
     hit(x,y,p){
@@ -528,11 +529,29 @@ const mug=(()=>{
       splash(MG.x+MG.w/2,MG.y+MG.h-6,14,1.2,0);
       puff(MG.x+MG.w/2,MG.y+MG.h/2,50,['#f2ead6','#e3d9c1','#ffffff','#bfb399']); }
   };
+}
+const mug=(()=>{
+  const MINT={S:'#7fa394',D:'#9cc0b0',M:'#bcd9cb',L:'#d6ece2',H:'#f2fbf6'}, PINK={S:'#c48c8c',D:'#dcaaa8',M:'#ecc6c2',L:'#f6dcd8',H:'#fff3f1'};
+  let cups=[];
+  return {
+    name:'머그컵', maxHp:24, box:{x:4,y:110,w:172,h:66}, note:{x:90, y:96},
+    end:['커피는 다시 타면 돼요.','월요일 머그가 은퇴했습니다.','세 잔 다 박살, 카페인 대신 해방감 충전 완료.'],
+    words:['쨍!','깡!','챙!','와작!','쩍!'],
+    build(){ cups=[makeMug(4,118,40,58,'MOOD',MINT), makeMug(64,110,44,66,'MONDAY'), makeMug(124,120,38,56,'NO',PINK)];
+      cups.forEach(c=>{ c.build(); c.hp=c.maxHp; c.dead=false; }); },
+    hpNow(){ return cups.reduce((n,c)=>n+(c.dead?0:c.hp),0); },
+    draw(){ for(const c of cups) if(!c.dead) c.draw(); },
+    hit(x,y,p){ const c=cups.find(c=>!c.dead && c.hit(x,y,p)); if(!c) return false;
+      c.hp=Math.max(0,c.hp-p);
+      if(c.hp<=0 && cups.filter(k=>!k.dead).length>1){ c.shatter(); c.dead=true; popText(c.box.x+c.box.w/2, c.box.y-12, '한 잔 끝!', 18); }
+      return true; },
+    shatter(){ for(const c of cups) if(!c.dead){ c.shatter(); c.dead=true; } }
+  };
 })();
 
 /* ===== 진행 상태 ===== */
 const OBJS={keyboard, monitor, mug};
-let O=keyboard, hp=O.maxHp, broken=false, hits=0, broke=0;
+let O=keyboard, hp=O.maxHp, broken=false, hits=0, broke=0, respawnT=null, enter=0;
 try{ const sv=JSON.parse(localStorage.getItem('smash-stats')||'{}'); hits=+sv.hits||0; broke=+sv.broke||0; }catch(e){}
 const saveStats=()=>{ try{ localStorage.setItem('smash-stats',JSON.stringify({hits,broke})); }catch(e){} };
 
@@ -548,7 +567,8 @@ function drawBodies(){
   for(const b of bodies){ ctx.save(); ctx.translate(Math.round(b.x),Math.round(b.y)); ctx.rotate(b.r); ctx.drawImage(b.sprite,-b.w/2|0,-b.h/2|0); ctx.restore(); }
   for(const d of dust){ ctx.fillStyle=d.c; ctx.fillRect(d.x|0,d.y|0,d.life>20?2:1,d.life>20?2:1); }
 }
-function frame(){ step(); stepDrops(); drawRoom(); if(!broken) O.draw(); drawLiquid(); drawBodies(); drawHammer(); requestAnimationFrame(frame); }
+function frame(){ step(); stepDrops(); drawRoom();
+  if(!broken){ if(enter>0){ ctx.save(); ctx.translate(0,-Math.round(150*enter*enter)); O.draw(); ctx.restore(); enter=Math.max(0,enter-0.055); if(enter===0){ clack(); clack(0.04); } } else O.draw(); } drawLiquid(); drawBodies(); drawHammer(); requestAnimationFrame(frame); }
 
 /* ===== 빡친 일 쪽지 ===== */
 let rage='';
@@ -583,7 +603,7 @@ $('rageForm').addEventListener('submit',e=>{ e.preventDefault(); rage=$('rageInp
 function popText(x,y,txt,size){ const s=scale(), el=document.createElement('div'); el.className='pop'; el.textContent=txt;
   el.style.left=x*s+'px'; el.style.top=y*s+'px'; el.style.fontSize=size+'px'; stage.appendChild(el); setTimeout(()=>el.remove(),650); }
 function hit(x,y,power){
-  if(broken) return;
+  if(broken || enter>0) return;
   if(!O.hit(x,y,power)){ popText(x,y,'헛스윙',14); return; }
   hits++; $('sHits').textContent=hits; saveStats();
   hammer={x:x-6,y:y-20,t:0,dur:5,down:true};
@@ -592,7 +612,7 @@ function hit(x,y,power){
   const words = O.words || (O===monitor ? ['쩍!','쨍!','빠직!','콰직!','쨍그랑!'] : ['퍽!','쾅!','빡!','콰직!','탁!']);
   popText(x,y-6,pick(words), power>2.2?26:power>1.5?21:17);
   tearNote(x*scale(), false);
-  hp=Math.max(0,hp-power); renderHp();
+  hp = O.hpNow ? O.hpNow() : Math.max(0,hp-power); renderHp();
   if(hp<=0) shatter();
   else $('msg').textContent = hp/O.maxHp<0.35 ? '거의 다 됐어요! 한 방 더!' : power>2.2 ? '묵직한 한 방!' : '';
 }
@@ -605,11 +625,15 @@ function shatter(){
   tearNote(0,true);
   $('big').textContent = O===monitor ? '쨍그랑!' : O===mug ? '와장창!' : '와장창!';
   $('big').classList.remove('on'); void $('big').offsetWidth; $('big').classList.add('on');
-  $('hint').hidden=true; $('again').hidden=false; $('again').textContent = O===monitor ? '🖥 새 모니터 가져오기' : O===mug ? '☕ 새 머그컵 가져오기' : '⌨ 새 키보드 가져오기';
+  $('hint').hidden=true; $('again').hidden=false; $('again').textContent = O===monitor ? '🖥 바로 새 모니터 가져오기' : O===mug ? '☕ 바로 새 머그컵 세 잔' : '⌨ 바로 새 키보드 가져오기';
   $('msg').textContent = rage ? `「${rage}」 산산조각 났어요.` : pick(O.end);
+  // 잠시 뒤 새 물건이 저절로 들어와요
+  clearTimeout(respawnT); const cur=O;
+  respawnT=setTimeout(()=>{ if(!broken || O!==cur) return; reset(); enter=1;
+    $('msg').textContent = O===mug ? '새 머그컵 세 잔이 들어왔어요.' : O===monitor ? '새 모니터가 들어왔어요.' : '새 키보드가 들어왔어요.'; }, 2400);
 }
 function renderHp(){ const p=Math.max(0,Math.round(hp/O.maxHp*100)); $('hpBar').style.width=p+'%'; $('hpBar').classList.toggle('low',p<35); $('hpTxt').textContent=p+'%'; }
-function reset(){ bodies=[]; dust=[]; drops=[]; puddles=[]; O.build(); hp=O.maxHp; broken=false; renderHp(); $('big').classList.remove('on'); $('again').hidden=true; $('hint').hidden=false; $('msg').textContent=''; placeNote(); }
+function reset(){ clearTimeout(respawnT); enter=0; bodies=[]; dust=[]; drops=[]; puddles=[]; O.build(); hp=O.maxHp; broken=false; renderHp(); $('big').classList.remove('on'); $('again').hidden=true; $('hint').hidden=false; $('msg').textContent=''; placeNote(); }
 $('again').addEventListener('click',()=>{ reset(); clack(); });
 document.querySelectorAll('[data-obj]').forEach(b=>b.addEventListener('click',()=>{
   O=OBJS[b.dataset.obj]; document.querySelectorAll('[data-obj]').forEach(x=>x.setAttribute('aria-pressed', String(x===b))); reset(); A(); clack(); }));
