@@ -71,6 +71,7 @@ section + section{border-top:1px solid var(--night-3)}
 .svc.sansa .badge,.svc.sansa h3{color:var(--lamp)}
 .svc.smash .badge,.svc.smash h3{color:#dbfc65}
 .svc.tray .badge,.svc.tray h3{color:#d8cfc4}
+.svc.camp .badge,.svc.camp h3{color:#b9d79a}
 .svc p{color:var(--cream-soft)}
 .svc ul{margin:0;padding-left:1.1em;color:var(--cream-soft)}
 .svc-shot{position:relative;display:block;border-radius:14px;overflow:hidden;border:1px solid var(--night-3);aspect-ratio:4/3;background:var(--night)}
