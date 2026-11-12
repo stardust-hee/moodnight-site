@@ -48,7 +48,7 @@
     box-shadow:0 3px 0 #8a6a2c; cursor:pointer}
   .rage button:active{transform:translateY(2px); box-shadow:0 1px 0 #8a6a2c}
 
-  .picker{display:flex; gap:8px}
+  .picker{display:grid; grid-template-columns:repeat(auto-fit,minmax(104px,1fr)); gap:8px}
   .picker button{flex:1; font:inherit; font-size:15px; color:var(--cream); background:var(--night2); border:2px solid #2a3154; padding:10px; cursor:pointer}
   .picker button[aria-pressed="true"]{background:var(--lime); color:#1a2012; border-color:var(--lime)}
   .stage{position:relative; border:3px solid var(--edge); box-shadow:0 0 0 2px #2a3154, 0 10px 0 var(--edge); overflow:hidden; user-select:none; -webkit-user-select:none}
@@ -125,7 +125,9 @@
   <div class="picker" role="group" aria-label="부술 물건">
     <button type="button" data-obj="keyboard" aria-pressed="true">⌨ 키보드</button>
     <button type="button" data-obj="monitor" aria-pressed="false">🖥 모니터</button>
-    <button type="button" data-obj="mug" aria-pressed="false">☕ 머그컵 3잔</button>
+    <button type="button" data-obj="mug" aria-pressed="false">☕ 머그 3잔</button>
+    <button type="button" data-obj="table" aria-pressed="false">🍚 밥상 엎기</button>
+    <button type="button" data-obj="plates" aria-pressed="false">🍽 접시 8장</button>
   </div>
 
   <div class="stage" id="stage">
@@ -149,7 +151,7 @@
   <section class="about">
     <h2>박살방은 이렇게 놀아요</h2>
     <ol>
-      <li><b>부술 물건 고르기</b> 키보드, 모니터, 머그컵 중 하나를 골라요. 물건마다 깨지는 모양이 달라요.</li>
+      <li><b>부술 물건 고르기</b> 키보드, 모니터, 머그컵, 밥상, 접시 중 하나를 골라요. 물건마다 깨지는 모양이 달라요.</li>
       <li><b>빡친 일 붙이기 (선택)</b> "월요일 출근", "야근 지시"처럼 오늘 화난 일을 적으면 노란 쪽지로 물건에 붙어요. 때릴 때마다 글자가 한 자씩 떨어져 나가요.</li>
       <li><b>누른 자리를 내리치기</b> 화면을 누른 바로 그 자리가 깨져요. 꾹 누르고 있으면 힘이 모여서, 놓는 순간 훨씬 세게 내리쳐요.</li>
       <li><b>와장창</b> 내구도가 0이 되면 물건이 산산조각 나요. 잠시 뒤 새 물건이 저절로 들어와서 계속 부술 수 있어요.</li>
@@ -160,6 +162,8 @@
       <li><b>⌨ 키보드</b> 맞은 자리 근처 키캡이 튀어 올라 책상 위로 굴러떨어지고, 빈 구멍과 금이 남아요. 마지막엔 몸체가 금 간 모양 그대로 조각나요.</li>
       <li><b>🖥 모니터</b> 야근 중인 엑셀 화면에 거미줄 같은 금이 가고 유리 파편이 튀어요. 많이 맞을수록 화면이 지직거리다가, 마지막엔 유리가 우수수 쏟아져요.</li>
       <li><b>☕ 머그컵 3잔</b> MOOD, MONDAY, NO 세 잔이 나란히 있어요. 한 잔씩 따로 깨지고, 도자기에 실금이 가고 이가 빠지듯 조각이 떨어져요. 커피가 출렁이며 책상에 고이고, 손잡이만 따로 떨어뜨릴 수도 있어요.</li>
+      <li><b>🍚 밥상 엎기</b> 쾅쾅 내리칠 때마다 밥그릇과 국그릇이 들썩이고 국이 튀어요. 마지막 한 방에 밥상이 통째로 뒤집혀요.</li>
+      <li><b>🍽 접시 8장</b> 쌓인 접시가 내리칠 때마다 한 장씩 쨍그랑 깨져요. 세게 치면 두 장씩.</li>
     </ul>
 
     <h2>왜 만들었냐면요</h2>
@@ -426,8 +430,8 @@ const monitor=(()=>{
    물건 3. 머그컵 — 도자기 금, 이 빠지듯 조각, 커피가 튀고 고임
    ================================================================ */
 let drops=[], puddles=[];
-function splash(x,y,n,spd,up){ for(let i=0;i<n;i++){ const a=-Math.PI/2+rnd(-1.2,1.2); const s=rnd(.6,1)*spd;
-  drops.push({x:x+rnd(-4,4),y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-(up||0),c:Math.random()<.25?'#7a4a2a':'#3b2416'}); } }
+function splash(x,y,n,spd,up,cols){ for(let i=0;i<n;i++){ const a=-Math.PI/2+rnd(-1.2,1.2); const s=rnd(.6,1)*spd;
+  drops.push({x:x+rnd(-4,4),y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-(up||0),c:cols?pick(cols):(Math.random()<.25?'#7a4a2a':'#3b2416')}); } }
 function stepDrops(){ for(const d of drops){ d.vy+=0.2; d.x+=d.vx; d.y+=d.vy; if(d.y>=FLOOR-1){ d.dead=true; addPuddle(d.x); } } drops=drops.filter(d=>!d.dead && d.x>-5 && d.x<W+5); }
 function addPuddle(x){ for(const p of puddles){ if(Math.abs(p.x-x)<p.w/2+5){ p.w=Math.min(80,p.w+1.3); p.x=(p.x*8+x)/9; return; } } puddles.push({x,w:5}); }
 function drawLiquid(){
@@ -549,8 +553,109 @@ const mug=(()=>{
   };
 })();
 
+
+/* ================================================================
+   물건 4. 밥상 — 쾅쾅 내리치면 그릇이 들썩이고, 마지막엔 밥상을 엎어요
+   ================================================================ */
+const table=(()=>{
+  const TB={x:12, y:132, w:156, h:8}, LEGY=TB.y+TB.h, LEGH=DESK-LEGY;
+  const SOUP=['#c9772f','#a85a22','#e0a050'], RICE=['#ffffff','#f3ead6','#e8e2cf'];
+  let tableArt, dishes=[];
+  function drawTable(){ const w=TB.w, h=TB.h+LEGH; const [c,g]=mkCanvas(w,h);
+    g.fillStyle='#2b1a10'; g.fillRect(0,0,w,TB.h); g.fillStyle='#a8703f'; g.fillRect(1,1,w-2,TB.h-3); g.fillStyle='#c48a52'; g.fillRect(2,1,w-4,2);
+    g.fillStyle='#7a4a26'; g.fillRect(1,TB.h-2,w-2,1);
+    for(const lx of [6,w-14]){ g.fillStyle='#2b1a10'; g.fillRect(lx,TB.h,8,LEGH); g.fillStyle='#8a5a32'; g.fillRect(lx+1,TB.h,6,LEGH-1); g.fillStyle='#a8703f'; g.fillRect(lx+1,TB.h,2,LEGH-1); }
+    g.fillStyle='#2b1a10'; g.fillRect(14,TB.h,w-28,3); g.fillStyle='#7a4a26'; g.fillRect(15,TB.h,w-30,2);
+    return c; }
+  function bowl(w,h,rim,fill){ const [c,g]=mkCanvas(w,h+6); // fill: 'rice'|'soup'
+    g.fillStyle='#2b2620'; g.fillRect(2,6,w-4,h-1); g.fillRect(0,6,w,2); g.fillRect(w/2-5|0,h+4,10,2);
+    g.fillStyle='#f2ead6'; g.fillRect(3,8,w-6,h-4); g.fillStyle='#ffffff'; g.fillRect(4,9,w/3|0,h-7);
+    g.fillStyle=rim; g.fillRect(3,10,w-6,1);
+    if(fill==='rice'){ g.fillStyle='#2b2620'; g.fillRect(3,1,w-6,6); g.fillStyle='#ffffff'; g.fillRect(4,2,w-8,5); g.fillStyle='#e8e2cf'; for(let i=0;i<7;i++) g.fillRect(5+((i*7)%(w-10)),3+(i%3),1,1); }
+    else { g.fillStyle='#2b2620'; g.fillRect(1,5,w-2,2); g.fillStyle='#c9772f'; g.fillRect(2,6,w-4,1); g.fillStyle='#f3ead6'; g.fillRect(8,6,3,1); g.fillRect(w-12,6,3,1); g.fillStyle='#4f8a3a'; g.fillRect(w/2|0,6,2,1); }
+    return c; }
+  function plate(w,food){ const [c,g]=mkCanvas(w,9);
+    g.fillStyle='#2b2620'; g.fillRect(0,6,w,3); g.fillStyle='#f2ead6'; g.fillRect(1,6,w-2,2);
+    if(food==='kimchi'){ g.fillStyle='#8a1f14'; g.fillRect(4,1,w-8,5); g.fillStyle='#d8412a'; g.fillRect(5,1,w-10,4); g.fillStyle='#f2c27a'; g.fillRect(7,2,3,1); g.fillRect(w-11,3,3,1); }
+    else if(food==='greens'){ g.fillStyle='#1f4a1c'; g.fillRect(4,2,w-8,4); g.fillStyle='#4f8a3a'; g.fillRect(5,2,w-10,3); g.fillStyle='#8ac06a'; g.fillRect(6,3,2,1); g.fillRect(w-9,2,2,1); }
+    else { g.fillStyle='#8a6a1a'; g.fillRect(4,1,w-8,5); g.fillStyle='#f2c94a'; for(let i=0;i<3;i++) g.fillRect(5+i*((w-10)/3|0),1,((w-10)/3|0)-1,4); g.fillStyle='#fbe6a0'; g.fillRect(6,2,2,1); }
+    return c; }
+  function spoon(){ const [c,g]=mkCanvas(30,5); g.fillStyle='#2b2620'; g.fillRect(0,1,30,3); g.fillStyle='#d8dde8'; g.fillRect(1,2,20,1); g.fillRect(22,1,7,3); g.fillStyle='#ffffff'; g.fillRect(23,2,3,1); return c; }
+  function sticks(){ const [c,g]=mkCanvas(34,4); g.fillStyle='#2b2620'; g.fillRect(0,0,34,4); g.fillStyle='#c9a46a'; g.fillRect(1,1,32,1); g.fillRect(1,2,30,1); return c; }
+  return {
+    name:'밥상', maxHp:10, box:{x:TB.x,y:TB.y-30,w:TB.w,h:60}, note:{x:TB.x+TB.w/2, y:TB.y+18},
+    big:'에라이!', key:'table', again:'🍚 바로 새 밥상 차리기', fresh:'새 밥상이 차려졌어요.',
+    end:['밥상 엎었어요. 속이 다 시원하네요.','오늘 저녁은 배달이에요.','엄마한테는 비밀이에요.'],
+    words:['쾅!','쿵!','탕!','에잇!','아오!'],
+    build(){ tableArt=drawTable();
+      const mk=(sp,x,kind)=>({sp,x,y:TB.y-sp.height,kind,oy:0,vy:0});
+      dishes=[mk(bowl(24,14,'#5b7fc0','rice'),22,'rice'), mk(bowl(32,12,'#5b7fc0','soup'),52,'soup'), mk(plate(24,'kimchi'),90,'kimchi'), mk(plate(22,'greens'),117,'greens'), mk(plate(22,'egg'),142,'egg')];
+      dishes.push({sp:spoon(),x:28,y:TB.y-4,kind:'spoon',oy:0,vy:0}); dishes.push({sp:sticks(),x:118,y:TB.y-3,kind:'sticks',oy:0,vy:0}); },
+    draw(){
+      ctx.fillStyle='rgba(0,0,0,.35)'; ctx.fillRect(TB.x+6,DESK-1,TB.w-12,3);
+      ctx.drawImage(tableArt,TB.x,TB.y);
+      for(const d of dishes){ d.vy+=0.5; d.oy+=d.vy; if(d.oy>0){ d.oy=0; d.vy=d.vy>2?-d.vy*0.3:0; } ctx.drawImage(d.sp,d.x,(d.y+d.oy)|0); }
+    },
+    hit(x,y,p){
+      if(x<TB.x-2||x>TB.x+TB.w+2||y<TB.y-34||y>DESK) return false;
+      thud(p);
+      for(const d of dishes){ d.vy=-rnd(1.2,2.6)*p*(Math.abs(d.x-x)<40?1.3:0.8); clack(Math.random()*0.12); }
+      const soup=dishes.find(d=>d.kind==='soup'); if(soup) splash(soup.x+soup.sp.width/2, soup.y+4, Math.round(4+p*5), 1.6+p*0.8, 1.2, SOUP);
+      if(p>1.6){ const r=dishes.find(d=>d.kind==='rice'); if(r) puff(r.x+r.sp.width/2, r.y+2, 6+p*4, RICE); }
+      puff(x,TB.y,4+p*3,['#c48a52','#7a4a26','#e8e2cf']);
+      return true; },
+    shatter(){
+      crash(); ceramicCrash(); thud(3);
+      // 밥상 통째로 뒤집히며 날아감
+      addBody(tableArt, TB.x+TB.w/2, TB.y+12, rnd(-1,1), -7.5, (Math.random()<.5?-1:1)*rnd(.22,.3));
+      for(const d of dishes){ const cx=d.x+d.sp.width/2, cy=d.y+d.sp.height/2;
+        addBody(d.sp, cx, cy, (cx-90)*0.07+rnd(-1.5,1.5), -rnd(5,9), rnd(-.5,.5));
+        if(d.kind==='rice') puff(cx,cy,40,RICE);
+        if(d.kind==='soup') splash(cx,cy,70,3.6,2,SOUP);
+        if(d.kind==='kimchi') puff(cx,cy,24,['#d8412a','#8a1f14','#f2c27a']);
+        if(d.kind==='greens') puff(cx,cy,18,['#4f8a3a','#8ac06a','#1f4a1c']);
+        if(d.kind==='egg') puff(cx,cy,16,['#f2c94a','#fbe6a0']); }
+      for(let i=0;i<10;i++) clack(0.15+Math.random()*0.8);
+    }
+  };
+})();
+
+/* ================================================================
+   물건 5. 접시 탑 — 내리칠 때마다 맨 위 접시가 깨져요
+   ================================================================ */
+const plates=(()=>{
+  const N=8, PW=70, PH=7, X0=55, BASE=DESK;
+  const COLS=[{a:'#f2ead6',b:'#5b7fc0'},{a:'#f2ead6',b:'#e0574a'},{a:'#e7f0f6',b:'#5b7fc0'},{a:'#f6e7d8',b:'#c9a46a'}];
+  let arts=[], left=N, wob=0;
+  function plateArt(i){ const col=COLS[i%COLS.length]; const [c,g]=mkCanvas(PW,PH);
+    g.fillStyle='#2b2620'; g.fillRect(2,0,PW-4,PH); g.fillRect(0,1,PW,PH-2);
+    g.fillStyle=col.a; g.fillRect(1,1,PW-2,PH-3); g.fillStyle='#ffffff'; g.fillRect(4,1,PW/3|0,1);
+    g.fillStyle=col.b; g.fillRect(3,PH-3,PW-6,1); g.fillStyle='#c8bfa8'; g.fillRect(2,PH-2,PW-4,1); return c; }
+  const py=i=>BASE-(i+1)*(PH-1);
+  function breakTop(p){ if(left<=0) return; left--; const art=arts[left], y=py(left);
+    for(let k=0;k<6;k++){ const x0=k*(PW/6), tr=triSprite(art,[[x0,0],[x0+PW/6+rnd(-2,2),rnd(0,PH)],[x0+rnd(0,PW/6),PH]]);
+      addBody(tr.c, X0+tr.cx, y+tr.cy, (tr.cx-PW/2)*0.06+rnd(-1,1)*p, -rnd(2,4)-p, rnd(-.5,.5)); }
+    puff(X0+PW/2, y+3, 14+p*6, ['#ffffff','#f2ead6','#c8bfa8']); }
+  return {
+    name:'접시 탑', maxHp:N, box:{x:X0,y:py(N-1),w:PW,h:N*PH}, note:{x:X0+PW/2, y:py(N-1)-12},
+    big:'쨍그랑!', key:'plates', again:'🍽 바로 새 접시 8장', fresh:'새 접시 8장이 쌓였어요.',
+    end:['설거지할 접시가 하나도 없어요.','접시 8장, 한 장도 안 남았어요.','오늘 설거지는 끝.'],
+    words:['쨍!','챙!','쩡!','와장!'],
+    build(){ arts=Array.from({length:N},(_,i)=>plateArt(i)); left=N; wob=0; },
+    hpNow(){ return left; },
+    draw(){ wob*=0.85; ctx.fillStyle='rgba(0,0,0,.35)'; ctx.fillRect(X0+4,DESK-1,PW-8,3);
+      for(let i=0;i<left;i++){ const sway=Math.round(Math.sin(i*1.3+wob*3)*wob*(i/N)*3); ctx.drawImage(arts[i],X0+sway,py(i)); } },
+    hit(x,y,p){ if(left<=0) return false; const top=py(left-1);
+      if(x<X0-6||x>X0+PW+6||y<top-30||y>DESK) return false;
+      ceramicHit(p); glassHit(p*0.4); wob=1.2;
+      const n=p>2.2?2:1; for(let k=0;k<n&&left>0;k++) breakTop(p);
+      return true; },
+    shatter(){ ceramicCrash(); while(left>0) breakTop(2.5); }
+  };
+})();
+
 /* ===== 진행 상태 ===== */
-const OBJS={keyboard, monitor, mug};
+const OBJS={keyboard, monitor, mug, table, plates};
 let O=keyboard, hp=O.maxHp, broken=false, hits=0, broke=0, respawnT=null, enter=0;
 try{ const sv=JSON.parse(localStorage.getItem('smash-stats')||'{}'); hits=+sv.hits||0; broke=+sv.broke||0; }catch(e){}
 const saveStats=()=>{ try{ localStorage.setItem('smash-stats',JSON.stringify({hits,broke})); }catch(e){} };
@@ -618,19 +723,19 @@ function hit(x,y,power){
 }
 function shatter(){
   O.shatter(); broken=true; broke++; $('sBroke').textContent=broke; saveStats();
-  try{ window.mnTrack&&window.mnTrack('act','smash_'+(O===monitor?'monitor':O===mug?'mug':'keyboard')); }catch(e){}
+  try{ window.mnTrack&&window.mnTrack('act','smash_'+(O.key||(O===monitor?'monitor':O===mug?'mug':'keyboard'))); }catch(e){}
   try{ navigator.vibrate&&navigator.vibrate([60,40,90]); }catch(e){}
   $('flash').classList.remove('on'); void $('flash').offsetWidth; $('flash').classList.add('on');
   stage.classList.remove('shake','bigshake'); void stage.offsetWidth; stage.classList.add('bigshake');
   tearNote(0,true);
-  $('big').textContent = O===monitor ? '쨍그랑!' : O===mug ? '와장창!' : '와장창!';
+  $('big').textContent = O.big || (O===monitor ? '쨍그랑!' : '와장창!');
   $('big').classList.remove('on'); void $('big').offsetWidth; $('big').classList.add('on');
-  $('hint').hidden=true; $('again').hidden=false; $('again').textContent = O===monitor ? '🖥 바로 새 모니터 가져오기' : O===mug ? '☕ 바로 새 머그컵 세 잔' : '⌨ 바로 새 키보드 가져오기';
+  $('hint').hidden=true; $('again').hidden=false; $('again').textContent = O.again || (O===monitor ? '🖥 바로 새 모니터 가져오기' : O===mug ? '☕ 바로 새 머그컵 세 잔' : '⌨ 바로 새 키보드 가져오기');
   $('msg').textContent = rage ? `「${rage}」 산산조각 났어요.` : pick(O.end);
   // 잠시 뒤 새 물건이 저절로 들어와요
   clearTimeout(respawnT); const cur=O;
   respawnT=setTimeout(()=>{ if(!broken || O!==cur) return; reset(); enter=1;
-    $('msg').textContent = O===mug ? '새 머그컵 세 잔이 들어왔어요.' : O===monitor ? '새 모니터가 들어왔어요.' : '새 키보드가 들어왔어요.'; }, 2400);
+    $('msg').textContent = O.fresh || (O===mug ? '새 머그컵 세 잔이 들어왔어요.' : O===monitor ? '새 모니터가 들어왔어요.' : '새 키보드가 들어왔어요.'); }, 2400);
 }
 function renderHp(){ const p=Math.max(0,Math.round(hp/O.maxHp*100)); $('hpBar').style.width=p+'%'; $('hpBar').classList.toggle('low',p<35); $('hpTxt').textContent=p+'%'; }
 function reset(){ clearTimeout(respawnT); enter=0; bodies=[]; dust=[]; drops=[]; puddles=[]; O.build(); hp=O.maxHp; broken=false; renderHp(); $('big').classList.remove('on'); $('again').hidden=true; $('hint').hidden=false; $('msg').textContent=''; placeNote(); }
