@@ -128,6 +128,11 @@
     <button type="button" data-obj="mug" aria-pressed="false">☕ 머그 3잔</button>
     <button type="button" data-obj="table" aria-pressed="false">🍚 밥상 엎기</button>
     <button type="button" data-obj="plates" aria-pressed="false">🍽 접시 8장</button>
+    <button type="button" data-obj="wine" aria-pressed="false">🍷 와인잔</button>
+    <button type="button" data-obj="pot" aria-pressed="false">🪴 화분</button>
+    <button type="button" data-obj="laptop" aria-pressed="false">💻 노트북</button>
+    <button type="button" data-obj="printer" aria-pressed="false">🖨 프린터</button>
+    <button type="button" data-obj="alarm" aria-pressed="false">⏰ 알람시계</button>
   </div>
 
   <div class="stage" id="stage">
@@ -151,7 +156,7 @@
   <section class="about">
     <h2>박살방은 이렇게 놀아요</h2>
     <ol>
-      <li><b>부술 물건 고르기</b> 키보드, 모니터, 머그컵, 밥상, 접시 중 하나를 골라요. 물건마다 깨지는 모양이 달라요.</li>
+      <li><b>부술 물건 고르기</b> 키보드, 모니터, 머그컵, 밥상, 접시, 와인잔, 화분, 노트북, 프린터, 알람시계 중 하나를 골라요. 물건마다 깨지는 모양이 달라요.</li>
       <li><b>빡친 일 붙이기 (선택)</b> "월요일 출근", "야근 지시"처럼 오늘 화난 일을 적으면 노란 쪽지로 물건에 붙어요. 때릴 때마다 글자가 한 자씩 떨어져 나가요.</li>
       <li><b>누른 자리를 내리치기</b> 화면을 누른 바로 그 자리가 깨져요. 꾹 누르고 있으면 힘이 모여서, 놓는 순간 훨씬 세게 내리쳐요.</li>
       <li><b>와장창</b> 내구도가 0이 되면 물건이 산산조각 나요. 잠시 뒤 새 물건이 저절로 들어와서 계속 부술 수 있어요.</li>
@@ -164,6 +169,11 @@
       <li><b>☕ 머그컵 3잔</b> MOOD, MONDAY, NO 세 잔이 나란히 있어요. 한 잔씩 따로 깨지고, 도자기에 실금이 가고 이가 빠지듯 조각이 떨어져요. 커피가 출렁이며 책상에 고이고, 손잡이만 따로 떨어뜨릴 수도 있어요.</li>
       <li><b>🍚 밥상 엎기</b> 꽃무늬 양은 밥상에 밥, 국, 반찬이 차려져 있어요. 누르는 순간 반찬째 휙 날아가요. 꾹 눌렀다 떼면 더 멀리 날아가요.</li>
       <li><b>🍽 접시 8장</b> 쌓인 접시가 내리칠 때마다 한 장씩 쨍그랑 깨져요. 세게 치면 두 장씩.</li>
+      <li><b>🍷 와인잔 9개</b> 스텐 장식장에 진열된 와인잔을 하나씩 눌러 깨요. 와인이 튀고, 꾹 누르면 옆 잔까지 같이 깨져요.</li>
+      <li><b>🪴 화분</b> 테라코타 화분에 금이 가고 흙이 와르르 쏟아져요.</li>
+      <li><b>💻 노트북</b> 엑셀이 떠 있는 화면이 깨지고 지지직거려요.</li>
+      <li><b>🖨 프린터</b> 용지 걸림 프린터를 내리치면 종이가 날리고 잉크가 튀어요.</li>
+      <li><b>⏰ 알람시계</b> 따르릉 울리는 알람시계를 조용히 시켜요.</li>
     </ul>
 
     <h2>왜 만들었냐면요</h2>
@@ -671,8 +681,154 @@ const plates=(()=>{
   };
 })();
 
+/* ================================================================
+   물건 6~9. 화분·노트북·프린터·알람시계 (같은 틀로 만든 물건들)
+   ================================================================ */
+function simpleObj(cfg){
+  const B=cfg.box; let art, cracks=[], t=0;
+  const composite=()=>{ const [c,g]=mkCanvas(W,H); g.drawImage(art,0,0); g.fillStyle=cfg.crack||'#2b2620'; for(const pts of cracks) for(let i=1;i<pts.length;i++) pixLine(g,pts[i-1][0],pts[i-1][1],pts[i][0],pts[i][1]); return c; };
+  const self={
+    name:cfg.name, key:cfg.key, maxHp:cfg.maxHp, box:B, note:cfg.note||{x:B.x+B.w/2,y:B.y-10},
+    big:cfg.big, again:cfg.again, fresh:cfg.fresh, end:cfg.end, words:cfg.words,
+    build(){ const [c,g]=mkCanvas(W,H); cfg.paint(g); art=c; cracks=[]; t=0; if(cfg.init) cfg.init(); },
+    draw(){ t++; const dmg=1-hp/self.maxHp; const sh=cfg.shake?cfg.shake(t,dmg):0;
+      ctx.fillStyle='rgba(0,0,0,.35)'; ctx.fillRect(B.x+3,DESK-1,B.w-6,3);
+      ctx.save(); ctx.translate(sh,0); ctx.drawImage(art,0,0);
+      ctx.fillStyle=cfg.crack||'#2b2620'; for(const pts of cracks) for(let i=1;i<pts.length;i++) pixLine(ctx,pts[i-1][0],pts[i-1][1],pts[i][0],pts[i][1]);
+      if(cfg.extra) cfg.extra(ctx,t,dmg); ctx.restore(); },
+    hit(x,y,p){ if(x<B.x-3||x>B.x+B.w+3||y<B.y-3||y>DESK+2) return false;
+      const cx=Math.max(B.x+2,Math.min(B.x+B.w-3,x)), cy=Math.max(B.y+2,Math.min(DESK-3,y));
+      for(let i=0;i<1+Math.round(p);i++){ let a=Math.random()*Math.PI*2, px=cx, py=cy; const pts=[[px,py]];
+        for(let k=0;k<2+Math.floor(Math.random()*2+p);k++){ a+=rnd(-.6,.6); const len=3+Math.random()*6*p; px=Math.max(B.x+1,Math.min(B.x+B.w-2,px+Math.cos(a)*len)); py=Math.max(B.y+1,Math.min(DESK-2,py+Math.sin(a)*len)); pts.push([px,py]); } cracks.push(pts); }
+      const comp=composite();
+      for(let i=0;i<1+Math.round(p*1.2);i++){ const q=rnd(2,3+p), a=Math.random()*Math.PI*2, ox=cx+Math.cos(a)*rnd(0,3), oy=cy+Math.sin(a)*rnd(0,3);
+        const tr=triSprite(comp,[[ox,oy],[ox+rnd(-q,q),oy+rnd(-q,q)],[ox+rnd(-q,q),oy+rnd(-q,q)]]); addBody(tr.c,tr.cx,tr.cy,Math.cos(a)*rnd(.6,1.6)*p,-rnd(1.5,3)-p,rnd(-.4,.4),cfg.glass); }
+      cfg.onHit(cx,cy,p); return true; },
+    shatter(){ const comp=composite(); const cols=cfg.cols||4, rows=cfg.rows||4, P=[], ox=B.x, oy=B.y, w=B.w, h=DESK-B.y;
+      for(let r=0;r<=rows;r++){ P[r]=[]; for(let c=0;c<=cols;c++) P[r][c]=[ox+c*w/cols+(c%cols?rnd(-3,3):0), oy+r*h/rows+(r%rows?rnd(-3,3):0)]; }
+      for(let r=0;r<rows;r++) for(let c=0;c<cols;c++){ const a=P[r][c], b=P[r][c+1], d=P[r+1][c], e=P[r+1][c+1];
+        for(const tri of (Math.random()<.5?[[a,b,e],[a,e,d]]:[[a,b,d],[b,e,d]])){ const tr=triSprite(comp,tri);
+          addBody(tr.c,tr.cx,tr.cy,(tr.cx-(ox+w/2))*0.08+rnd(-.8,.8),-rnd(2.5,5.5),rnd(-.4,.4),cfg.glass); } }
+      cfg.onShatter(); }
+  };
+  return self;
+}
+const SOIL=['#3b2416','#5a3a22','#2a170d','#6b4a2a'];
+const pot=simpleObj({ name:'화분', key:'pot', maxHp:8, box:{x:44,y:70,w:92,h:112}, crack:'#5a2a1a', cols:4, rows:5,
+  big:'와르르!', again:'🪴 바로 새 화분 가져오기', fresh:'새 화분이 들어왔어요.', words:['퍽!','쩍!','와작!','푹!'],
+  end:['흙은 내일 치워요.','식물은 무사히 옮겨 심었다고 쳐요.','분갈이 한 번 화끈하게 했네요.'],
+  paint(g){ const px=58, py=128, pw=64, ph=54;
+    // 줄기와 잎
+    g.fillStyle='#2f6b3a'; g.fillRect(89,84,2,46); pixLine(g,90,110,74,96); pixLine(g,90,100,106,86); pixLine(g,90,118,108,108);
+    const leaf=(x,y,w,h,c)=>{ g.fillStyle='#1f4a1c'; g.fillRect(x-1,y,w+2,h); g.fillRect(x,y-1,w,h+2); g.fillStyle=c; g.fillRect(x,y,w,h); g.fillStyle='#8ac06a'; g.fillRect(x+1,y+1,Math.max(1,w/3|0),1); };
+    leaf(62,86,16,10,'#4f8a3a'); leaf(100,76,16,10,'#5a9a44'); leaf(102,100,14,8,'#4f8a3a'); leaf(82,70,14,12,'#5a9a44'); leaf(70,104,12,7,'#3f7a30');
+    // 화분 (테라코타)
+    g.fillStyle='#2b1a10'; g.fillRect(px-4,py,pw+8,10); g.fillStyle='#c9713f'; g.fillRect(px-3,py+1,pw+6,8); g.fillStyle='#e08a55'; g.fillRect(px-3,py+1,pw+6,2);
+    for(let i=0;i<ph-10;i++){ const inset=Math.round(i*0.16); g.fillStyle='#2b1a10'; g.fillRect(px+inset,py+10+i,pw-inset*2,1); g.fillStyle='#b8612f'; g.fillRect(px+inset+1,py+10+i,pw-inset*2-2,1); g.fillStyle='#d27a45'; g.fillRect(px+inset+3,py+10+i,10,1); g.fillStyle='#96491f'; g.fillRect(px+pw-inset-9,py+10+i,7,1); }
+    g.fillStyle='#2b1a10'; g.fillRect(px+7,DESK-1,pw-14,1);
+    g.fillStyle='#3b2416'; g.fillRect(px,py-2,pw,3); g.fillStyle='#5a3a22'; g.fillRect(px+4,py-2,8,1); g.fillRect(px+30,py-2,10,1); },
+  onHit(x,y,p){ ceramicHit(p); puff(x,y,6+p*5,SOIL); if(p>1.6) splash(90,128,Math.round(6+p*4),1.6,1,SOIL); },
+  onShatter(){ ceramicCrash(); thud(2); splash(90,150,110,3.2,1.5,SOIL); puff(90,150,60,SOIL); puff(90,95,24,['#4f8a3a','#8ac06a','#1f4a1c']); } });
+const laptop=simpleObj({ name:'노트북', key:'laptop', maxHp:10, box:{x:24,y:84,w:132,h:98}, crack:'#e8f4ff', cols:5, rows:4, glass:true,
+  big:'콰직!', again:'💻 바로 새 노트북 가져오기', fresh:'새 노트북이 들어왔어요.', words:['쩍!','빠직!','콰직!','탁!'],
+  end:['저장은 했길 바라요.','엑셀이 드디어 닫혔어요.','재택근무 종료.'],
+  paint(g){ const sx=34, sy=86, sw=112, sh=72;
+    g.fillStyle='#2b2620'; g.fillRect(sx,sy,sw,sh); g.fillStyle='#8a919c'; g.fillRect(sx+1,sy+1,sw-2,sh-2); g.fillStyle='#10131f'; g.fillRect(sx+5,sy+5,sw-10,sh-11);
+    g.fillStyle='#f4f6f8'; g.fillRect(sx+7,sy+7,sw-14,sh-15); g.fillStyle='#2f7d4f'; g.fillRect(sx+7,sy+7,sw-14,6);
+    g.fillStyle='#c8cdd6'; for(let r=0;r<7;r++) g.fillRect(sx+7,sy+18+r*7,sw-14,1); for(let c=0;c<6;c++) g.fillRect(sx+22+c*15,sy+13,1,sh-21);
+    g.fillStyle='#e0574a'; g.fillRect(sx+24,sy+27,13,5); g.fillRect(sx+54,sy+41,13,5); g.fillStyle='#5b7fc0'; g.fillRect(sx+39,sy+20,13,5); g.fillRect(sx+69,sy+34,13,5);
+    g.fillStyle='#3a3f48'; g.fillRect(sx+sw/2-1,sy+2,2,2);
+    // 본체
+    g.fillStyle='#2b2620'; g.fillRect(24,158,132,24); g.fillStyle='#aeb6c8'; g.fillRect(25,159,130,20); g.fillStyle='#d7dce4'; g.fillRect(25,159,130,2); g.fillStyle='#7d8590'; g.fillRect(25,178,130,3);
+    g.fillStyle='#3a3f48'; for(let r=0;r<3;r++) for(let c=0;c<14;c++) g.fillRect(31+c*8.5|0,163+r*4,6,3);
+    g.fillStyle='#8a919c'; g.fillRect(74,175,32,3); },
+  extra(g,t,dmg){ if(dmg>0.3 && t%9<3){ g.fillStyle='rgba(255,61,240,.5)'; g.fillRect(41,93+((t*7)%50),98,2); g.fillStyle='rgba(61,255,232,.4)'; g.fillRect(41,100+((t*13)%44),98,1); } },
+  onHit(x,y,p){ if(y<158){ glassHit(p); puff(x,y,5+p*4,['#ffffff','#cfe8ff','#9fd0ff']); } else { thud(p); for(let i=0;i<2+p;i++) clack(Math.random()*.1); puff(x,y,5+p*3,['#aeb6c8','#3a3f48','#d7dce4']); } },
+  onShatter(){ crash(); glassCrash(); puff(90,120,50,['#ffffff','#cfe8ff','#9fd0ff','#ff3df0','#3dffe8']); puff(90,170,30,['#aeb6c8','#3a3f48']); } });
+const INK=['#16b5d8','#e0338a','#f2d21a','#1a1a1a'];
+function paper(){ const [c,g]=mkCanvas(16,20); g.fillStyle='#2b2620'; g.fillRect(0,0,16,20); g.fillStyle='#ffffff'; g.fillRect(1,1,14,18); g.fillStyle='#9aa0aa'; for(let i=0;i<6;i++) g.fillRect(3,3+i*3,i%3===2?6:10,1); return c; }
+const printer=simpleObj({ name:'프린터', key:'printer', maxHp:12, box:{x:26,y:96,w:128,h:86}, crack:'#2b2620', cols:5, rows:4,
+  big:'와장창!', again:'🖨 바로 새 프린터 가져오기', fresh:'새 프린터가 들어왔어요. 또 용지 걸림이에요.', words:['쾅!','퍽!','콰직!','탕!'],
+  end:['용지 걸림, 영원히 해결.','이제 출력은 편의점에서.','토너 부족 알림이 사라졌어요.'],
+  paint(g){ // 뒤 용지함
+    g.fillStyle='#2b2620'; g.fillRect(52,96,76,26); g.fillStyle='#ffffff'; g.fillRect(54,98,72,24); g.fillStyle='#e8e2cf'; g.fillRect(54,100,72,1); g.fillRect(54,103,72,1);
+    // 몸통
+    g.fillStyle='#2b2620'; g.fillRect(26,118,128,64); g.fillStyle='#d7dce4'; g.fillRect(27,119,126,60); g.fillStyle='#eef1f5'; g.fillRect(27,119,126,4); g.fillStyle='#9ca3ae'; g.fillRect(27,172,126,7);
+    g.fillStyle='#3a3f48'; g.fillRect(36,128,58,18); g.fillStyle='#1a2a1a'; g.fillRect(38,130,54,14);
+    g.fillStyle='#ff5a4a'; [[40,133,'PAPER'],[40,139,'JAM']].forEach(([x,y,wd])=>{ for(let i=0;i<wd.length;i++) g.fillRect(x+i*5,y,4,3); });
+    g.fillStyle='#e0574a'; g.fillRect(104,130,6,6); g.fillStyle='#8ac06a'; g.fillRect(116,130,6,6); g.fillStyle='#3a3f48'; g.fillRect(128,130,16,6);
+    // 출력구와 걸린 종이
+    g.fillStyle='#2b2620'; g.fillRect(40,154,100,10); g.fillStyle='#10131f'; g.fillRect(42,156,96,6); g.fillStyle='#ffffff'; g.fillRect(58,157,64,12); g.fillStyle='#9aa0aa'; g.fillRect(62,161,40,1); g.fillRect(62,164,52,1); },
+  shake(t,dmg){ return dmg>0.5 && t%6<3 ? 1 : 0; },
+  onHit(x,y,p){ thud(p); clack(.03); puff(x,y,5+p*3,['#d7dce4','#9ca3ae','#ffffff']);
+    for(let i=0;i<1+Math.round(p);i++) addBody(paper(),rnd(60,120),118,rnd(-2,2),-rnd(3,6)-p,rnd(-.3,.3));
+    if(p>1.8) splash(90,150,Math.round(8+p*4),2,1,INK); },
+  onShatter(){ crash(); thud(3); for(let i=0;i<14;i++) addBody(paper(),rnd(50,130),rnd(110,150),rnd(-3.5,3.5),-rnd(4,9),rnd(-.4,.4));
+    splash(90,150,90,3.4,1.6,INK); puff(90,150,40,['#d7dce4','#9ca3ae','#3a3f48','#ffffff']); } });
+const alarm=simpleObj({ name:'알람시계', key:'alarm', maxHp:6, box:{x:48,y:88,w:84,h:94}, crack:'#2b2620', cols:4, rows:4,
+  big:'조용!', again:'⏰ 바로 새 알람시계 가져오기', fresh:'새 알람시계가 들어왔어요. 또 울려요.', words:['땡!','깡!','쨍!','닥쳐!'],
+  end:['5분만 더 자요.','스누즈, 영원히.','오늘은 알람 없는 날.'],
+  paint(g){ const cx=90, cy=140, R=34;
+    // 다리, 종, 망치
+    g.fillStyle='#2b2620'; pixLine(g,70,166,62,181); pixLine(g,71,166,63,181); pixLine(g,110,166,118,181); pixLine(g,109,166,117,181);
+    const bell=(bx)=>{ g.fillStyle='#2b2620'; g.fillRect(bx-13,96,26,14); g.fillRect(bx-10,93,20,3); g.fillStyle='#e0574a'; g.fillRect(bx-12,97,24,12); g.fillRect(bx-9,94,18,3); g.fillStyle='#f08a7a'; g.fillRect(bx-10,96,8,3); g.fillStyle='#a83a30'; g.fillRect(bx-12,106,24,3); };
+    bell(68); bell(112); g.fillStyle='#2b2620'; g.fillRect(88,88,4,14); g.fillRect(84,88,12,4); g.fillStyle='#aeb6c8'; g.fillRect(85,89,10,2);
+    // 몸통
+    for(let y=-R;y<=R;y++) for(let x=-R;x<=R;x++){ const d=x*x+y*y; if(d>R*R) continue; g.fillStyle = d>(R-1.5)*(R-1.5)?'#2b2620' : d>(R-6)*(R-6)?(x+y<0?'#f08a7a':'#c9453a') : d>(R-7.5)*(R-7.5)?'#2b2620' : '#fbf6ea'; g.fillRect(cx+x,cy+y,1,1); }
+    g.fillStyle='#2b2620'; for(let k=0;k<12;k++){ const a=k/12*Math.PI*2; g.fillRect(cx+Math.round(Math.sin(a)*23)-(k%3?0:1),cy-Math.round(Math.cos(a)*23)-(k%3?0:1),k%3?1:2,k%3?1:2); }
+    pixLine(g,cx,cy,cx-9,cy-12); pixLine(g,cx+1,cy,cx-8,cy-12); pixLine(g,cx,cy,cx,cy-20); g.fillStyle='#e0574a'; pixLine(g,cx,cy,cx+14,cy+6); g.fillStyle='#2b2620'; g.fillRect(cx-1,cy-1,3,3); },
+  shake(t,dmg){ return Math.round(Math.sin(t*1.9)*1.5); },
+  extra(g,t){ if(t%40<26){ g.fillStyle='#dbfc65'; for(const [x,y] of [[40,92],[36,104],[140,92],[144,104]]) g.fillRect(x+(t%4<2?0:1),y,4,1); } if(t%40===0){ const a=A(); if(a){ for(let i=0;i<6;i++) tone(a,1750+(i%2)*260,0.05,0.05,a.currentTime+i*0.06,'square'); } } },
+  onHit(x,y,p){ const a=A(); if(a){ tone(a,rnd(1300,1700),0.25,0.12); tone(a,rnd(2600,3100),0.15,0.05); } thud(p*.6); puff(x,y,5+p*4,['#e0574a','#fbf6ea','#aeb6c8']); },
+  onShatter(){ crash(); const a=A(); if(a){ for(let i=0;i<8;i++) tone(a,rnd(900,2600),rnd(.1,.3),0.06,a.currentTime+Math.random()*.6); }
+    for(let i=0;i<8;i++){ const [c,g]=mkCanvas(7,7); g.fillStyle='#2b2620'; g.fillRect(1,0,5,7); g.fillRect(0,1,7,5); g.fillStyle='#d8b24a'; g.fillRect(1,1,5,5); g.fillStyle='#2b2620'; g.fillRect(3,3,1,1); addBody(c,rnd(70,110),rnd(120,160),rnd(-3,3),-rnd(3,7),rnd(-.6,.6)); }
+    puff(90,140,40,['#e0574a','#fbf6ea','#d8b24a','#aeb6c8']); } });
+
+/* ================================================================
+   물건 10. 와인잔 장식장 — 3x3 스텐 선반에 놓인 와인잔 9개를 하나씩 깨요
+   ================================================================ */
+const wine=(()=>{
+  const X0=30, Y0=62, CW=40, CH=40, GW=18, GH=30;
+  let frame, gArt, alive=[];
+  function paintFrame(){ const w=CW*3+8, h=CH*3+4; const [c,g]=mkCanvas(w,h);
+    for(let i=0;i<=3;i++){ const x=2+i*CW; g.fillStyle='#3a3f48'; g.fillRect(x,0,4,h); g.fillStyle='#c8cdd6'; g.fillRect(x+1,0,2,h-1); g.fillStyle='#eef1f5'; g.fillRect(x+1,0,1,h-1); }
+    for(let r=1;r<=3;r++){ const y=r*CH-2; g.fillStyle='#3a3f48'; g.fillRect(0,y,w,5); g.fillStyle='#aeb6c8'; g.fillRect(0,y+1,w,3); g.fillStyle='#eef1f5'; g.fillRect(0,y+1,w,1); }
+    return c; }
+  function paintGlass(){ const [c,g]=mkCanvas(GW,GH);
+    const o='rgba(220,235,250,.9)', f='rgba(190,215,240,.28)';
+    g.fillStyle=f; g.fillRect(2,1,GW-4,13); g.fillRect(4,14,GW-8,2);
+    g.fillStyle='#8a1f3a'; g.fillRect(3,8,GW-6,6); g.fillRect(5,14,GW-10,1); g.fillStyle='#b83a55'; g.fillRect(3,8,GW-6,1);
+    g.fillStyle=o; g.fillRect(1,0,1,13); g.fillRect(GW-2,0,1,13); g.fillRect(2,13,2,1); g.fillRect(GW-4,13,2,1); g.fillRect(4,15,GW-8,1); g.fillRect(1,0,GW-2,1);
+    g.fillRect(GW/2-1|0,16,2,11); g.fillRect(3,GH-3,GW-6,2); g.fillStyle='#ffffff'; g.fillRect(3,2,1,5);
+    return c; }
+  const gx=i=>X0+4+(i%3)*CW+((CW-4-GW)/2|0)+2, gy=i=>Y0+((i/3|0)+1)*CH-2-GH;
+  function breakGlass(i,p){ if(!alive[i]) return; alive[i]=false; const x=gx(i), y=gy(i);
+    for(let k=0;k<7;k++){ const ox=rnd(0,GW-5), oy=rnd(0,GH-6), tr=triSprite(gArt,[[ox,oy],[ox+rnd(3,7),oy+rnd(0,5)],[ox+rnd(0,4),oy+rnd(4,9)]],'rgba(255,255,255,.9)');
+      addBody(tr.c,x+tr.cx,y+tr.cy,rnd(-2,2)*p,-rnd(1.5,4)-p*.5,rnd(-.5,.5),true); }
+    splash(x+GW/2,y+10,10,1.8,1,['#8a1f3a','#b83a55','#6a1028']); puff(x+GW/2,y+10,12,['#ffffff','#cfe8ff','#9fd0ff']);
+    popText(x+GW/2,y-6,pick(['쨍!','챙!','쨍그랑!']),15); }
+  return {
+    name:'와인잔', key:'wine', maxHp:9, box:{x:X0,y:Y0,w:CW*3+8,h:CH*3+4}, note:{x:90,y:Y0-10},
+    big:'쨍그랑!', again:'🍷 바로 새 와인잔 9개', fresh:'새 와인잔 9개가 진열됐어요.', hint:'와인잔을 하나씩 눌러 깨요 · 꾹 누르면 옆 잔까지',
+    end:['오늘은 병째 마셔요.','장식장이 깔끔해졌어요.','와인잔 9개, 전멸.'], words:['쨍!'],
+    build(){ frame=paintFrame(); gArt=paintGlass(); alive=Array(9).fill(true); },
+    hpNow(){ return alive.filter(Boolean).length; },
+    draw(){ ctx.fillStyle='rgba(0,0,0,.35)'; ctx.fillRect(X0+4,DESK-1,CW*3,3);
+      for(let i=0;i<9;i++) if(alive[i]) ctx.drawImage(gArt,gx(i),gy(i));
+      ctx.drawImage(frame,X0,Y0); },
+    hit(x,y,p){ if(x<X0-4||x>X0+CW*3+12||y<Y0-4||y>DESK+2) return false;
+      let best=-1, bd=1e9; for(let i=0;i<9;i++){ if(!alive[i]) continue; const d=Math.hypot(gx(i)+GW/2-x, gy(i)+GH/2-y); if(d<bd){ bd=d; best=i; } }
+      if(best<0) return false;
+      glassHit(p); breakGlass(best,p);
+      if(p>2.2){ let nb=-1, nd=1e9; for(let i=0;i<9;i++){ if(!alive[i]) continue; const d=Math.hypot(gx(i)-gx(best), gy(i)-gy(best)); if(d<nd){ nd=d; nb=i; } } if(nb>=0) breakGlass(nb,p); }
+      return true; },
+    shatter(){ glassCrash(); crash(); for(let i=0;i<9;i++) breakGlass(i,2);
+      addBody(frame,X0+(CW*3+8)/2,Y0+(CH*3+4)/2,rnd(-.6,.6),-2.5,(Math.random()<.5?-1:1)*.05); }
+  };
+})();
+
 /* ===== 진행 상태 ===== */
-const OBJS={keyboard, monitor, mug, table, plates};
+const OBJS={keyboard, monitor, mug, table, plates, wine, pot, laptop, printer, alarm};
 let O=keyboard, hp=O.maxHp, broken=false, hits=0, broke=0, respawnT=null, enter=0;
 try{ const sv=JSON.parse(localStorage.getItem('smash-stats')||'{}'); hits=+sv.hits||0; broke=+sv.broke||0; }catch(e){}
 const saveStats=()=>{ try{ localStorage.setItem('smash-stats',JSON.stringify({hits,broke})); }catch(e){} };
