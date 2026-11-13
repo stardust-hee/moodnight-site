@@ -133,6 +133,7 @@
     <button type="button" data-obj="laptop" aria-pressed="false">💻 노트북</button>
     <button type="button" data-obj="printer" aria-pressed="false">🖨 프린터</button>
     <button type="button" data-obj="alarm" aria-pressed="false">⏰ 알람시계</button>
+    <button type="button" data-obj="snack" aria-pressed="false">🍜 뿌셩뿌샹</button>
   </div>
 
   <div class="stage" id="stage">
@@ -156,7 +157,7 @@
   <section class="about">
     <h2>박살방은 이렇게 놀아요</h2>
     <ol>
-      <li><b>부술 물건 고르기</b> 키보드, 모니터, 머그컵, 밥상, 접시, 와인잔, 화분, 노트북, 프린터, 알람시계 중 하나를 골라요. 물건마다 깨지는 모양이 달라요.</li>
+      <li><b>부술 물건 고르기</b> 키보드, 모니터, 머그컵, 밥상, 접시, 와인잔, 화분, 노트북, 프린터, 알람시계, 뿌셩뿌샹 중 하나를 골라요. 물건마다 깨지는 모양이 달라요.</li>
       <li><b>빡친 일 붙이기 (선택)</b> "월요일 출근", "야근 지시"처럼 오늘 화난 일을 적으면 노란 쪽지로 물건에 붙어요. 때릴 때마다 글자가 한 자씩 떨어져 나가요.</li>
       <li><b>누른 자리를 내리치기</b> 화면을 누른 바로 그 자리가 깨져요. 꾹 누르고 있으면 힘이 모여서, 놓는 순간 훨씬 세게 내리쳐요.</li>
       <li><b>와장창</b> 내구도가 0이 되면 물건이 산산조각 나요. 잠시 뒤 새 물건이 저절로 들어와서 계속 부술 수 있어요.</li>
@@ -174,6 +175,7 @@
       <li><b>💻 노트북</b> 엑셀이 떠 있는 화면이 깨지고 지지직거려요.</li>
       <li><b>🖨 프린터</b> 용지 걸림 프린터를 내리치면 종이가 날리고 잉크가 튀어요.</li>
       <li><b>⏰ 알람시계</b> 따르릉 울리는 알람시계를 조용히 시켜요.</li>
+      <li><b>🍜 대형 뿌셩뿌샹</b> 봉지째 부숴 먹는 라면 과자예요. 칠 때마다 바삭바삭 구겨지고, 다 부수면 봉지가 터지면서 과자 조각과 스프 가루가 쏟아져요.</li>
     </ul>
 
     <h2>왜 만들었냐면요</h2>
@@ -689,7 +691,7 @@ function simpleObj(cfg){
   const composite=()=>{ const [c,g]=mkCanvas(W,H); g.drawImage(art,0,0); g.fillStyle=cfg.crack||'#2b2620'; for(const pts of cracks) for(let i=1;i<pts.length;i++) pixLine(g,pts[i-1][0],pts[i-1][1],pts[i][0],pts[i][1]); return c; };
   const self={
     name:cfg.name, key:cfg.key, maxHp:cfg.maxHp, box:B, note:cfg.note||{x:B.x+B.w/2,y:B.y-10},
-    big:cfg.big, again:cfg.again, fresh:cfg.fresh, end:cfg.end, words:cfg.words,
+    big:cfg.big, again:cfg.again, fresh:cfg.fresh, end:cfg.end, words:cfg.words, hint:cfg.hint,
     build(){ const [c,g]=mkCanvas(W,H); cfg.paint(g); art=c; cracks=[]; t=0; if(cfg.init) cfg.init(); },
     draw(){ t++; const dmg=1-hp/self.maxHp; const sh=cfg.shake?cfg.shake(t,dmg):0;
       ctx.fillStyle='rgba(0,0,0,.35)'; ctx.fillRect(B.x+3,DESK-1,B.w-6,3);
@@ -827,8 +829,42 @@ const wine=(()=>{
   };
 })();
 
+/* ================================================================
+   물건 11. 대형 뿌셩뿌샹 — 봉지째 부숴 먹는 라면 과자 (우리가 지어낸 과자예요)
+   ================================================================ */
+function crunch(p){ const a=A(); if(!a) return; for(let i=0;i<4+p*3;i++) noise(a,rnd(.02,.05),'bandpass',rnd(1800,5200),2.5,0.3+p*0.08,a.currentTime+i*rnd(.012,.03)); noise(a,0.07,'lowpass',900,0.8,0.3); }
+const CRUMB=['#f2d27a','#e8b84a','#fbe6a0','#d9a23a'];
+function crumbBit(){ const w=3+Math.floor(Math.random()*5), h=2+Math.floor(Math.random()*3); const [c,g]=mkCanvas(w,h); g.fillStyle='#b5802a'; g.fillRect(0,0,w,h); g.fillStyle=pick(CRUMB); g.fillRect(0,0,w-1,h-1); g.fillStyle='#fbe6a0'; if(w>3) g.fillRect(1,0,2,1); return c; }
+const snack=simpleObj({ name:'뿌셩뿌샹', key:'snack', maxHp:14, box:{x:30,y:44,w:120,h:138}, crack:'rgba(255,255,255,.75)', cols:5, rows:6,
+  big:'바사삭!', again:'🍜 바로 새 뿌셩뿌샹 한 봉지', fresh:'대형 뿌셩뿌샹 한 봉지가 또 들어왔어요.', words:['바삭!','와작!','뿌셩!','뿌샹!','빠직!'],
+  hint:'봉지째 마구 눌러 부숴요 · 꾹 누르면 더 세게',
+  end:['이제 스프 뿌리고 흔들면 돼요.','가루까지 완벽하게 부쉈어요.','대형 한 봉지, 순식간에 가루.'],
+  paint(g){ const x=34, y=50, w=112, h=130;
+    // 봉지 위아래 톱니 밀봉
+    g.fillStyle='#2b2620'; g.fillRect(x,y,w,h);
+    g.fillStyle='#19a39a'; g.fillRect(x+1,y+1,w-2,h-2); g.fillStyle='#22c2b6'; g.fillRect(x+1,y+10,14,h-20); g.fillStyle='#128079'; g.fillRect(x+w-13,y+10,12,h-20);
+    for(const yy of [y+1,y+h-9]){ g.fillStyle='#0f6e68'; g.fillRect(x+1,yy,w-2,8); g.fillStyle='#22c2b6'; for(let i=0;i<w-2;i+=4) g.fillRect(x+1+i,yy+1,2,6); }
+    g.fillStyle='#161b33'; for(let i=0;i<w;i+=6){ g.fillRect(x+i,y-1,3,2); g.fillRect(x+i,y+h-1,3,2); }
+    // 노란 폭발 무늬
+    g.fillStyle='#2b2620'; const cx=x+w/2, cy=y+52; for(let k=0;k<14;k++){ const a=k/14*Math.PI*2, r=k%2?36:46; g.beginPath(); g.moveTo(cx,cy); g.lineTo(cx+Math.cos(a-.22)*30,cy+Math.sin(a-.22)*24); g.lineTo(cx+Math.cos(a)*r,cy+Math.sin(a)*r*.8); g.lineTo(cx+Math.cos(a+.22)*30,cy+Math.sin(a+.22)*24); g.fill(); }
+    g.fillStyle='#ffd83a'; for(let k=0;k<14;k++){ const a=k/14*Math.PI*2, r=k%2?33:43; g.beginPath(); g.moveTo(cx,cy); g.lineTo(cx+Math.cos(a-.2)*28,cy+Math.sin(a-.2)*22); g.lineTo(cx+Math.cos(a)*r,cy+Math.sin(a)*r*.8); g.lineTo(cx+Math.cos(a+.2)*28,cy+Math.sin(a+.2)*22); g.fill(); }
+    g.beginPath(); g.ellipse(cx,cy,31,25,0,0,Math.PI*2); g.fill();
+    // 이름 (두 줄)
+    g.textAlign='center'; g.textBaseline='middle'; g.font='16px "Galmuri14","Galmuri11",monospace';
+    for(const [t,ty] of [['뿌셩',cy-9],['뿌샹',cy+9]]){ g.fillStyle='#2b2620'; for(const [dx,dy] of [[-1,0],[1,0],[0,-1],[0,1],[1,1]]) g.fillText(t,cx+dx,ty+dy); g.fillStyle='#e0372a'; g.fillText(t,cx,ty); }
+    g.fillStyle='#2b2620'; g.fillRect(x+10,y+13,26,11); g.fillStyle='#ffffff'; g.fillRect(x+11,y+14,24,9); g.font='8px "Galmuri11",monospace'; g.fillStyle='#e0372a'; g.fillText('대형',x+23,y+19);
+    // 라면 사리 그림
+    const nx=x+24, ny=y+84, nw=64, nh=22; g.fillStyle='#2b2620'; g.fillRect(nx-1,ny-1,nw+2,nh+2); g.fillStyle='#f2d27a'; g.fillRect(nx,ny,nw,nh);
+    g.fillStyle='#d9a23a'; for(let r=0;r<5;r++) for(let c=0;c<nw;c++){ const yy=ny+2+r*4+Math.round(Math.sin(c*0.7+r)*1.2); g.fillRect(nx+c,yy,1,1); }
+    g.fillStyle='#fbe6a0'; for(let r=0;r<5;r++) for(let c=0;c<nw;c+=3){ const yy=ny+1+r*4+Math.round(Math.sin(c*0.7+r)*1.2); g.fillRect(nx+c,yy,1,1); }
+    g.font='10px "Galmuri11",monospace'; g.fillStyle='#0a3f3b'; g.fillText('부숴 먹는 라면 과자',cx+1,y+h-15); g.fillStyle='#ffffff'; g.fillText('부숴 먹는 라면 과자',cx,y+h-16); g.textAlign='start'; g.textBaseline='alphabetic'; },
+  shake(t,dmg){ return 0; },
+  onHit(x,y,p){ crunch(p); thud(p*.5); puff(x,y,4+p*4,CRUMB); if(p>1.8) for(let i=0;i<3;i++) addBody(crumbBit(),x+rnd(-6,6),y,rnd(-2,2),-rnd(2,4),rnd(-.5,.5)); },
+  onShatter(){ crunch(3); crunch(2.5); crash(); for(let i=0;i<46;i++) addBody(crumbBit(),rnd(50,130),rnd(80,160),rnd(-4,4),-rnd(3,9),rnd(-.6,.6));
+    puff(90,120,70,CRUMB); puff(90,110,40,['#e0572a','#f08a3a','#ffd83a']); } });
+
 /* ===== 진행 상태 ===== */
-const OBJS={keyboard, monitor, mug, table, plates, wine, pot, laptop, printer, alarm};
+const OBJS={keyboard, monitor, mug, table, plates, wine, pot, laptop, printer, alarm, snack};
 let O=keyboard, hp=O.maxHp, broken=false, hits=0, broke=0, respawnT=null, enter=0;
 try{ const sv=JSON.parse(localStorage.getItem('smash-stats')||'{}'); hits=+sv.hits||0; broke=+sv.broke||0; }catch(e){}
 const saveStats=()=>{ try{ localStorage.setItem('smash-stats',JSON.stringify({hits,broke})); }catch(e){} };
