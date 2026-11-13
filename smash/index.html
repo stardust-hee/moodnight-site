@@ -176,8 +176,8 @@
       <li><b>💻 노트북</b> 엑셀이 떠 있는 화면이 깨지고 지지직거려요.</li>
       <li><b>🖨 프린터</b> 용지 걸림 프린터를 내리치면 종이가 날리고 잉크가 튀어요.</li>
       <li><b>⏰ 알람시계</b> 따르릉 울리는 알람시계를 조용히 시켜요.</li>
-      <li><b>🍜 대형 뿌셩뿌샹</b> 봉지째 부숴 먹는 라면 과자예요. 망치 대신 두 손으로 봉지를 쥐고 와구작 와구작. 터지지 않아서 끝없이 부술 수 있어요.</li>
-      <li><b>🫧 왁뿌볼</b> 말랑한 공에 굳힌 왁스 껍질을 손으로 쥐어 와작와작 벗겨요. 다 벗기면 새 색 왁스가 다시 입혀져요.</li>
+      <li><b>🍜 대형 뿌셩뿌샹</b> 봉지째 부숴 먹는 라면 과자예요. 망치 대신 두 손으로 봉지를 쥐고 와구작 와구작. 톡톡 누르면 끝없이 부술 수 있고, 최대 힘까지 꾹 쥐었다 놓으면 봉지가 펑 터져요.</li>
+      <li><b>🫧 왁뿌볼</b> 말랑한 공에 굳힌 왁스 껍질을 손으로 쥐어 와작와작 벗겨요. 다 벗기면 새 색 왁스가 다시 입혀지고, 최대 힘까지 꾹 쥐었다 놓으면 공까지 펑 터져요.</li>
     </ul>
 
     <h2>왜 만들었냐면요</h2>
@@ -845,14 +845,14 @@ const HAND=(()=>{ const [c,g]=mkCanvas(26,32); const O_='#2b2620', S='#f2c9a0', 
   g.fillStyle=O_; g.fillRect(4,0,9,7); g.fillStyle=S; g.fillRect(5,1,7,6); g.fillStyle=L; g.fillRect(6,1,3,2);
   return c; })();
 let snSq=0, snY=120, snCur=0, snN=0;
-const snack=simpleObj({ noHammer:true, endless:true, init(){ snN=0; snSq=0; }, msg(){ return `와구작 ${snN}번째`; },
+const snack=simpleObj({ noHammer:true, endless:true, init(){ snN=0; snSq=0; }, msg(){ return `와구작 ${snN}번째 · 최대 힘까지 꾹 쥐면 터져요`; },
   pre(g,t,dmg){ snSq*=0.86; let s=snSq; if(press && O===snack){ s=Math.max(s,Math.min(1,(performance.now()-press.t)/900)*0.85+0.15); snY+=(press.y-snY)*0.3; }
     dmg=Math.min(1,snN/24); snCur=s; g.translate(90,DESK); g.scale(1-0.1*dmg-0.17*s, 1+0.035*s); g.translate(-90,-DESK); if(s>0.5) g.translate(Math.round(Math.sin(t*2.3)),0); },
   post(g,t,dmg){ dmg=Math.min(1,snN/24); const hw=56*(1-0.1*dmg-0.17*snCur), y=Math.max(58,Math.min(150,snY))-16, grip=snCur>0.08?0:5;
     g.drawImage(HAND,Math.round(90-hw-14-grip),Math.round(y)); g.save(); g.translate(Math.round(90+hw+14+grip),Math.round(y)); g.scale(-1,1); g.drawImage(HAND,0,0); g.restore(); }, name:'뿌셩뿌샹', key:'snack', maxHp:14, box:{x:30,y:44,w:120,h:138}, crack:'rgba(255,255,255,.75)', cols:5, rows:6,
-  big:'바사삭!', again:'🍜 바로 새 뿌셩뿌샹 한 봉지', fresh:'대형 뿌셩뿌샹 한 봉지가 또 들어왔어요.', words:['와구작!','와작!','바삭!','뿌셩!','뿌샹!'],
-  hint:'봉지를 눌러 손으로 와구작 · 꾹 쥐면 더 세게',
-  end:['이제 스프 뿌리고 흔들면 돼요.','가루까지 완벽하게 부쉈어요.','대형 한 봉지, 순식간에 가루.'],
+  big:'펑! 바사삭!', again:'🍜 바로 새 뿌셩뿌샹 한 봉지', fresh:'대형 뿌셩뿌샹 한 봉지가 또 들어왔어요.', words:['와구작!','와작!','바삭!','뿌셩!','뿌샹!'],
+  hint:'톡톡 누르면 와구작 · 끝까지 꾹 쥐었다 놓으면 펑!',
+  end:['봉지째 터뜨렸어요. 속이 뻥 뚫리네요.','가루까지 완벽하게 부쉈어요.','대형 한 봉지, 한 방에 가루.'],
   paint(g){ const x=34, y=50, w=112, h=130;
     // 봉지 위아래 톱니 밀봉
     g.fillStyle='#2b2620'; g.fillRect(x,y,w,h);
@@ -874,7 +874,7 @@ const snack=simpleObj({ noHammer:true, endless:true, init(){ snN=0; snSq=0; }, m
     g.font='10px "Galmuri11",monospace'; g.fillStyle='#0a3f3b'; g.fillText('부숴 먹는 라면 과자',cx+1,y+h-15); g.fillStyle='#ffffff'; g.fillText('부숴 먹는 라면 과자',cx,y+h-16); g.textAlign='start'; g.textBaseline='alphabetic'; },
   shake(t,dmg){ return 0; },
   onHit(x,y,p){ snN++; snSq=1; snY=y; if(snN%20===0){ try{ window.mnTrack&&window.mnTrack('act','smash_snack'); }catch(e){} } crunch(p); setTimeout(()=>crunch(p*.8),110); puff(x,y,4+p*4,CRUMB); puff(90,y,3+p*3,CRUMB); if(p>1.8) for(let i=0;i<3;i++) addBody(crumbBit(),x+rnd(-6,6),y,rnd(-2,2),-rnd(2,4),rnd(-.5,.5)); },
-  onShatter(){ crunch(3); crunch(2.5); crash(); for(let i=0;i<46;i++) addBody(crumbBit(),rnd(50,130),rnd(80,160),rnd(-4,4),-rnd(3,9),rnd(-.6,.6));
+  onShatter(){ crunch(3); crunch(2.5); crash(); thud(3); { const a=A(); if(a){ noise(a,0.25,'lowpass',300,0.7,1.0); noise(a,0.5,'bandpass',3200,0.8,0.7,a.currentTime+0.03); } } for(let i=0;i<46;i++) addBody(crumbBit(),rnd(50,130),rnd(80,160),rnd(-4,4),-rnd(3,9),rnd(-.6,.6));
     puff(90,120,70,CRUMB); puff(90,110,40,['#e0572a','#f08a3a','#ffd83a']); } });
 
 /* ================================================================
@@ -886,9 +886,9 @@ const waxball=(()=>{
   let cells=[], total=0, pal=0, sq=0, hy=CY, cur=0, coat=1, coatT=null, n=0;
   const obj={
     name:'왁뿌볼', key:'waxball', maxHp:1, box:{x:CX-R,y:CY-R,w:R*2,h:R*2}, note:{x:CX,y:CY-R-12},
-    noHammer:true, endless:true, big:'와작!', again:'', fresh:'', end:[''], words:['와작!','타닥!','빠직!','톡!','파삭!'],
-    hint:'공을 눌러 왁스 껍질을 와작 · 꾹 쥐면 더 넓게',
-    msg(){ return obj.hpNow()===0 ? '왁스를 다 벗겼어요! 새 왁스에 퐁당 담그는 중…' : `왁스 벗기는 중 · ${n}번 와작`; },
+    noHammer:true, endless:true, big:'펑!', again:'🫧 바로 새 왁뿌볼', fresh:'새 왁뿌볼이 들어왔어요.', end:['공까지 터뜨렸어요. 속이 다 시원하네요.','왁스도 공도 한 방에 끝.','손맛 제대로 봤어요.'], words:['와작!','타닥!','빠직!','톡!','파삭!'],
+    hint:'톡톡 누르면 와작 · 끝까지 꾹 쥐었다 놓으면 펑!',
+    msg(){ return obj.hpNow()===0 ? '왁스를 다 벗겼어요! 새 왁스에 퐁당 담그는 중…' : `${n}번 와작 · 최대 힘까지 꾹 쥐면 공이 터져요`; },
     build(){ clearTimeout(coatT); cells=[]; for(let y=-R;y<R;y+=CS) for(let x=-R;x<R;x+=CS){ const mx=x+CS/2, my=y+CS/2; if(mx*mx+my*my<=R*R) cells.push({x,y,on:true}); }
       total=cells.length; obj.maxHp=total; sq=0; coat=1; n=0; },
     hpNow(){ return cells.filter(c=>c.on).length; },
@@ -925,7 +925,13 @@ const waxball=(()=>{
       if(obj.hpNow()===0){ try{ window.mnTrack&&window.mnTrack('act','smash_waxball'); }catch(e){}
         clearTimeout(coatT); coatT=setTimeout(()=>{ if(O!==obj) return; pal++; for(const c of cells) c.on=true; coat=0; hp=obj.hpNow(); renderHp(); $('msg').textContent='새 왁스가 굳었어요. 다시 와작와작!'; const a2=A(); if(a2) noise(a2,0.3,'lowpass',700,1,0.3); },1100); }
       return true; },
-    shatter(){}
+    shatter(){ clearTimeout(coatT); const P=PAL[pal%PAL.length], K=CORE[pal%CORE.length];
+      for(const c of cells){ if(!c.on) continue; c.on=false; if(Math.random()<.3){ const w=3+Math.floor(Math.random()*4), h=2+Math.floor(Math.random()*4); const [cv2,g]=mkCanvas(w,h); g.fillStyle=P[2]; g.fillRect(0,0,w,h); g.fillStyle=Math.random()<.5?P[0]:P[1]; g.fillRect(0,0,w-1,h-1);
+        addBody(cv2,CX+c.x,CY+c.y,c.x*0.12+rnd(-2,2),c.y*0.1-rnd(2,7),rnd(-.6,.6)); } }
+      for(let i=0;i<22;i++){ const r=4+Math.floor(Math.random()*7); const [cv2,g]=mkCanvas(r,r); g.fillStyle='#2b2620'; g.fillRect(1,0,r-2,r); g.fillRect(0,1,r,r-2); g.fillStyle=K[0]; g.fillRect(1,1,r-2,r-2); g.fillStyle=K[1]; g.fillRect(1,1,Math.max(1,r/3|0),1);
+        const a=Math.random()*Math.PI*2, sp=rnd(2,6); addBody(cv2,CX+Math.cos(a)*10,CY+Math.sin(a)*10,Math.cos(a)*sp,Math.sin(a)*sp-3,rnd(-.5,.5)); }
+      splash(CX,CY,80,4,2,[K[0],K[1],K[2]]); puff(CX,CY,70,[P[0],P[1],'#ffffff',K[1]]);
+      const a=A(); if(a){ noise(a,0.22,'lowpass',260,0.7,1.0); noise(a,0.4,'bandpass',2400,0.9,0.7,a.currentTime+0.02); for(let i=0;i<16;i++) noise(a,rnd(.012,.03),'bandpass',rnd(2600,6500),4,0.35,a.currentTime+0.05+Math.random()*0.5); tone(a,180,0.25,0.25,a.currentTime,'triangle'); } }
   };
   return obj;
 })();
@@ -994,7 +1000,8 @@ function hit(x,y,power){
   popText(x,y-6,pick(words), power>2.2?26:power>1.5?21:17);
   tearNote(x*scale(), false);
   hp = O.hpNow ? O.hpNow() : Math.max(0,hp-power); renderHp();
-  if(O.endless){ $('msg').textContent = O.msg ? O.msg() : ''; return; }
+  if(O.endless){ if(power>=2.9){ stage.classList.remove('shake','bigshake'); void stage.offsetWidth; stage.classList.add('bigshake'); try{ navigator.vibrate&&navigator.vibrate([60,30,90]); }catch(e){} hp=0; renderHp(); shatter(); return; }
+    $('msg').textContent = O.msg ? O.msg() : ''; return; }
   if(hp<=0) shatter();
   else $('msg').textContent = hp/O.maxHp<0.35 ? '거의 다 됐어요! 한 방 더!' : power>2.2 ? '묵직한 한 방!' : '';
 }
@@ -1030,7 +1037,8 @@ cv.addEventListener('pointerdown',e=>{ e.preventDefault(); A(); if(broken) retur
   clearInterval(chargeTimer);
   chargeTimer=setInterval(()=>{ if(!press) return; const k=Math.min(1,(performance.now()-press.t)/900);
     if(k>0.18) charge.classList.add('on'); charge.style.setProperty('--s',0.3+k*0.9);
-    charge.querySelector('b').textContent = k>=1 ? '최대 힘!' : '힘 모으는 중'; },30);
+    charge.querySelector('b').textContent = k>=1 ? (O.endless?'지금 놓으면 펑!':'최대 힘!') : '힘 모으는 중';
+    if(O.noHammer && k>0.3 && Math.random()<0.25+k*0.4){ const a=A(); if(a) noise(a,rnd(.012,.03),'bandpass',rnd(2400,6000),3,0.12+k*0.2); } },30);
 });
 function release(){ if(!press) return; clearInterval(chargeTimer); charge.classList.remove('on');
   const k=Math.min(1,(performance.now()-press.t)/900); const power=1+k*2;
