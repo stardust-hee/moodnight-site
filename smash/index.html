@@ -175,7 +175,7 @@
       <li><b>💻 노트북</b> 엑셀이 떠 있는 화면이 깨지고 지지직거려요.</li>
       <li><b>🖨 프린터</b> 용지 걸림 프린터를 내리치면 종이가 날리고 잉크가 튀어요.</li>
       <li><b>⏰ 알람시계</b> 따르릉 울리는 알람시계를 조용히 시켜요.</li>
-      <li><b>🍜 대형 뿌셩뿌샹</b> 봉지째 부숴 먹는 라면 과자예요. 칠 때마다 바삭바삭 구겨지고, 다 부수면 봉지가 터지면서 과자 조각과 스프 가루가 쏟아져요.</li>
+      <li><b>🍜 대형 뿌셩뿌샹</b> 봉지째 부숴 먹는 라면 과자예요. 망치 대신 두 손으로 봉지를 쥐고 와구작 와구작 부숴요. 다 부수면 봉지가 터지면서 과자 조각과 스프 가루가 쏟아져요.</li>
     </ul>
 
     <h2>왜 만들었냐면요</h2>
@@ -691,13 +691,13 @@ function simpleObj(cfg){
   const composite=()=>{ const [c,g]=mkCanvas(W,H); g.drawImage(art,0,0); g.fillStyle=cfg.crack||'#2b2620'; for(const pts of cracks) for(let i=1;i<pts.length;i++) pixLine(g,pts[i-1][0],pts[i-1][1],pts[i][0],pts[i][1]); return c; };
   const self={
     name:cfg.name, key:cfg.key, maxHp:cfg.maxHp, box:B, note:cfg.note||{x:B.x+B.w/2,y:B.y-10},
-    big:cfg.big, again:cfg.again, fresh:cfg.fresh, end:cfg.end, words:cfg.words, hint:cfg.hint,
+    big:cfg.big, again:cfg.again, fresh:cfg.fresh, end:cfg.end, words:cfg.words, hint:cfg.hint, noHammer:cfg.noHammer,
     build(){ const [c,g]=mkCanvas(W,H); cfg.paint(g); art=c; cracks=[]; t=0; if(cfg.init) cfg.init(); },
     draw(){ t++; const dmg=1-hp/self.maxHp; const sh=cfg.shake?cfg.shake(t,dmg):0;
       ctx.fillStyle='rgba(0,0,0,.35)'; ctx.fillRect(B.x+3,DESK-1,B.w-6,3);
-      ctx.save(); ctx.translate(sh,0); ctx.drawImage(art,0,0);
+      ctx.save(); if(cfg.pre) cfg.pre(ctx,t,dmg); ctx.translate(sh,0); ctx.drawImage(art,0,0);
       ctx.fillStyle=cfg.crack||'#2b2620'; for(const pts of cracks) for(let i=1;i<pts.length;i++) pixLine(ctx,pts[i-1][0],pts[i-1][1],pts[i][0],pts[i][1]);
-      if(cfg.extra) cfg.extra(ctx,t,dmg); ctx.restore(); },
+      if(cfg.extra) cfg.extra(ctx,t,dmg); ctx.restore(); if(cfg.post) cfg.post(ctx,t,dmg); },
     hit(x,y,p){ if(x<B.x-3||x>B.x+B.w+3||y<B.y-3||y>DESK+2) return false;
       const cx=Math.max(B.x+2,Math.min(B.x+B.w-3,x)), cy=Math.max(B.y+2,Math.min(DESK-3,y));
       for(let i=0;i<1+Math.round(p);i++){ let a=Math.random()*Math.PI*2, px=cx, py=cy; const pts=[[px,py]];
@@ -835,9 +835,19 @@ const wine=(()=>{
 function crunch(p){ const a=A(); if(!a) return; for(let i=0;i<4+p*3;i++) noise(a,rnd(.02,.05),'bandpass',rnd(1800,5200),2.5,0.3+p*0.08,a.currentTime+i*rnd(.012,.03)); noise(a,0.07,'lowpass',900,0.8,0.3); }
 const CRUMB=['#f2d27a','#e8b84a','#fbe6a0','#d9a23a'];
 function crumbBit(){ const w=3+Math.floor(Math.random()*5), h=2+Math.floor(Math.random()*3); const [c,g]=mkCanvas(w,h); g.fillStyle='#b5802a'; g.fillRect(0,0,w,h); g.fillStyle=pick(CRUMB); g.fillRect(0,0,w-1,h-1); g.fillStyle='#fbe6a0'; if(w>3) g.fillRect(1,0,2,1); return c; }
-const snack=simpleObj({ name:'뿌셩뿌샹', key:'snack', maxHp:14, box:{x:30,y:44,w:120,h:138}, crack:'rgba(255,255,255,.75)', cols:5, rows:6,
-  big:'바사삭!', again:'🍜 바로 새 뿌셩뿌샹 한 봉지', fresh:'대형 뿌셩뿌샹 한 봉지가 또 들어왔어요.', words:['바삭!','와작!','뿌셩!','뿌샹!','빠직!'],
-  hint:'봉지째 마구 눌러 부숴요 · 꾹 누르면 더 세게',
+const HAND=(()=>{ const [c,g]=mkCanvas(26,32); const O_='#2b2620', S='#f2c9a0', D='#d9a67a', L='#fbe0c2';
+  g.fillStyle=O_; g.fillRect(0,5,14,24); g.fillStyle=S; g.fillRect(1,6,12,22); g.fillStyle=D; g.fillRect(1,24,12,4); g.fillStyle=L; g.fillRect(2,7,3,14);
+  for(let i=0;i<4;i++){ const y=4+i*6, w=i===0||i===3?11:13; g.fillStyle=O_; g.fillRect(11,y,w+2,7); g.fillStyle=S; g.fillRect(12,y+1,w,5); g.fillStyle=D; g.fillRect(12,y+5,w,1); g.fillStyle=L; g.fillRect(12+w-3,y+1,2,2); }
+  g.fillStyle=O_; g.fillRect(4,0,9,7); g.fillStyle=S; g.fillRect(5,1,7,6); g.fillStyle=L; g.fillRect(6,1,3,2);
+  return c; })();
+let snSq=0, snY=120, snCur=0;
+const snack=simpleObj({ noHammer:true,
+  pre(g,t,dmg){ snSq*=0.86; let s=snSq; if(press && O===snack){ s=Math.max(s,Math.min(1,(performance.now()-press.t)/900)*0.85+0.15); snY+=(press.y-snY)*0.3; }
+    snCur=s; g.translate(90,DESK); g.scale(1-0.1*dmg-0.17*s, 1+0.035*s); g.translate(-90,-DESK); if(s>0.5) g.translate(Math.round(Math.sin(t*2.3)),0); },
+  post(g,t,dmg){ const hw=56*(1-0.1*dmg-0.17*snCur), y=Math.max(58,Math.min(150,snY))-16, grip=snCur>0.08?0:5;
+    g.drawImage(HAND,Math.round(90-hw-14-grip),Math.round(y)); g.save(); g.translate(Math.round(90+hw+14+grip),Math.round(y)); g.scale(-1,1); g.drawImage(HAND,0,0); g.restore(); }, name:'뿌셩뿌샹', key:'snack', maxHp:14, box:{x:30,y:44,w:120,h:138}, crack:'rgba(255,255,255,.75)', cols:5, rows:6,
+  big:'바사삭!', again:'🍜 바로 새 뿌셩뿌샹 한 봉지', fresh:'대형 뿌셩뿌샹 한 봉지가 또 들어왔어요.', words:['와구작!','와작!','바삭!','뿌셩!','뿌샹!'],
+  hint:'봉지를 눌러 손으로 와구작 · 꾹 쥐면 더 세게',
   end:['이제 스프 뿌리고 흔들면 돼요.','가루까지 완벽하게 부쉈어요.','대형 한 봉지, 순식간에 가루.'],
   paint(g){ const x=34, y=50, w=112, h=130;
     // 봉지 위아래 톱니 밀봉
@@ -859,7 +869,7 @@ const snack=simpleObj({ name:'뿌셩뿌샹', key:'snack', maxHp:14, box:{x:30,y:
     g.fillStyle='#fbe6a0'; for(let r=0;r<5;r++) for(let c=0;c<nw;c+=3){ const yy=ny+1+r*4+Math.round(Math.sin(c*0.7+r)*1.2); g.fillRect(nx+c,yy,1,1); }
     g.font='10px "Galmuri11",monospace'; g.fillStyle='#0a3f3b'; g.fillText('부숴 먹는 라면 과자',cx+1,y+h-15); g.fillStyle='#ffffff'; g.fillText('부숴 먹는 라면 과자',cx,y+h-16); g.textAlign='start'; g.textBaseline='alphabetic'; },
   shake(t,dmg){ return 0; },
-  onHit(x,y,p){ crunch(p); thud(p*.5); puff(x,y,4+p*4,CRUMB); if(p>1.8) for(let i=0;i<3;i++) addBody(crumbBit(),x+rnd(-6,6),y,rnd(-2,2),-rnd(2,4),rnd(-.5,.5)); },
+  onHit(x,y,p){ snSq=1; snY=y; crunch(p); setTimeout(()=>crunch(p*.8),110); puff(x,y,4+p*4,CRUMB); puff(90,y,3+p*3,CRUMB); if(p>1.8) for(let i=0;i<3;i++) addBody(crumbBit(),x+rnd(-6,6),y,rnd(-2,2),-rnd(2,4),rnd(-.5,.5)); },
   onShatter(){ crunch(3); crunch(2.5); crash(); for(let i=0;i<46;i++) addBody(crumbBit(),rnd(50,130),rnd(80,160),rnd(-4,4),-rnd(3,9),rnd(-.6,.6));
     puff(90,120,70,CRUMB); puff(90,110,40,['#e0572a','#f08a3a','#ffd83a']); } });
 
@@ -920,7 +930,7 @@ function hit(x,y,power){
   if(broken || enter>0) return;
   if(!O.hit(x,y,power)){ popText(x,y,'헛스윙',14); return; }
   hits++; $('sHits').textContent=hits; saveStats();
-  hammer={x:x-6,y:y-20,t:0,dur:5,down:true};
+  if(!O.noHammer) hammer={x:x-6,y:y-20,t:0,dur:5,down:true};
   try{ navigator.vibrate&&navigator.vibrate(power>2?40:15); }catch(e){}
   stage.classList.remove('shake','bigshake'); void stage.offsetWidth; stage.classList.add(power>2.2?'bigshake':'shake');
   const words = O.words || (O===monitor ? ['쩍!','쨍!','빠직!','콰직!','쨍그랑!'] : ['퍽!','쾅!','빡!','콰직!','탁!']);
@@ -958,7 +968,7 @@ function toCanvas(e){ const r=cv.getBoundingClientRect(); return {x:(e.clientX-r
 cv.addEventListener('pointerdown',e=>{ e.preventDefault(); A(); if(broken) return;
   const p=toCanvas(e); press={...p,t:performance.now()};
   charge.style.left=p.px+'px'; charge.style.top=p.py+'px';
-  hammer={x:p.x-6,y:p.y-20,t:0,dur:5,down:false};
+  if(!O.noHammer) hammer={x:p.x-6,y:p.y-20,t:0,dur:5,down:false};
   clearInterval(chargeTimer);
   chargeTimer=setInterval(()=>{ if(!press) return; const k=Math.min(1,(performance.now()-press.t)/900);
     if(k>0.18) charge.classList.add('on'); charge.style.setProperty('--s',0.3+k*0.9);
