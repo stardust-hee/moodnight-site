@@ -1,10 +1,65 @@
 {
   "rewrites": [
-    { "source": "/santa/en", "destination": "/santa/index.en.html" },
-    { "source": "/santa/r/:slug", "has": [{ "type": "query", "key": "lang", "value": "en" }], "destination": "/santa/index.en.html" },
-    { "source": "/santa/r/:slug", "destination": "/santa/index.html" },
-    { "source": "/mansion/en", "destination": "/mansion/index.en.html" },
-    { "source": "/mansion/r/:slug", "has": [{ "type": "query", "key": "lang", "value": "en" }], "destination": "/mansion/index.en.html" },
-    { "source": "/mansion/r/:slug", "destination": "/mansion/index.html" }
+    {
+      "source": "/santa/en",
+      "destination": "/santa/index.en.html"
+    },
+    {
+      "source": "/santa/r/:slug",
+      "has": [
+        {
+          "type": "query",
+          "key": "lang",
+          "value": "en"
+        }
+      ],
+      "destination": "/santa/index.en.html"
+    },
+    {
+      "source": "/santa/r/:slug",
+      "destination": "/santa/index.html"
+    },
+    {
+      "source": "/mansion/en",
+      "destination": "/mansion/index.en.html"
+    },
+    {
+      "source": "/mansion/r/:slug",
+      "has": [
+        {
+          "type": "query",
+          "key": "lang",
+          "value": "en"
+        }
+      ],
+      "destination": "/mansion/index.en.html"
+    },
+    {
+      "source": "/mansion/r/:slug",
+      "destination": "/mansion/index.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "SAMEORIGIN"
+        },
+        {
+          "key": "Permissions-Policy",
+          "value": "camera=(), microphone=(), geolocation=()"
+        }
+      ]
+    }
   ]
 }

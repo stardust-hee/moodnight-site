@@ -604,6 +604,7 @@ function clampRoom(x,z){ const mx=ROOM.W-.55, mz=ROOM.D/2-.5; return [Math.max(-
 /* ================= UI ================= */
 const card=$('card'); let mode='world', curSite=null, visitData=null;
 function toast(m){ const t=$('toast'); t.textContent=m; t.classList.add('show'); clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('show'),2200); }
+const escH=t=>String(t??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function setCard(html){ card.classList.remove('show'); setTimeout(()=>{ card.innerHTML=html; if(html) card.classList.add('show'); },html?120:0); }
 const tentIcon={bell:'<svg viewBox="0 0 52 38"><path d="M6 34h40l-4-14H10z" fill="#e8d8b8"/><path d="M10 20L26 4l16 16z" fill="#d8c39c"/><path d="M22 34a4 6 0 0 1 8 0z" fill="#5a4636"/></svg>',
   aframe:'<svg viewBox="0 0 52 38"><path d="M6 34L26 4l20 30z" fill="#e8d8b8"/><path d="M20 34l6-12 6 12z" fill="#5a4636"/></svg>',
@@ -676,12 +677,12 @@ function enterInside(data,editable){
   if(editable) setCard(`<h3>텐트 안 꾸미기</h3><p class="sub">앞벽을 걷어 낸 단면이에요. 소품을 눌러 놓고 끌어서 옮겨요</p>
     <div class="palette">${IN_ITEMS.map(([k,n,e])=>`<button class="pi" data-k="${k}"><span>${e}</span>${n}</button>`).join('')}</div>
     <div class="row"><button class="btn ghost" id="goOut">밖으로 나가기</button></div>`);
-  else setCard(`<h3>${data.name}님의 텐트 안</h3><p class="sub">구경 중이에요. 마음에 들면 내 텐트도 꾸며 보세요</p><div class="row"><button class="btn ghost" id="goOut">밖으로 나가기</button></div>`);
+  else setCard(`<h3>${escH(data.name)}님의 텐트 안</h3><p class="sub">구경 중이에요. 마음에 들면 내 텐트도 꾸며 보세요</p><div class="row"><button class="btn ghost" id="goOut">밖으로 나가기</button></div>`);
   setTimeout(()=>{ card.querySelectorAll('.pi').forEach(b=>b.onclick=()=>addItem(b.dataset.k)); $('goOut').onclick=()=>{ select(null); scene=world; worldCam(); if(editable) enterOutside(curSite); else { visitOutside(visitData); } }; },140);
 }
 function visitOutside(no){
   mode='visit'; visitData=no; const d=NEIGHBORS[no], s=SITES[no-1]; focus(s.x,s.z,2.1);
-  setCard(`<h3>${d.name}님의 텐트 <span style="color:var(--dim);font-weight:600;font-size:13px">· ${no}번</span></h3><p class="sub">${TENT_TYPES[d.type]} · 놀러 왔어요</p>
+  setCard(`<h3>${escH(d.name)}님의 텐트 <span style="color:var(--dim);font-weight:600;font-size:13px">· ${no}번</span></h3><p class="sub">${TENT_TYPES[d.type]} · 놀러 왔어요</p>
   <div class="row"><button class="btn ghost" id="back">캠핑장 보기</button><button class="btn wood" id="peek">텐트 안 구경하기</button></div>`);
   setTimeout(()=>{ $('back').onclick=()=>{ focusWorld(); showWorldCard(); }; $('peek').onclick=()=>{ enterInside(d,false); }; },140);
 }
