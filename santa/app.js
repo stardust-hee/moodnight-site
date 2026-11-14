@@ -114,7 +114,11 @@ function onGift(g, el) {
   toast(isOpen() ? L(`${room.display_name}님만 열어볼 수 있어요`, `Only ${room.display_name} can open these`) : L(`흔들어 보니 ${item(g.item).shake}. 12월 25일에 열려요`, `You give it a shake... ${item(g.item).shake}. Opens on Dec 25`));
 }
 
-function panel(html) { $("#panelBody").innerHTML = html; }
+function panel(html) {
+  $("#panelBody").innerHTML = html;
+  /* 집주인 화면 맨 아래에 "다녀간 친구 집" 카드 (체험판 제외) */
+  if (MODE === "host" && !window.DEMO && window.mnFriends) mnFriends.attach($("#panelBody"));
+}
 
 function renderLogin() {
   panel(`
@@ -715,7 +719,13 @@ async function loadGuest() {
     return;
   }
   if (data.is_owner && !window.DEMO) { location.replace("/santa/"); return; }
-  room = data; document.title = L(`${room.display_name}의 선물가게 | 산타의 선물가게`, `${POSS(room.display_name)} Gift Shop | Santa's Gift Shop`);
+  room = data;
+  if (!window.DEMO && window.mnFriends) {  /* 친구 집 기록: 이 기기에만 저장, 주인에게는 알려지지 않아요 */
+    const first = !mnFriends.list().length;
+    mnFriends.visit("santa", room.slug, room.display_name);
+    if (first) setTimeout(() => toast(L("이 선물가게를 다녀간 친구 집에 저장했어요. 나만 볼 수 있어요", "Saved to your visited places. Only you can see it")), 2500);
+  }
+  document.title = L(`${room.display_name}의 선물가게 | 산타의 선물가게`, `${POSS(room.display_name)} Gift Shop | Santa's Gift Shop`);
   renderTop(); renderGifts(); renderSend();
 }
 
@@ -723,6 +733,7 @@ async function loadGuest() {
   const { data } = await sb.auth.getSession();
   session = data.session;
   if (MODE === "guest") return loadGuest();
+  if (!window.DEMO && window.mnFriends) setTimeout(() => mnFriends.announce(), 1200);  /* 새 기능 안내 (기기당 한 번) */
   if (!session) { renderTop(); renderGifts(); renderLogin(); return; }
   if (location.hash.includes("access_token")) history.replaceState(null, "", "/santa/" + location.search);
   loadHost();
