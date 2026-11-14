@@ -20,6 +20,8 @@
 | `/blog/` | 읽을거리 (애드센스 심사용 글). 현재 2개: manitto, christmas-card |
 | `/privacy.html` `/terms.html` | 개인정보처리방침, 이용약관 (산타 + 성탄맨션 공통) |
 | `/auth-test.html` | 로그인 테스트용 (검색 차단) |
+| `/feedback.js` | 💌 익명 의견함 위젯 ("이런 기능 있었으면 좋겠어요"). RPC `feedback_add`(하루 5개/기기), 관리자 "의견함" 탭에서 확인. 아직 서비스 페이지에는 안 붙임 |
+| `/feedback-test.html` | 의견함 미리보기 (검색 차단) |
 | `og.png` `santa/og.png` | 공유 미리보기 이미지 1200×630 |
 | `icon-512.png` `apple-touch-icon.png` | 앱 아이콘 |
 

@@ -1,6 +1,7 @@
 User-agent: *
 Allow: /
 Disallow: /auth-test.html
+Disallow: /feedback-test.html
 Disallow: /admin/
 Disallow: /tools/
 

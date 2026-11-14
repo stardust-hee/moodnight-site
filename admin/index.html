@@ -173,6 +173,34 @@ function moderationHTML() {
     <p id="reviewStatus" class="msg" role="status" aria-live="polite"></p>
   </div></section>`;
 }
+const FB_PAGE = { home: "홈", santa: "선물가게", mansion: "성탄맨션", sansa: "산사", smash: "박살방", tray: "트레이", camp: "캠프", blog: "읽을거리", other: "기타" };
+function feedbackHTML() {
+  if (!Array.isArray(S.feedback)) return '<section class="win"><h2>의견함.exe</h2><div class="body"><p class="msg">의견을 불러오지 못했어요. 새로고침해 주세요.</p></div></section>';
+  const list = S.feedback.filter(f => fbShowHidden || f.status !== "hidden");
+  const nNew = S.feedback.filter(f => f.status === "new").length, nHid = S.feedback.filter(f => f.status === "hidden").length;
+  return `<section class="win"><h2>의견함.exe</h2><div class="body">
+    <p class="msg">"이런 기능 있었으면 좋겠어요" 창으로 들어온 익명 의견이에요. 새 의견 ${n(nNew)}개 · 전체 ${n(S.feedback.length)}개${nHid ? ` · 숨김 ${n(nHid)}개 <button type="button" id="fbToggle">${fbShowHidden ? "숨김 빼고 보기" : "숨김도 보기"}</button>` : ""}</p>
+    <div class="rep">${list.map(f => `<div${f.status === "new" ? ' style="border-left:4px solid #e0a83a;padding-left:10px"' : ""}>
+      <small>${esc(new Date(f.at).toLocaleString("ko-KR"))} · ${esc(FB_PAGE[f.page] || f.page)} · ${f.status === "new" ? "새 의견" : f.status === "read" ? "읽음" : "숨김"}</small>
+      <p style="margin:8px 0;white-space:pre-wrap">${esc(f.body)}</p>
+      <div class="row">
+        ${f.status !== "read" ? `<button type="button" data-fb-id="${esc(f.id)}" data-fb-st="read">읽음</button>` : `<button type="button" data-fb-id="${esc(f.id)}" data-fb-st="new">안 읽음으로</button>`}
+        ${f.status !== "hidden" ? `<button type="button" data-fb-id="${esc(f.id)}" data-fb-st="hidden">숨기기</button>` : ""}
+      </div></div>`).join("") || '<p class="msg">아직 들어온 의견이 없어요.</p>'}</div>
+    <p id="fbStatus" class="msg" role="status" aria-live="polite"></p>
+  </div></section>`;
+}
+let fbShowHidden = false;
+function bindFeedback() {
+  const t = $("#fbToggle"); if (t) t.onclick = () => { fbShowHidden = !fbShowHidden; render(); };
+  document.querySelectorAll("[data-fb-id]").forEach(b => b.onclick = async () => {
+    b.disabled = true;
+    const { error } = await sb.rpc("admin_feedback_mark", { p_id: b.dataset.fbId, p_status: b.dataset.fbSt });
+    if (error) { b.disabled = false; const st = $("#fbStatus"); if (st) st.textContent = "바꾸지 못했어요. 다시 해 주세요."; return; }
+    const f = S.feedback.find(x => x.id === b.dataset.fbId); if (f) f.status = b.dataset.fbSt;
+    render();
+  });
+}
 function bindModeration() {
   document.querySelectorAll('[data-review-id]').forEach(b => b.onclick = async () => {
     const hidden = b.dataset.hidden === 'true';
@@ -192,13 +220,13 @@ function bindModeration() {
   });
 }
 // 크롬 탭처럼: 섹션 제목으로 어느 탭에 둘지 정해요
-const TABS = [["home", "🌙", "전체"], ["members", "👤", "회원"], ["santa", "🎁", "선물가게"], ["mansion", "🏠", "성탄맨션"], ["sansa", "🏮", "산사"], ["smash", "🔨", "박살방"], ["tray", "🍽️", "실버 트레이"], ["report", "🚩", "신고"]];
-const SEC_TAB = [["한눈에", "home"], ["기간별", "home"], ["광고", "home"], ["최근 7일 페이지별", "home"], ["회원", "members"], ["산타의 선물가게", "santa"], ["성탄맨션", "mansion"], ["무드나잇 산사", "sansa"], ["박살방", "smash"], ["Silver Tray", "tray"], ["마음 챙기기", "sansa smash tray"], ["신고", "report"]];
+const TABS = [["home", "🌙", "전체"], ["members", "👤", "회원"], ["santa", "🎁", "선물가게"], ["mansion", "🏠", "성탄맨션"], ["sansa", "🏮", "산사"], ["smash", "🔨", "박살방"], ["tray", "🍽️", "실버 트레이"], ["report", "🚩", "신고"], ["feedback", "💌", "의견함"]];
+const SEC_TAB = [["한눈에", "home"], ["기간별", "home"], ["광고", "home"], ["최근 7일 페이지별", "home"], ["회원", "members"], ["산타의 선물가게", "santa"], ["성탄맨션", "mansion"], ["무드나잇 산사", "sansa"], ["박살방", "smash"], ["Silver Tray", "tray"], ["마음 챙기기", "sansa smash tray"], ["신고", "report"], ["의견함", "feedback"]];
 let tab = (() => { try { const h = location.hash.slice(1); if (TABS.some(t => t[0] === h)) return h; return localStorage.getItem("mn_admin_tab") || "home"; } catch (e) { return "home"; } })();
 if (!TABS.some(t => t[0] === tab)) tab = "home";
 function applyTabs() {
   const today = new Date().toLocaleDateString("ko-KR", { timeZone: "Asia/Seoul" });
-  const badge = { members: (S.members || []).filter(m => !m.admin && new Date(m.joined).toLocaleDateString("ko-KR", { timeZone: "Asia/Seoul" }) === today).length, report: (S.reports || []).filter(r => r.svc !== "산사").length + (S.sansaQueue || []).filter(r => r.pending).length };
+  const badge = { members: (S.members || []).filter(m => !m.admin && new Date(m.joined).toLocaleDateString("ko-KR", { timeZone: "Asia/Seoul" }) === today).length, report: (S.reports || []).filter(r => r.svc !== "산사").length + (S.sansaQueue || []).filter(r => r.pending).length, feedback: (S.feedback || []).filter(f => f.status === "new").length };
   $("#ctabs").innerHTML = TABS.map(([k, ic, l]) => `<button role="tab" data-tab="${k}" aria-selected="${tab === k}"><span class="ic">${ic}</span>${l}${badge[k] ? `<span class="ct">${badge[k]}</span>` : ""}</button>`).join("");
   $("#ctabs").hidden = false;
   document.querySelectorAll("#dash > section").forEach(sec => {
@@ -252,12 +280,14 @@ function render() {
     ${Object.keys(PAGES).filter(k => (s.pages || {})[k]).map(k => card(PAGES[k], n(s.pages[k]))).join("") || '<p class="msg">아직 기록이 없어요. 방문 기록은 11월 9일부터 쌓여요.</p>'}
   </div></div></section>
   ${moderationHTML()}
+  ${feedbackHTML()}
   <section class="win"><h2>신고·숨김 기록.exe</h2><div class="body"><div class="rep">
     ${(s.reports || []).map(r => `<div><small>${esc(new Date(r.at).toLocaleString("ko-KR"))} · ${esc(r.svc)} ${esc(r.kind)}</small><p style="margin:2px 0">${esc(r.text) || "(내용 없음)"}</p><small>사유: ${esc(r.reason || "-")}</small></div>`).join("") || '<p class="msg">신고된 게 없어요.</p>'}
   </div></div></section>`;
   document.querySelectorAll("[data-p]").forEach(b => b.onclick = () => { period = b.dataset.p; render(); });
   applyTabs();
   bindModeration();
+  bindFeedback();
 }
 async function load() {
   // 이 기기는 관리자 기기로 표시해서 방문 숫자에서 빼요 (지난 기록도 지워요)
@@ -269,6 +299,7 @@ async function load() {
   try { const r = await sb.rpc("admin_members"); data.members = r.error ? null : r.data; } catch (e) { data.members = null; }
   try { const r = await sb.rpc("admin_mind_stats"); data.mind = r.error ? null : r.data; } catch (e) { data.mind = null; }
   try { const r = await sb.rpc("admin_sansa_reports"); data.sansaQueue = r.error ? null : r.data; } catch (e) { data.sansaQueue = null; }
+  try { const r = await sb.rpc("admin_feedback"); data.feedback = r.error ? null : r.data; } catch (e) { data.feedback = null; }
   if (data.mind && data.mind.reports) data.reports = (data.reports || []).concat(data.mind.reports).sort((x, y) => String(y.at).localeCompare(String(x.at)));
   S = data; $("#loginBox").hidden = true; $("#dash").hidden = false; $("#reload").hidden = false; $("#logout").hidden = false;
   $("#who").textContent = `${new Date().toLocaleString("ko-KR")} 기준`;

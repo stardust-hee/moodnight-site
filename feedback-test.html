@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>의견함 미리보기 | 무드나잇 (확인용)</title>
+<style>
+  :root{color-scheme:light dark;--bg:#F3EFE8;--fg:#2E241E;--soft:#6A5B50;--line:#D9CDBB;--card:#fff}
+  @media (prefers-color-scheme:dark){:root{--bg:#171512;--fg:#F1EADF;--soft:#B3A79A;--line:#3A342D;--card:#211E1A}}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);font-family:"Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;line-height:1.6;
+    padding:24px max(16px,env(safe-area-inset-right,0px)) 96px max(16px,env(safe-area-inset-left,0px))}
+  main{max-width:880px;margin:0 auto;display:grid;gap:20px}
+  h1{margin:0;font-size:1.4rem;line-height:1.4}
+  h2{margin:0;font-size:1.02rem}
+  p{margin:0}
+  .lead,.hint{color:var(--soft);font-size:.92rem}
+  .tag{display:inline-block;font-size:.75rem;font-weight:700;border:1px solid var(--line);border-radius:999px;padding:1px 10px;color:var(--soft)}
+  .grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr))}
+  .col{border:1px solid var(--line);border-radius:18px;background:var(--card);padding:14px;display:grid;gap:10px;align-content:start;min-width:0}
+  .stage{border-radius:14px;padding:22px 14px;display:grid;place-items:center;min-height:90px}
+  .santa{background:#EEE7DA;--mnfb-bg:#FFFFFF;--mnfb-fg:#3A2A22;--mnfb-soft:#5E4A3C;--mnfb-line:#E2D6C2;--mnfb-accent:#C23A2E;--mnfb-accent-text:#FFF8EA}
+  .mansion{background:#0F1B28;--mnfb-bg:#172738;--mnfb-fg:#EEF3F8;--mnfb-soft:#9FB2C6;--mnfb-line:#24384C;--mnfb-accent:#FFD27A;--mnfb-accent-text:#0F1B28}
+  .home{background:#151A2E;--mnfb-bg:#1E2540;--mnfb-fg:#F6EEDD;--mnfb-soft:#B9B3A6;--mnfb-line:#2A3254;--mnfb-accent:#F2C46B;--mnfb-accent-text:#151A2E}
+  .warn{border-left:4px solid #C23A2E;padding:10px 12px;background:var(--card);border-radius:8px;font-size:.9rem}
+</style>
+</head>
+<body>
+<main>
+  <div>
+    <span class="tag">확인용 페이지 · 검색에 안 잡혀요</span>
+    <h1>💌 의견함 미리보기</h1>
+    <p class="lead">아직 실제 서비스 화면에는 안 붙였어요. 여기서 버튼 모양과 의견 창을 먼저 확인해 보세요. 왼쪽 아래에 떠 있는 버튼이 실제로 붙을 모양이에요.</p>
+  </div>
+
+  <p class="warn">여기서 <b>보내기</b>를 누르면 실제 의견함에 들어가요. 관리자 화면 <b>💌 의견함</b> 탭에서 보이는지 확인할 수 있어요. 테스트로 보낼 땐 "테스트"라고 적어 주세요.</p>
+
+  <section class="grid" aria-label="서비스별 버튼 모양">
+    <div class="col"><h2>🎁 선물가게 모양</h2><div class="stage santa" id="stSanta"></div></div>
+    <div class="col"><h2>🏢 맨션 모양</h2><div class="stage mansion" id="stMansion"></div></div>
+    <div class="col"><h2>🏠 홈 모양</h2><div class="stage home" id="stHome"></div></div>
+  </section>
+  <p class="hint">위 버튼을 누르면 그 서비스 색으로 의견 창이 열려요. 실제 페이지에선 의견이 어느 서비스에서 왔는지 자동으로 붙어요(여기서 보낸 건 "기타"로 들어가요).</p>
+</main>
+
+<script src="/feedback.js?v=1" data-page="other"></script>
+<script>
+(function () {
+  var VARS = ["--mnfb-bg", "--mnfb-fg", "--mnfb-soft", "--mnfb-line", "--mnfb-accent", "--mnfb-accent-text"];
+  [["stSanta", "santa"], ["stMansion", "mansion"], ["stHome", "home"]].forEach(function (x) {
+    var st = document.getElementById(x[0]);
+    var b = document.createElement("button"); b.type = "button"; b.className = "mnfb-btn"; b.textContent = "💌 의견 보내기";
+    b.onclick = function () {
+      var cs = getComputedStyle(st), root = document.documentElement;
+      VARS.forEach(function (v) { root.style.setProperty(v, cs.getPropertyValue(v)); });
+      mnFeedback.open();
+    };
+    st.appendChild(b);
+  });
+  // 떠 있는 버튼은 기본 색으로 열려요
+  document.addEventListener("click", function (e) {
+    if (e.target.closest(".mnfb-btn.float")) VARS.forEach(function (v) { document.documentElement.style.removeProperty(v); });
+  }, true);
+})();
+</script>
+</body>
+</html>
