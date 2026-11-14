@@ -25,6 +25,9 @@
  <div class="property-row"><label for="sizeRange">크기</label><input type="range" id="sizeRange" min="7" max="38" value="17" step="1" disabled><output id="sizeValue">—</output></div>
  <div class="property-row"><label for="rotateRange">회전</label><input type="range" id="rotateRange" min="-180" max="180" value="0" step="1" disabled><output id="rotateValue">—</output></div></div>
  <label class="upload-label">＋ 나만의 사진 / 소품 넣기 <input type="file" id="uploadInput" accept="image/png,image/jpeg,image/webp"></label>
+ <div id="fbSlot" style="display:flex;justify-content:center;margin:6px 0 10px"></div>
  <div class="bottom-save"><button id="shareBtn" class="pill-btn outline">↗ 링크 공유</button><button id="saveBtn" class="pill-btn">↓ 이미지 저장</button></div></div>
 </aside>
-</div><div id="toast" class="toast" role="status" aria-live="polite"></div><script src="app.js"></script><script src="/track.js?v=5" defer></script></body></html>
+</div><div id="toast" class="toast" role="status" aria-live="polite"></div><script src="app.js"></script><script src="/track.js?v=5" defer></script><style>html{--mnfb-bg:#FFFFFF;--mnfb-fg:#2E2A26;--mnfb-soft:#6A625A;--mnfb-line:#DDD6CC;--mnfb-accent:#2E2A26;--mnfb-accent-text:#FFFFFF}</style>
+<script src="/feedback.js?v=2" data-page="tray" data-inline="#fbSlot" defer></script>
+</body></html>

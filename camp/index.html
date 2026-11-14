@@ -176,7 +176,7 @@
   <label>🔥 모닥불·빗소리 <input type="range" id="vFire" min="0" max="100"></label>
   <button class="btn ghost" id="vMute">소리 끄기</button>
 </div>
-<div class="intro" id="intro"><div class="intro-box"><b>⛺ MY LITTLE CAMP</b><p>호숫가 숲속 캠핑장에 내 텐트를 치고 꾸며요</p><button class="btn" id="startCamp">캠핑 시작하기</button><small>소리가 나와요 · 오른쪽 위 🔊에서 조절할 수 있어요</small></div></div>
+<div class="intro" id="intro"><div class="intro-box"><b>⛺ MY LITTLE CAMP</b><p>호숫가 숲속 캠핑장에 내 텐트를 치고 꾸며요</p><button class="btn" id="startCamp">캠핑 시작하기</button><small>소리가 나와요 · 오른쪽 위 🔊에서 조절할 수 있어요</small><div id="fbSlot" style="justify-self:center;margin-top:4px"></div></div></div>
 <a class="proto" href="/">← 무드나잇</a><div class="wx" id="wx" hidden></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
@@ -1010,5 +1010,7 @@ const Sound=(()=>{
 setTimeout(()=>$('loading').classList.add('hide'),200);
 window.__camp={Marsh,marker,get selected(){return selected},get mode(){return mode},get me(){return me},SITES,enterOutside,addItem,enterInside,showPlaceCard,camera,controls,visitOutside};
 </script>
+<style>html{--mnfb-bg:#FBF6EA;--mnfb-fg:#4A3F35;--mnfb-soft:#6E6255;--mnfb-line:#E6DCC8;--mnfb-accent:#C9673A;--mnfb-accent-text:#FFFFFF}</style>
+<script src="/feedback.js?v=2" data-page="camp" data-inline="#fbSlot" defer></script>
 </body>
 </html>

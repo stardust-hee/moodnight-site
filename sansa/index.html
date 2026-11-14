@@ -402,6 +402,7 @@
       <button data-go="sky">✨ 연등 하늘 보기</button>
       <button data-go="roof">🏛 기와 지붕 보기</button>
       <hr>
+      <div id="fbSlot" style="margin:4px 0 10px"></div>
       <a class="dLink" href="/">← 무드나잇 홈</a>
       <p class="dFoot"><a href="/privacy.html">개인정보처리방침</a> · <a href="/terms.html">이용약관</a><br>문의 moodnight@kakao.com</p>
     </nav>
@@ -1064,5 +1065,7 @@ document.getElementById('roofAgainBtn').addEventListener('click', goWrite);
 document.getElementById('skyAgainBtn').addEventListener('click', goWrite);
 </script>
 <script src="/track.js?v=3" defer></script>
+<style>html{--mnfb-bg:#FBF3E1;--mnfb-fg:#3B2A20;--mnfb-soft:#6B5546;--mnfb-line:#E3D2AE;--mnfb-accent:#B8433A;--mnfb-accent-text:#FFF8EA}</style>
+<script src="/feedback.js?v=2" data-page="sansa" data-inline="#fbSlot" defer></script>
 </body>
 </html>

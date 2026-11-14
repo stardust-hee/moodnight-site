@@ -137,7 +137,13 @@
     btn.onclick = open;
     const sel = me && me.dataset.inline;
     const host = sel ? document.querySelector(sel) : null;
-    if (host) host.appendChild(btn); else { btn.classList.add("float"); document.body.appendChild(btn); }
+    if (host) host.appendChild(btn);
+    else {
+      btn.classList.add("float");
+      // 떠 있는 버튼이 페이지 맨 아래 글자를 가리지 않게 빈 공간을 둬요
+      const pad = document.createElement("div"); pad.setAttribute("aria-hidden", "true"); pad.style.height = "64px";
+      document.body.append(pad, btn);
+    }
   }
   window.mnFeedback = { open, setPage: p => { if (PAGES.includes(p)) page = p; } };
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", mount); else mount();
