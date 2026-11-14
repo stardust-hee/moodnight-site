@@ -26,7 +26,6 @@
 <link rel="stylesheet" href="/style.css?v=8">
 <meta name="google-adsense-account" content="ca-pub-2331460749309543">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2331460749309543" crossorigin="anonymous"></script>
-<style>html{--mnf-bg:var(--night-2);--mnf-fg:var(--cream);--mnf-soft:var(--cream-soft);--mnf-line:var(--night-3);--mnf-accent:var(--lamp);--mnf-accent-text:#151A2E}</style>
 </head>
 <body>
 
@@ -67,10 +66,6 @@
         <div class="hill"></div>
       </div>
     </div>
-  </section>
-
-  <section id="friends" hidden style="padding-block:28px">
-    <div class="wrap narrow"><div id="mnfHome" hidden></div></div>
   </section>
 
   <section id="services">
@@ -410,11 +405,6 @@
   var h=location.hash.replace('#','');
   tabs.forEach(function(t){ if(t.getAttribute('aria-controls')===h) pick(t); });
 })();
-</script>
-<script src="/friends.js?v=4"></script>
-<script>
-/* 친구 링크로 놀러 간 집이 있으면 "내가 놀러 간 친구 집" 카드를 보여 줘요 (이 기기에만 저장된 목록) */
-(function(){ try{ var d=document.getElementById("mnfHome"), s=document.getElementById("friends"); if(!d||!s||!window.mnFriends) return; mnFriends.render(d); s.hidden=d.hidden; }catch(e){} })();
 </script>
 <script src="/track.js?v=3" defer></script>
 <script>

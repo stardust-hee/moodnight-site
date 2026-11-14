@@ -1,7 +1,6 @@
 User-agent: *
 Allow: /
 Disallow: /auth-test.html
-Disallow: /friends-test.html
 Disallow: /admin/
 Disallow: /tools/
 

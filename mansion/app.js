@@ -229,10 +229,7 @@ async function reload() {
 }
 
 /* ── 패널 ── */
-function panel(h) {
-  $('#panelBody').innerHTML = h;
-  if (MODE === 'host' && window.mnFriends) mnFriends.attach($('#panelBody'));  // 집주인 화면 맨 아래에 "내가 놀러 간 친구 집" 카드
-}
+function panel(h) { $('#panelBody').innerHTML = h; }
 function render() {
   rebuild(); if (reduce) frame(0);
   const hits = $('#hits'); hits.innerHTML = '';
@@ -587,11 +584,6 @@ async function loadGuest() {
   const { data, error } = await sb.rpc('get_mansion', { p_slug: pathSlug, p_device: DEVICE });
   if (error || !data) { render(); panel(`<div class="who"><b>${L('맨션을 찾을 수 없어요', 'Mansion not found')}</b></div><p class="sub">${L('링크가 잘못됐거나 맨션이 없어졌어요. 링크를 보낸 친구에게 다시 확인해 주세요.', 'The link may be wrong, or the mansion was deleted. Check with the friend who sent it.')}</p><a class="btn wide" href="/mansion/${EN ? 'en' : ''}">${L('나도 내 맨션 만들기', 'Build my own mansion')}</a>`); return; }
   if (data.is_owner) { location.replace('/mansion/'); return; }
-  if (window.mnFriends) {  // 친구 집 기록: 이 기기에만 저장, 주인에게는 알려지지 않아요
-    const first = !mnFriends.list().length;
-    mnFriends.visit('mansion', data.slug, data.display_name);
-    if (first) setTimeout(() => toast(L('\'내가 놀러 간 친구 집\'에 저장했어요. 나만 볼 수 있어요', 'Saved to places you visited. Only you can see it')), 2500);
-  }
   apply(data); render();
 }
 
@@ -613,7 +605,6 @@ render(); requestAnimationFrame(frame);
 (async function init() {
   const { data } = await sb.auth.getSession(); session = data.session;
   if (MODE === 'guest') return loadGuest();
-  if (window.mnFriends) setTimeout(() => mnFriends.announce(), 1200);  // 새 기능 안내 (기기당 한 번)
   if (!session) { renderLogin(); return; }
   if (location.hash.includes('access_token')) history.replaceState(null, '', '/mansion/');
   loadHost();
