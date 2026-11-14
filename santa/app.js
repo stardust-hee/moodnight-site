@@ -116,7 +116,7 @@ function onGift(g, el) {
 
 function panel(html) {
   $("#panelBody").innerHTML = html;
-  /* 집주인 화면 맨 아래에 "다녀간 친구 집" 카드 (체험판 제외) */
+  /* 집주인 화면 맨 아래에 "내가 놀러 간 친구 집" 카드 (체험판 제외) */
   if (MODE === "host" && !window.DEMO && window.mnFriends) mnFriends.attach($("#panelBody"));
 }
 
@@ -723,7 +723,7 @@ async function loadGuest() {
   if (!window.DEMO && window.mnFriends) {  /* 친구 집 기록: 이 기기에만 저장, 주인에게는 알려지지 않아요 */
     const first = !mnFriends.list().length;
     mnFriends.visit("santa", room.slug, room.display_name);
-    if (first) setTimeout(() => toast(L("이 선물가게를 다녀간 친구 집에 저장했어요. 나만 볼 수 있어요", "Saved to your visited places. Only you can see it")), 2500);
+    if (first) setTimeout(() => toast(L("'내가 놀러 간 친구 집'에 저장했어요. 나만 볼 수 있어요", "Saved to places you visited. Only you can see it")), 2500);
   }
   document.title = L(`${room.display_name}의 선물가게 | 산타의 선물가게`, `${POSS(room.display_name)} Gift Shop | Santa's Gift Shop`);
   renderTop(); renderGifts(); renderSend();

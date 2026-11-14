@@ -20,7 +20,7 @@
 | `/blog/` | 읽을거리 (애드센스 심사용 글). 현재 2개: manitto, christmas-card |
 | `/privacy.html` `/terms.html` | 개인정보처리방침, 이용약관 (산타 + 성탄맨션 공통) |
 | `/auth-test.html` | 로그인 테스트용 (검색 차단) |
-| `/friends.js` | 다녀간 친구 집 기록·카드·새 기능 안내 팝업 (선물가게·맨션 공통). 친구 링크로 간 집을 이 기기 localStorage(`mn_friends_v1`)에만 저장하고 서버·집주인에게는 보내지 않음. 홈·산타·맨션 주인 화면에 카드, 산타·맨션 주인 화면에서 안내 팝업 1회(`mn_ann_friends_v1`) |
+| `/friends.js` | "내가 놀러 간 친구 집" 기록·카드·새 기능 안내 팝업 (선물가게·맨션 공통). 친구 링크로 간 집을 이 기기 localStorage(`mn_friends_v1`)에만 저장하고 서버·집주인에게는 보내지 않음. 홈·산타·맨션 주인 화면에 카드, 산타·맨션 주인 화면에서 안내 팝업 1회(`mn_ann_friends_v1`) |
 | `og.png` `santa/og.png` | 공유 미리보기 이미지 1200×630 |
 | `icon-512.png` `apple-touch-icon.png` | 앱 아이콘 |
 

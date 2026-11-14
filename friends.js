@@ -1,16 +1,18 @@
-/* 무드나잇 친구 집 기록 — 선물가게·성탄맨션·홈 공통
- * 친구 링크(/santa/r/…, /mansion/r/…)로 놀러 간 집을 이 기기(localStorage)에만 저장해요.
- * 서버로 보내지 않고, 집주인에게도 알려지지 않아요(누가 다녀갔는지는 주인이 볼 수 없어요).
+/* 무드나잇 "내가 놀러 간 친구 집" 기록 — 선물가게·성탄맨션·홈 공통
+ * 방문한 사람이 친구 링크(/santa/r/…, /mansion/r/…)로 들어가 본 집을 자기 기기(localStorage)에만 저장해요.
+ * 서버로 보내지 않고, 집주인에게도 알려지지 않아요. 내 집에 누가 다녀갔는지는 어디에도 저장·표시되지 않아요(선물가게는 익명 추리라서요).
  *
- * mnFriends.visit(kind, slug, name)   다녀간 집 기록 (kind: "santa" | "mansion")
+ * mnFriends.visit(kind, slug, name)   놀러 간 집 기록 (kind: "santa" | "mansion")
  * mnFriends.list()                    최근 순서 목록
- * mnFriends.attach(el)                el 맨 끝에 "다녀간 친구 집" 카드를 붙여요 (목록이 비면 아무것도 안 붙임)
- * mnFriends.render(el)                el 안을 카드로 채워요 (목록이 비면 el.hidden = true)
- * mnFriends.announce()                새 기능 안내 팝업 (기기당 한 번)
+ * mnFriends.attach(el)                el 맨 끝에 "내가 놀러 간 친구 집" 카드를 붙여요 (목록이 비면 아무것도 안 붙임)
+ * mnFriends.render(el, sample)        el 안을 카드로 채워요 (목록이 비면 el.hidden = true). sample을 주면 미리보기용 가짜 목록
+ * mnFriends.announce(force)           새 기능 안내 팝업 (기기당 한 번, ANN_UNTIL 전까지만). force=true면 미리보기용으로 항상 보여줘요
  * 글자는 모두 textContent로 넣어서, 집 이름에 이상한 글자가 있어도 안전해요. */
 (function () {
   "use strict";
   const KEY = "mn_friends_v1", MAX = 20, ANN_KEY = "mn_ann_friends_v1";
+  /* 안내 팝업은 이 시각까지만 보여요 (한국시간 11월 17일 0시 = 14·15·16일 3일간). 이후엔 코드가 남아 있어도 뜨지 않아요 */
+  const ANN_UNTIL = new Date("2026-11-17T00:00:00+09:00").getTime();
   const T = (ko, en) => (typeof window.L === "function" ? window.L(ko, en) : ko);
   const isEn = () => window.LANG === "en";
 
@@ -52,7 +54,7 @@
 .mnf li a:hover,.mnf li a:focus-visible{border-color:var(--a)}
 .mnf li a span.mnf-n{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .mnf li a span.mnf-i{flex:none;font-size:1.2rem}
-.mnf li a span.mnf-go{flex:none;color:var(--a);font-size:.85rem}
+.mnf li a span.mnf-go{flex:none;color:var(--a);font-size:1.5rem;line-height:1;padding-left:2px}
 .mnf li button{flex:none;width:40px;border:1px solid var(--l);border-radius:12px;background:none;color:var(--s);font-size:1.1rem;cursor:pointer}
 .mnf li button:hover,.mnf li button:focus-visible{color:var(--a);border-color:var(--a)}
 .mnf .mnf-more{border:0;background:none;color:var(--s);font:inherit;font-size:.85rem;text-decoration:underline;text-underline-offset:3px;cursor:pointer;justify-self:start;padding:0}
@@ -72,30 +74,34 @@
   }
 
   /* ---------- 카드 ---------- */
-  function build() {
-    const all = load();
+  function build(sample) {
+    const all = sample ? sample.slice() : load();
     if (!all.length) return null;
     style();
     const box = document.createElement("section");
-    box.className = "mnf"; box.setAttribute("aria-label", T("다녀간 친구 집", "Friends' places you visited"));
-    const h = document.createElement("h3"); h.textContent = T("👋 다녀간 친구 집", "👋 Friends' places you visited");
+    box.className = "mnf"; box.setAttribute("aria-label", T("내가 놀러 간 친구 집", "Places I visited"));
+    const h = document.createElement("h3"); h.textContent = T("👋 내가 놀러 간 친구 집", "👋 Places I visited");
     const p = document.createElement("p"); p.className = "mnf-sub";
-    p.textContent = T("친구 링크로 놀러 간 집이 이 기기에 모여요. 나만 볼 수 있어요.", "Places you opened from a friend's link are saved on this device. Only you can see this.");
+    p.textContent = T("내가 친구 링크로 들어가 본 집만 모여요. 나만 볼 수 있고, 친구에게는 알려지지 않아요.", "Only places I opened from a friend's link are listed. Only I can see this, and friends are never notified.");
     const ul = document.createElement("ul");
     let shown = 5;
     const more = document.createElement("button"); more.type = "button"; more.className = "mnf-more";
     function fill() {
-      const cur = load(); ul.textContent = "";
+      const cur = sample ? sample.slice() : load(); ul.textContent = "";
       cur.slice(0, shown).forEach(x => {
         const k = KINDS[x.k]; const li = document.createElement("li");
         const a = document.createElement("a"); a.href = k.path + x.s + (isEn() ? "?lang=en" : "");
         const i = document.createElement("span"); i.className = "mnf-i"; i.setAttribute("aria-hidden", "true"); i.textContent = k.icon;
         const n = document.createElement("span"); n.className = "mnf-n"; n.textContent = k.label(x.n);
-        const g = document.createElement("span"); g.className = "mnf-go"; g.textContent = T("놀러 가기", "Visit");
+        const g = document.createElement("span"); g.className = "mnf-go"; g.setAttribute("aria-hidden", "true"); g.textContent = "›";
+        a.setAttribute("aria-label", k.label(x.n) + " " + T("놀러 가기", "Visit"));
         a.append(i, n, g);
         const d = document.createElement("button"); d.type = "button"; d.textContent = "×";
         d.setAttribute("aria-label", T(k.label(x.n) + " 목록에서 지우기", "Remove " + k.label(x.n) + " from the list"));
-        d.onclick = () => { remove(x.k, x.s); if (!load().length) box.remove(); else fill(); };
+        d.onclick = () => {
+          if (sample) { const j = sample.findIndex(y => y.k === x.k && y.s === x.s); if (j >= 0) sample.splice(j, 1); if (!sample.length) box.remove(); else fill(); return; }  // 미리보기는 진짜 목록을 건드리지 않아요
+          remove(x.k, x.s); if (!load().length) box.remove(); else fill();
+        };
         li.append(a, d); ul.appendChild(li);
       });
       const rest = cur.length - shown;
@@ -108,31 +114,34 @@
     return box;
   }
   function attach(el) { if (!el) return; const old = el.querySelector(":scope > .mnf"); if (old) old.remove(); const b = build(); if (b) el.appendChild(b); }
-  function render(el) {
-    if (!el) return; el.textContent = ""; const b = build();
+  function render(el, sample) {
+    if (!el) return; el.textContent = ""; const b = build(sample);
     if (b) { el.appendChild(b); el.hidden = false; } else el.hidden = true;
   }
 
   /* ---------- 새 기능 안내 팝업 (기기당 한 번) ---------- */
-  function announce() {
-    try { if (localStorage.getItem(ANN_KEY)) return; } catch (e) { return; }
+  function announce(force) {
+    if (!force) {
+      if (Date.now() >= ANN_UNTIL) return;   // 3일이 지나면 더 이상 안 보여요
+      try { if (localStorage.getItem(ANN_KEY)) return; } catch (e) { return; }
+    }
     if (document.querySelector(".mnf-pop")) return;
     style();
     const prevFocus = document.activeElement;
     const wrap = document.createElement("div"); wrap.className = "mnf-pop";
     const card = document.createElement("div"); card.className = "mnf-card"; card.setAttribute("role", "dialog"); card.setAttribute("aria-modal", "true"); card.setAttribute("aria-labelledby", "mnfT");
     const tag = document.createElement("span"); tag.className = "mnf-tag"; tag.textContent = "NEW";
-    const h = document.createElement("h2"); h.id = "mnfT"; h.textContent = T("이젠 친구 집을 모아서 볼 수 있어요", "Now you can revisit your friends' places");
+    const h = document.createElement("h2"); h.id = "mnfT"; h.textContent = T("이젠 내가 놀러 간 친구 집을 모아서 볼 수 있어요", "Now you can revisit the places you visited");
     const rows = document.createElement("div"); rows.className = "mnf-rows";
-    [["🏢", T("이젠 친구의 맨션을 볼 수 있어요", "Revisit your friends' mansions")], ["🎁", T("이젠 친구의 선물가게를 볼 수 있어요", "Revisit your friends' gift shops")]].forEach(([e, t]) => {
+    [["🏢", T("이젠 친구의 맨션을 다시 볼 수 있어요", "Revisit friends' mansions")], ["🎁", T("이젠 친구의 선물가게를 다시 볼 수 있어요", "Revisit friends' gift shops")]].forEach(([e, t]) => {
       const p = document.createElement("p"); const b = document.createElement("b"); b.setAttribute("aria-hidden", "true"); b.textContent = e; p.append(b, document.createTextNode(t)); rows.appendChild(p);
     });
     const note = document.createElement("p"); note.className = "mnf-note";
-    note.textContent = T("지금부터 친구 링크로 놀러 간 집이 이 기기에 모여요. 나만 볼 수 있고, 친구에게는 알려지지 않아요.", "From now on, places you open from a friend's link are saved on this device. Only you can see them, and your friends won't be notified.");
+    note.textContent = T("지금부터 내가 친구 링크로 놀러 간 집만 이 기기에 모여요. 내 집에 누가 다녀갔는지는 저장도, 표시도 되지 않아요.", "From now on, only places you open from a friend's link are saved on this device. Who visited your own place is never saved or shown.");
     const ok = document.createElement("button"); ok.type = "button"; ok.className = "mnf-ok"; ok.textContent = T("알겠어요", "Got it");
     card.append(tag, h, rows, note, ok); wrap.appendChild(card); document.body.appendChild(wrap);
     function close() {
-      try { localStorage.setItem(ANN_KEY, String(Date.now())); } catch (e) {}
+      if (!force) try { localStorage.setItem(ANN_KEY, String(Date.now())); } catch (e) {}
       document.removeEventListener("keydown", onKey, true); wrap.remove();
       try { if (prevFocus && prevFocus.focus) prevFocus.focus(); } catch (e) {}
     }

@@ -411,9 +411,9 @@
   tabs.forEach(function(t){ if(t.getAttribute('aria-controls')===h) pick(t); });
 })();
 </script>
-<script src="/friends.js?v=1"></script>
+<script src="/friends.js?v=4"></script>
 <script>
-/* 친구 링크로 놀러 간 집이 있으면 "다녀간 친구 집" 카드를 보여 줘요 (이 기기에만 저장된 목록) */
+/* 친구 링크로 놀러 간 집이 있으면 "내가 놀러 간 친구 집" 카드를 보여 줘요 (이 기기에만 저장된 목록) */
 (function(){ try{ var d=document.getElementById("mnfHome"), s=document.getElementById("friends"); if(!d||!s||!window.mnFriends) return; mnFriends.render(d); s.hidden=d.hidden; }catch(e){} })();
 </script>
 <script src="/track.js?v=3" defer></script>

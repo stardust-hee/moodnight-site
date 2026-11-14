@@ -231,7 +231,7 @@ async function reload() {
 /* ── 패널 ── */
 function panel(h) {
   $('#panelBody').innerHTML = h;
-  if (MODE === 'host' && window.mnFriends) mnFriends.attach($('#panelBody'));  // 집주인 화면 맨 아래에 "다녀간 친구 집" 카드
+  if (MODE === 'host' && window.mnFriends) mnFriends.attach($('#panelBody'));  // 집주인 화면 맨 아래에 "내가 놀러 간 친구 집" 카드
 }
 function render() {
   rebuild(); if (reduce) frame(0);
@@ -590,7 +590,7 @@ async function loadGuest() {
   if (window.mnFriends) {  // 친구 집 기록: 이 기기에만 저장, 주인에게는 알려지지 않아요
     const first = !mnFriends.list().length;
     mnFriends.visit('mansion', data.slug, data.display_name);
-    if (first) setTimeout(() => toast(L('이 맨션을 다녀간 친구 집에 저장했어요. 나만 볼 수 있어요', 'Saved to your visited places. Only you can see it')), 2500);
+    if (first) setTimeout(() => toast(L('\'내가 놀러 간 친구 집\'에 저장했어요. 나만 볼 수 있어요', 'Saved to places you visited. Only you can see it')), 2500);
   }
   apply(data); render();
 }
