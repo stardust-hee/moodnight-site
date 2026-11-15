@@ -131,6 +131,8 @@ section + section{border-top:1px solid var(--night-3)}
 .legal h1{font-size:clamp(1.8rem,5vw,2.4rem);margin-bottom:10px}
 .legal .meta{color:var(--cream-soft);margin-bottom:36px}
 .legal h2{font-size:1.3rem;margin:36px 0 12px;color:var(--lamp)}
+.legal h3{font-size:1.12rem;margin:28px 0 8px;color:var(--cream)}
+.legal h3 + p{margin-top:0}
 .legal p,.legal li{color:#E4DCCB}
 .legal p + p{margin-top:10px}
 .legal ul,.legal ol{padding-left:1.3em;margin:8px 0}
