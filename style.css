@@ -200,3 +200,20 @@ section + section{border-top:1px solid var(--night-3)}
   #services .svc > *,#mind .svc > *{grid-column:2}
   #services .svc-shot,#mind .svc-shot{grid-column:1;grid-row:1 / span 9;align-self:start}
 }
+
+/* 오른쪽 위 메뉴 */
+.head-right{display:flex;align-items:center;gap:16px;min-width:0}
+.menu{position:relative}
+.menu summary{list-style:none;cursor:pointer;width:44px;height:44px;display:grid;place-items:center;border:1px solid var(--night-3);border-radius:12px;background:var(--night-2)}
+.menu summary::-webkit-details-marker{display:none}
+.menu summary:focus-visible{outline:3px solid var(--lamp);outline-offset:2px}
+.menu .bars{display:grid;gap:4px;width:18px}
+.menu .bars i{display:block;height:2px;border-radius:2px;background:var(--cream);transition:transform .2s,opacity .2s}
+.menu[open] .bars i:nth-child(1){transform:translateY(6px) rotate(45deg)}
+.menu[open] .bars i:nth-child(2){opacity:0}
+.menu[open] .bars i:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
+.menu-panel{position:absolute;right:0;top:calc(100% + 10px);width:min(280px,calc(100vw - 32px));max-height:calc(100dvh - 90px);overflow:auto;background:var(--night-2);border:1px solid var(--night-3);border-radius:16px;padding:8px;display:grid;box-shadow:0 16px 40px rgba(0,0,0,.45)}
+.menu-panel a{color:var(--cream);text-decoration:none;padding:11px 12px;border-radius:10px;font-size:1rem;line-height:1.4}
+.menu-panel a:hover,.menu-panel a:focus-visible{background:var(--night-3);outline:none}
+.menu-panel a.sub{padding-left:20px;font-size:.95rem;color:#E4DCCB}
+.menu-label{margin:8px 12px 2px;font-size:.78rem;letter-spacing:.08em;color:var(--lamp)}
