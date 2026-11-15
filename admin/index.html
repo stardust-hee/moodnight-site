@@ -101,6 +101,13 @@ let S = null, period = "day";
 
 function card(label, v, sub) { return `<div class="card"><span>${label}</span><b>${v}</b>${sub ? `<small>${sub}</small>` : ""}</div>`; }
 function group(daily, mode) {
+  daily = daily.filter(d => d.has_data !== false); // 기록이 시작되기 전 날짜는 0이 아니라 '기록 없음'이라 뺀다
+  if (mode === "week" && Array.isArray(S.weeks)) {
+    return S.weeks.map(w => {
+      const inr = daily.filter(d => d.d >= w.from && d.d <= w.to), sum = k => inr.reduce((a, d) => a + (d[k] || 0), 0);
+      return { label: `${w.from}~${w.to}${w.partial ? " (일부)" : ""}`, visitors: w.visitors, users: sum("users"), rooms: sum("rooms"), gifts: sum("gifts"), mansions: sum("mansions"), residents: sum("residents"), shares: w.shares };
+    });
+  }
   if (mode === "day") return daily.slice(-14).map(d => ({ ...d, label: d.d }));
   const out = [], size = mode === "week" ? 7 : 30, list = daily.slice();
   for (let end = list.length; end > 0 && out.length < (mode === "week" ? 8 : 2); end -= size) {
@@ -248,9 +255,10 @@ function render() {
     <div class="grid">
       ${card("전체 회원", n(s.users), `카카오 ${n(s.users_kakao)} · 구글 ${n(s.users_google)}`)}
       ${card("오늘 방문자", n(s.today_visitors), `방문 ${n(s.today_visits)}번`)}
-      ${card("7일 방문자", n(s.week_visitors), `2일 이상 온 사람 ${n(s.week_returning)}명 (${pct(s.week_returning, s.week_visitors)})`)}
-      ${card("공유 버튼", n(s.shares), `링크로 들어온 방문 ${n(s.link_visits)}번`)}
+      ${card("7일 방문 기기", n(s.week_visitors), `한국시간 ${esc(s.week_from)}~오늘 · 2일 이상 온 기기 ${n(s.week_returning)}개 (${pct(s.week_returning, s.week_visitors)})`)}
+      ${card("공유 버튼 누름", n(s.shares), `링크로 들어온 방문 ${n(s.link_visits)}번`)}
     </div>
+    <p class="msg" style="margin:8px 0 0">방문자 수는 사람이 아니라 <b>기기 식별값</b> 기준이에요(기기·브라우저를 바꾸거나 저장소를 지우면 다른 사람으로 셈). 같은 페이지는 10분 안 재방문을 한 번으로 세요. 재방문 = 기간 안에 <b>한국시간 날짜 2일 이상</b> 방문한 기기. 공유는 버튼을 누른 횟수이고 <b>실제 전달 완료가 아니에요</b>. 방문 기록은 ${s.data_since ? esc(new Date(s.data_since).toLocaleString("ko-KR", { timeZone: "Asia/Seoul" })) : "-"}(KST)부터라 그 전 기간은 0이 아니라 <b>기록 없음</b>이고 증감률은 계산하지 않아요. 관리자 기기 방문은 제외되고(이전 기록도 삭제), 관리자 계정이 만든 선물가게 ${n(s.rooms_admin)}개·맨션 ${n(s.mansions_admin)}개는 가게·맨션 수에 포함돼 있어요. 삭제된 선물가게·맨션의 생성 기록은 이 숫자에 남지 않을 수 있어요.</p>
   </div></section>
   ${membersHTML()}
   <section class="win"><h2>산타의 선물가게.exe</h2><div class="body"><div class="grid">
@@ -267,7 +275,7 @@ function render() {
   <section class="win"><h2>기간별.exe</h2><div class="body">
     <div class="tabs" role="tablist">${[["day", "일간"], ["week", "주간"], ["month", "월간"]].map(([k, l]) => `<button role="tab" data-p="${k}" aria-selected="${period === k}">${l}</button>`).join("")}</div>
     <div class="chart" aria-label="방문자 막대그래프">${rows.map(r => `<div style="height:${Math.max(2, r.visitors / max * 100)}%" data-t="${esc(r.label)} · ${r.visitors}명"></div>`).join("")}</div>
-    <div class="legend"><span>${esc(rows[0] ? rows[0].label : "")}</span><span>방문자</span><span>${esc(rows.length ? rows[rows.length - 1].label : "")}</span></div>
+    <div class="legend"><span>${esc(rows[0] ? rows[0].label : "")}</span><span>${period === "month" ? "방문자(일별 합·중복 포함)" : "방문자(기기)"}</span><span>${esc(rows.length ? rows[rows.length - 1].label : "")}</span></div>
     <div class="tbl"><table><thead><tr><th>${period === "day" ? "날짜" : "기간"}</th>${cols.map(c => `<th>${c[1]}</th>`).join("")}</tr></thead>
       <tbody>${rows.slice().reverse().map(r => `<tr><td>${esc(r.label)}</td>${cols.map(([k]) => `<td class="${r[k] ? "" : "z"}">${n(r[k])}</td>`).join("")}</tr>`).join("")}</tbody></table></div>
   </div></section>
@@ -281,8 +289,8 @@ function render() {
   </div></div></section>
   ${moderationHTML()}
   ${feedbackHTML()}
-  <section class="win"><h2>신고·숨김 기록.exe</h2><div class="body"><div class="rep">
-    ${(s.reports || []).map(r => `<div><small>${esc(new Date(r.at).toLocaleString("ko-KR"))} · ${esc(r.svc)} ${esc(r.kind)}</small><p style="margin:2px 0">${esc(r.text) || "(내용 없음)"}</p><small>사유: ${esc(r.reason || "-")}</small></div>`).join("") || '<p class="msg">신고된 게 없어요.</p>'}
+  <section class="win"><h2>신고·숨김 기록.exe</h2><div class="body"><p class="msg">맨션 기록은 집주인이 벽보를 떼거나 입주자를 내보낼 때 남는 처리 기록이에요. 선물가게 신고는 숨김 여부로, 맨션은 집주인 처리 여부로 상태를 보여 줘요. 기록만으로 이용자를 차단하지 않아요.</p><div class="rep">
+    ${(s.reports || []).map(r => `<div><small>${esc(new Date(r.at).toLocaleString("ko-KR"))} · ${esc(r.svc)} ${esc(r.kind)} · <b>${esc(r.state || "상태 미기록")}</b></small><p style="margin:2px 0">${esc(r.text) || "(내용 없음)"}</p><small>사유: ${esc(r.reason || "-")}</small></div>`).join("") || '<p class="msg">신고된 게 없어요.</p>'}
   </div></div></section>`;
   document.querySelectorAll("[data-p]").forEach(b => b.onclick = () => { period = b.dataset.p; render(); });
   applyTabs();

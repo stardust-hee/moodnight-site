@@ -63,7 +63,10 @@ const cleanName = v => EN ? v.trim().replace(/\s+/g, " ") : v.replace(/\s/g, "")
 function renderTop() {
   setTimeout(renderSide, 0);
   const el = $("#dday");
-  el.textContent = isOpen() ? "Merry Christmas" : L(`개봉까지 D-${daysLeft()}`, `${daysLeft()} days to open`);
+  // 방 주인에게는 첫 화면 위쪽에서 바로 받은 선물 개수가 보이게 해요 (개수만, 내용은 안 보여요)
+  const got = MODE === "host" && room && Array.isArray(room.boxes) ? room.boxes.filter(b => !b.hidden).length : null;
+  const gotTxt = got === null ? "" : L(`🎁 받은 선물 ${got}개 · `, `🎁 ${got} gift${got === 1 ? "" : "s"} · `);
+  el.textContent = gotTxt + (isOpen() ? "Merry Christmas" : L(`개봉까지 D-${daysLeft()}`, `${daysLeft()} days to open`));
   el.classList.toggle("xmas", isOpen());
   $("#title").textContent = room ? L(`${room.display_name}의 선물가게`, `${POSS(room.display_name)} Gift Shop`) : L("산타의 선물가게", "Santa's Gift Shop");
 }
@@ -237,6 +240,7 @@ async function openCard() {
 }
 
 function renderHost() {
+  renderTop();
   const boxes = room.boxes;
   const visible = boxes.filter(b => !b.hidden);
   const opened = visible.filter(b => b.opened).length;
@@ -291,13 +295,14 @@ function renderHost() {
   $("#delRoom").onclick = askDelete;
   // 방 그림 바로 아래 버튼: 선물 목록, 이미지 저장 (방 그림을 꾹 눌러 저장하면 선물 없는 배경만 저장돼서)
   let bar = $("#roomTools");
-  if (room.boxes.length) {
-    if (!bar) { bar = document.createElement("div"); bar.id = "roomTools"; bar.className = "room-tools"; $("#room").after(bar); }
-    bar.innerHTML = `<button class="room-card-btn" id="listBtn" aria-label="${L("받은 선물 목록", "Gift list")}">${L("☰ 선물 목록", "☰ Gift list")}</button>`
-      + (visible.length ? `<button class="room-card-btn" id="roomCardBtn">${isOpen() ? L("📸 결과 카드", "📸 Result card") : L("📸 이미지 저장", "📸 Save image")}</button>` : "");
-    $("#listBtn").onclick = openList;
-    if ($("#roomCardBtn")) $("#roomCardBtn").onclick = openCard;
-  } else if (bar) bar.remove();
+  // 받은 선물 개수는 방 그림 바로 아래에 크게 보여 줘요 (0개일 때도). 개수만 보여 주고 메시지·보낸 사람은 여기서 안 나와요
+  if (!bar) { bar = document.createElement("div"); bar.id = "roomTools"; bar.className = "room-tools"; $("#room").after(bar); }
+  const cnt = visible.length;
+  bar.innerHTML = `<p class="room-count${cnt ? "" : " zero"}" id="roomCount" role="status" aria-live="polite"><span aria-hidden="true">🎁</span> ${cnt ? L(`받은 선물 <b>${cnt}</b>개`, `<b>${cnt}</b> gift${cnt === 1 ? "" : "s"} received`) : L("아직 받은 선물이 없어요. 링크를 공유해 보세요", "No gifts yet. Share your link!")}</p>`
+    + (room.boxes.length ? `<button class="room-card-btn" id="listBtn" aria-label="${L("받은 선물 목록", "Gift list")}">${L("☰ 선물 목록", "☰ Gift list")}</button>` : "")
+    + (visible.length ? `<button class="room-card-btn" id="roomCardBtn">${isOpen() ? L("📸 결과 카드", "📸 Result card") : L("📸 이미지 저장", "📸 Save image")}</button>` : "");
+  if ($("#listBtn")) $("#listBtn").onclick = openList;
+  if ($("#roomCardBtn")) $("#roomCardBtn").onclick = openCard;
 }
 
 /* ── 받은 선물 목록 (주인만) ──
@@ -308,7 +313,7 @@ async function openList() {
   sheet(`<div><h2>${L("받은 선물", "Your gifts")}</h2><p class="sub">${L("불러오는 중…", "Loading…")}</p></div>`);
   const { data, error } = await sb.rpc("list_my_gifts");
   if (error) { toast(errMsg(error)); closeModal(); return; }
-  const list = data || [], open = isOpen();
+  const list = data || [], open = isOpen(), shown = list.filter(g => !g.hidden).length;
   const rows = list.map((g, i) => {
     const it = item(g.item);
     const tag = g.hidden ? `<span class="gl-tag off">${L("숨김", "Hidden")}</span>` : g.result === "right" ? `<span class="gl-tag ok">${L("정답", "Solved")}</span>` : g.result === "miss" ? `<span class="gl-tag">${L("공개", "Revealed")}</span>` : g.opened ? `<span class="gl-tag">${L("추리 중", "Guessing")}</span>` : "";
@@ -322,7 +327,7 @@ async function openList() {
       <span class="gl-text"><span class="gl-head"><b>${L("선물", "Gift")} ${i + 1}</b>${tag}</span>${body}</span>${action}</button></li>`;
   }).join("");
   const opened = list.filter(g => g.opened).length;
-  sheet(`<div><h2>${L(`받은 선물 ${list.length}개`, `${list.length} gift${list.length === 1 ? "" : "s"}`)}</h2><p class="sub">${open ? L(`${opened}개를 열어 봤어요. 선물을 누르면 단서를 보고 보낸 사람을 맞힐 수 있어요.`, `You've opened ${opened}. Tap a gift to read the clues and guess the sender.`) : L("메시지는 12월 25일에 선물을 열면 여기서 한 번에 볼 수 있어요.", "Once you open them on Dec 25, all the messages show up here.")}</p></div>
+  sheet(`<div><h2>${L(`받은 선물 ${shown}개`, `${shown} gift${shown === 1 ? "" : "s"}`)}</h2><p class="sub">${open ? L(`${opened}개를 열어 봤어요. 선물을 누르면 단서를 보고 보낸 사람을 맞힐 수 있어요.`, `You've opened ${opened}. Tap a gift to read the clues and guess the sender.`) : L("메시지는 12월 25일에 선물을 열면 여기서 한 번에 볼 수 있어요.", "Once you open them on Dec 25, all the messages show up here.")}</p></div>
     <ul class="gift-list">${rows}</ul>`);
   document.querySelectorAll(".gl-row:not(:disabled)").forEach(b => b.onclick = () => {
     const box = room.boxes.find(x => x.id === b.dataset.id); if (box) openModal(box);
