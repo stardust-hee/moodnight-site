@@ -23,7 +23,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&display=swap">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
-<link rel="stylesheet" href="/style.css?v=11">
+<link rel="stylesheet" href="/style.css?v=12">
 <meta name="google-adsense-account" content="ca-pub-2331460749309543">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2331460749309543" crossorigin="anonymous"></script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebSite", "name": "무드나잇", "alternateName": "moodnight", "url": "https://www.moodnight.co.kr/", "inLanguage": "ko"}</script>
@@ -213,6 +213,8 @@
         <button role="tab" class="sansa" aria-selected="false" aria-controls="how-sansa" id="tab-sansa">무드나잇 산사</button>
         <button role="tab" class="smash" aria-selected="false" aria-controls="how-smash" id="tab-smash">박살방</button>
         <button role="tab" class="tray" aria-selected="false" aria-controls="how-tray" id="tab-tray">Silver Tray Studio</button>
+        <button role="tab" class="camp" aria-selected="false" aria-controls="how-camp" id="tab-camp">MY LITTLE CAMP</button>
+        <button role="tab" class="test" aria-selected="false" aria-controls="how-test" id="tab-test">심리테스트</button>
       </div>
       <ol class="steps" role="tabpanel" id="how-santa" aria-labelledby="tab-santa">
         <li>
@@ -282,6 +284,34 @@
         <li>
           <h3>와장창</h3>
           <p>내구도가 0이 되면 물건이 산산조각 나요. 로그인 없이, 적은 글은 어디에도 저장되지 않아요.</p>
+        </li>
+      </ol>
+      <ol class="steps" role="tabpanel" id="how-camp" aria-labelledby="tab-camp" hidden>
+        <li>
+          <h3>자리 고르고 텐트 치기</h3>
+          <p>로그인하고 호숫가 숲속 캠핑장 12자리 중 한 곳을 골라요. 벨텐트, A형, 돔 텐트 중에 고르고 색도 바꿔요.</p>
+        </li>
+        <li>
+          <h3>안팎으로 꾸미기</h3>
+          <p>의자, 랜턴, 모닥불을 놓고 텐트 안까지 꾸며요. 서울 시간에 맞춰 낮밤이 바뀌고, 실제 날씨처럼 비와 눈이 내려요.</p>
+        </li>
+        <li>
+          <h3>이웃이랑 놀기</h3>
+          <p>이웃 텐트에 놀러 가 안까지 구경하고, 모닥불 옆 게시판에 쪽지를 남겨요. 마시멜로를 노릇하게 구워 랭킹에도 올라가 보세요.</p>
+        </li>
+      </ol>
+      <ol class="steps" role="tabpanel" id="how-test" aria-labelledby="tab-test" hidden>
+        <li>
+          <h3>테스트 고르기</h3>
+          <p>오행 기운, 크리스마스 선물 상자, 친구가 보는 나까지. 로그인 없이 1분이면 끝나요.</p>
+        </li>
+        <li>
+          <h3>결과 카드 받기</h3>
+          <p>나를 닮은 캐릭터와 행운 아이템, 어울리는 선물이 담긴 결과 카드가 나와요. 이미지로 저장할 수도 있어요.</p>
+        </li>
+        <li>
+          <h3>친구랑 궁합 보기</h3>
+          <p>결과 링크를 보내면 친구도 테스트하고 둘의 궁합을 볼 수 있어요. '친구가 보는 나'는 친구들이 나를 얼마나 아는지 점수로 알려 줘요.</p>
         </li>
       </ol>
     </div>
@@ -446,15 +476,24 @@
 </script>
 <script>
 (function(){
-  var tabs=[].slice.call(document.querySelectorAll('.how-tabs [role=tab]'));
-  function pick(t){ tabs.forEach(function(x){ var on=x===t; x.setAttribute('aria-selected',on); x.tabIndex=on?0:-1; document.getElementById(x.getAttribute('aria-controls')).hidden=!on; }); }
+  var tabs=[].slice.call(document.querySelectorAll('.how-tabs [role=tab]')), cur=0, timer=null, stopped=false, paused=false, seen=false;
+  var box=document.getElementById('how'), bar=document.querySelector('.how-tabs');
+  function pick(t){ tabs.forEach(function(x,i){ var on=x===t; if(on) cur=i; x.setAttribute('aria-selected',on); x.tabIndex=on?0:-1; var p=document.getElementById(x.getAttribute('aria-controls')); p.hidden=!on; if(on){ p.classList.remove('fade'); void p.offsetWidth; p.classList.add('fade'); } }); }
+  // 천천히 자동으로 넘어가요 (9초). 손대면 멈추고, 직접 고르면 그 뒤로는 안 넘어가요
+  var SLOW=9000, reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function tick(){ if(stopped||paused||!seen||document.hidden) return; pick(tabs[(cur+1)%tabs.length]); }
+  if(!reduce){ timer=setInterval(tick,SLOW); }
+  function stop(){ stopped=true; if(timer) clearInterval(timer); bar.classList.add('manual'); }
+  box.addEventListener('mouseenter',function(){ paused=true; }); box.addEventListener('mouseleave',function(){ paused=false; });
+  box.addEventListener('focusin',function(){ paused=true; }); box.addEventListener('focusout',function(){ paused=false; });
+  if('IntersectionObserver' in window){ new IntersectionObserver(function(es){ seen=es[0].isIntersecting; },{threshold:.4}).observe(box); } else seen=true;
   tabs.forEach(function(t,i){
-    t.addEventListener('click',function(){ pick(t); });
-    t.addEventListener('keydown',function(e){ var d=e.key==='ArrowRight'?1:e.key==='ArrowLeft'?-1:0; if(d){ var n=tabs[(i+d+tabs.length)%tabs.length]; pick(n); n.focus(); } });
+    t.addEventListener('click',function(){ stop(); pick(t); });
+    t.addEventListener('keydown',function(e){ var d=e.key==='ArrowRight'?1:e.key==='ArrowLeft'?-1:0; if(d){ stop(); var n=tabs[(i+d+tabs.length)%tabs.length]; pick(n); n.focus(); } });
   });
   // 서비스 카드의 '들어가기' 근처에서 온 해시(#how-sansa 등)로 바로 열기
   var h=location.hash.replace('#','');
-  tabs.forEach(function(t){ if(t.getAttribute('aria-controls')===h) pick(t); });
+  tabs.forEach(function(t){ if(t.getAttribute('aria-controls')===h){ stop(); pick(t); } });
 })();
 </script>
 <script src="/track.js?v=3" defer></script>
