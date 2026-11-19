@@ -218,3 +218,23 @@ section + section{border-top:1px solid var(--night-3)}
 .menu-panel a.sub{padding-left:20px;font-size:.95rem;color:#E4DCCB}
 .menu-label{margin:8px 12px 2px;font-size:.78rem;letter-spacing:.08em;color:var(--lamp)}
 
+/* 심리테스트 카드 */
+.mt-row{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(150px,46%);gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:6px;scrollbar-width:none}
+.mt-row::-webkit-scrollbar{display:none}
+@media (min-width:760px){.mt-row{grid-auto-columns:220px}}
+.mt-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 12px}
+@media (min-width:760px){.mt-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.mt-card{display:grid;gap:8px;text-decoration:none;color:var(--cream);scroll-snap-align:start;min-width:0}
+.mt-thumb{position:relative;aspect-ratio:4/5;max-width:100%;border-radius:16px;overflow:hidden;display:grid;place-content:center;justify-items:center;gap:8px;padding:34px 12px 14px;text-align:center;border:1px solid var(--night-3)}
+.mt-thumb .k{font-size:.72rem;letter-spacing:.06em;color:var(--lamp);font-weight:700}
+.mt-thumb .t{font-family:var(--font-display);font-size:1.25rem;line-height:1.25;color:#FFF6E6;text-wrap:balance}
+.mt-thumb .e{display:flex;flex-wrap:wrap;justify-content:center;gap:4px;font-size:1.5rem;line-height:1}
+.mt-thumb .e.one{font-size:2.6rem}
+.mt-thumb .l{font-size:.75rem;color:rgba(255,246,230,.75)}
+.mt-tag{position:absolute;top:10px;left:10px;font-size:.66rem;font-weight:800;letter-spacing:.06em;background:var(--lamp);color:#151A2E;border-radius:6px;padding:3px 6px}
+.mt-soon .mt-thumb{filter:saturate(.55) brightness(.8)}
+.mt-soon .mt-tag{background:var(--night-3);color:var(--cream)}
+.mt-name{font-size:.95rem;line-height:1.4;font-weight:600;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.mt-meta{font-size:.78rem;color:var(--cream-soft);margin-top:-4px}
+a.mt-card:hover .mt-thumb{border-color:var(--lamp)}
+a.mt-card:focus-visible{outline:3px solid var(--lamp);outline-offset:3px;border-radius:16px}
