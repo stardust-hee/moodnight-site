@@ -243,3 +243,10 @@ section + section{border-top:1px solid var(--night-3)}
 .mt-meta{font-size:.78rem;color:var(--cream-soft);margin-top:-4px}
 a.mt-card:hover .mt-thumb{border-color:var(--lamp)}
 a.mt-card:focus-visible{outline:3px solid var(--lamp);outline-offset:3px;border-radius:16px}
+/* 맨 위로 버튼 */
+.to-top{position:fixed;right:max(18px,env(safe-area-inset-right,0px));bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:40;width:46px;height:46px;border-radius:50%;border:1px solid var(--night-3);background:var(--night-2);color:var(--lamp);display:grid;place-items:center;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.35);animation:toTopIn .25s ease}
+.to-top[hidden]{display:none}
+.to-top:hover{border-color:var(--lamp)}
+.to-top:focus-visible{outline:3px solid var(--lamp);outline-offset:2px}
+@keyframes toTopIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.to-top{animation:none}}
