@@ -128,7 +128,7 @@ function renderLogin() {
     ${EN ? "" : `<button class="login kakao" id="loginKakao">카카오로 시작하기</button>`}
     <button class="login google" id="loginGoogle">${L("구글로 시작하기", "Continue with Google")}</button>
     ${EN ? `<button class="linkish" id="loginKakao">Continue with Kakao</button>` : ""}
-    <p class="fine">${L(`선물가게를 만드는 사람만 로그인해요. 로그인하면 <a href="/terms.html">이용약관</a>과 <a href="/privacy.html">개인정보처리방침</a>에 동의하는 것으로 봐요.`, `Only the gift shop owner logs in. Friends don't need an account. By logging in you agree to our <a href="/terms.html">Terms</a> and <a href="/privacy.html">Privacy Policy</a> (in Korean).`)}</p>
+    <p class="fine">${L(`선물가게를 만드는 사람만 로그인해요. 로그인하면 <a href="/terms">이용약관</a>과 <a href="/privacy">개인정보처리방침</a>에 동의하는 것으로 봐요.`, `Only the gift shop owner logs in. Friends don't need an account. By logging in you agree to our <a href="/terms">Terms</a> and <a href="/privacy">Privacy Policy</a> (in Korean).`)}</p>
   </div>`);
   const back = location.origin + "/santa/";
   $("#loginKakao").onclick = () => sb.auth.signInWithOAuth({ provider: "kakao", options: { redirectTo: back, scopes: "profile_nickname profile_image" } });
@@ -547,7 +547,7 @@ function renderSend() {
     </details>
     ${draftErr ? `<p class="err">${esc(draftErr)}</p>` : ""}
     <button class="btn red wide" id="sendBtn">${L("선물 몰래 두고 오기", "Leave my secret gift")}</button>
-    <p class="fine">${L(`욕설이나 상처 주는 메시지는 신고되면 삭제돼요. <a href="/terms.html">이용약관</a>`, `Hurtful messages are removed when reported. <a href="/terms.html">Terms</a>`)}</p>
+    <p class="fine">${L(`욕설이나 상처 주는 메시지는 신고되면 삭제돼요. <a href="/terms">이용약관</a>`, `Hurtful messages are removed when reported. <a href="/terms">Terms</a>`)}</p>
   </div>`);
   document.querySelectorAll("[data-wrap]").forEach(b => b.onclick = () => { draft.wrap = b.dataset.wrap; renderSend(); renderSide(); });
   document.querySelectorAll("[data-item]").forEach(b => b.onclick = () => { draft.item = b.dataset.item; renderSend(); renderSide(); });

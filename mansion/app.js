@@ -344,7 +344,7 @@ function renderGuest() {
     ${statsHTML()}
     ${listHTML()}
     <a class="btn wide" href="/mansion/${EN ? 'en' : ''}">${L('나도 내 맨션 만들기', 'Build my own mansion')}</a>
-    <p class="fine">${L('욕설이나 상처 주는 말은 집주인이 퇴거시킬 수 있어요. <a href="/terms.html">이용약관</a>', 'The owner can evict anyone who leaves hurtful words. <a href="/terms.html">Terms</a>')}</p>`);
+    <p class="fine">${L('욕설이나 상처 주는 말은 집주인이 퇴거시킬 수 있어요. <a href="/terms">이용약관</a>', 'The owner can evict anyone who leaves hurtful words. <a href="/terms">Terms</a>')}</p>`);
   bindList();
 }
 
@@ -544,7 +544,7 @@ function renderLogin() {
   panel(`<div class="who"><b>${L('내 성탄맨션 만들기', 'Build your Christmas Mansion')}</b></div>
     <p class="sub">${L('눈 내리는 밤, 내 이름이 붙은 12집짜리 맨션 한 동이 생겨요.', 'On a snowy night, you get a 12-unit mansion with your name on it.')}</p>${HOW_HOST}
     ${EN ? '<button class="btn wide" id="loginGoogle">Continue with Google</button><button class="btn ghost wide" id="loginKakao">Continue with Kakao</button>' : '<button class="btn wide kakao" id="loginKakao">카카오로 시작하기</button><button class="btn ghost wide" id="loginGoogle">구글로 시작하기</button>'}
-    <p class="fine">${L('맨션을 만드는 사람만 로그인해요. 로그인하면 <a href="/terms.html">이용약관</a>과 <a href="/privacy.html">개인정보처리방침</a>에 동의하는 것으로 봐요. 만 14세 이상만 만들 수 있어요.', "Only the mansion owner logs in. Friends don't need an account. By logging in you agree to our <a href=\"/terms.html\">Terms</a> and <a href=\"/privacy.html\">Privacy Policy</a> (in Korean). You must be 14 or older.")}</p>`);
+    <p class="fine">${L('맨션을 만드는 사람만 로그인해요. 로그인하면 <a href="/terms">이용약관</a>과 <a href="/privacy">개인정보처리방침</a>에 동의하는 것으로 봐요. 만 14세 이상만 만들 수 있어요.', "Only the mansion owner logs in. Friends don't need an account. By logging in you agree to our <a href=\"/terms.html\">Terms</a> and <a href=\"/privacy.html\">Privacy Policy</a> (in Korean). You must be 14 or older.")}</p>`);
   const back = location.origin + '/mansion/';
   $('#loginKakao').onclick = () => sb.auth.signInWithOAuth({ provider: 'kakao', options: { redirectTo: back, scopes: 'profile_nickname profile_image' } });
   $('#loginGoogle').onclick = () => sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: back } });
