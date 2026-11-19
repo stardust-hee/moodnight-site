@@ -117,6 +117,7 @@
             <li>편지는 바로 읽고, 친구가 '주인만 보기'로 숨길 수도 있어요</li>
             <li>1층에는 산타의 선물가게가 있어요</li>
           </ul>
+          <p class="live-stats" data-stat="mansion" hidden></p>
           <div class="btns"><a class="btn" href="/mansion/">내 맨션 만들기</a></div>
           <span class="addr">moodnight.co.kr/mansion</span>
         </article>
@@ -141,6 +142,7 @@
             <li>색마다 뜻이 담긴 연등, 흰 등은 그리운 사람에게</li>
             <li>모두의 기와가 모여 대웅전 지붕을 한 채씩 지어요</li>
           </ul>
+          <p class="live-stats" data-stat="sansa" hidden></p>
           <div class="btns"><a class="btn" href="/sansa/">산사 들어가기</a></div>
           <span class="addr">moodnight.co.kr/sansa</span>
         </article>
@@ -153,6 +155,7 @@
             <li>키캡이 튀고, 유리가 갈라지고, 커피가 쏟아져요</li>
             <li>오늘 빡친 일을 쪽지로 붙여 같이 부술 수 있어요</li>
           </ul>
+          <p class="live-stats" data-stat="smash" hidden></p>
           <div class="btns"><a class="btn" href="/smash/">박살방 들어가기</a></div>
           <span class="addr">moodnight.co.kr/smash</span>
         </article>
@@ -165,6 +168,7 @@
             <li>끌어서 옮기고 크기와 각도를 자유롭게 바꿔요</li>
             <li>완성한 트레이는 이미지로 저장하거나 링크로 공유해요</li>
           </ul>
+          <p class="live-stats" data-stat="tray" hidden></p>
           <div class="btns"><a class="btn" href="/tray/">트레이 꾸미기</a></div>
           <span class="addr">moodnight.co.kr/tray</span>
         </article>
@@ -177,6 +181,7 @@
             <li>의자, 랜턴, 모닥불을 놓고 텐트 안까지 꾸며요</li>
             <li>서울 시간에 맞춰 낮밤이 바뀌고, 실제 날씨처럼 비와 눈이 내려요</li>
           </ul>
+          <p class="live-stats" data-stat="camp" hidden></p>
           <div class="btns"><a class="btn" href="/camp/">내 텐트 치러 가기</a></div>
           <span class="addr">moodnight.co.kr/camp</span>
         </article>
@@ -412,18 +417,30 @@
 })();
 </script>
 <script>
-/* 실제 숫자 표시: 서버(public_stats)에서 진짜 개수를 가져와요. 선물이 MIN_GIFTS개 넘으면 보여요 */
+/* 실제 숫자 표시: 서버(public_stats)에서 진짜 개수를 가져와요. 기준(min)보다 적으면 그 줄은 안 보여요 */
 (function () {
-  const MIN_GIFTS = 30;
   fetch("https://gbmlkyfguktjtroczqfw.supabase.co/rest/v1/rpc/public_stats", {
     method: "POST",
     headers: { "apikey": "sb_publishable_RO92ntdlSM5_Urctc5FD9w_4OHcZQzf", "Content-Type": "application/json" },
     body: "{}"
   }).then(r => r.ok ? r.json() : null).then(d => {
-    if (!d || d.gifts < MIN_GIFTS) return;
-    const el = document.getElementById("liveStats"), n = x => Number(x).toLocaleString("ko-KR");
-    el.innerHTML = `<span class="dot"></span><span>지금까지 선물가게 <b>${n(d.rooms)}</b>개, 맡겨진 선물 <b>${n(d.gifts)}</b>개</span>`;
-    el.hidden = false;
+    if (!d) return;
+    const n = x => Number(x || 0).toLocaleString("ko-KR");
+    const parts = (list) => list.filter(p => (d[p[1]] || 0) >= p[3]).map(p => `${p[0]} <b>${n(d[p[1]])}</b>${p[2]}`);
+    const lines = {
+      santa:   { el: document.getElementById("liveStats"), min: ["gifts", 30], list: [["선물가게", "rooms", "개", 1], ["맡겨진 선물", "gifts", "개", 1]] },
+      mansion: { min: ["residents", 10], list: [["세워진 맨션", "mansions", "채", 1], ["입주한 이웃", "residents", "명", 1]] },
+      sansa:   { min: ["lanterns", 10], list: [["띄운 연등", "lanterns", "개", 1], ["올린 기와 소원", "tiles", "장", 5], ["목탁으로 비운 번뇌", "bonnoe", "번", 10]] },
+      smash:   { min: ["smashed", 30], list: [["박살 낸 물건", "smashed", "개", 1]] },
+      tray:    { min: ["tray_visitors", 10], list: [["트레이를 꾸미러 온 손님", "tray_visitors", "명", 1], ["저장한 트레이", "trays", "개", 10]] },
+      camp:    { min: ["tents", 10], list: [["쳐진 텐트", "tents", "동", 1], ["구운 마시멜로", "marsh", "개", 10], ["남긴 방명록", "camp_notes", "장", 10]] }
+    };
+    Object.keys(lines).forEach(k => {
+      const L = lines[k], el = L.el || document.querySelector(`.live-stats[data-stat="${k}"]`);
+      if (!el || (d[L.min[0]] || 0) < L.min[1]) return;
+      el.innerHTML = `<span class="dot"></span><span>지금까지 ${parts(L.list).join(", ")}</span>`;
+      el.hidden = false;
+    });
   }).catch(() => {});
 })();
 </script>
