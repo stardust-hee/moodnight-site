@@ -92,6 +92,11 @@ section + section{border-top:1px solid var(--night-3)}
 .how-tabs .sansa[aria-selected="true"]{background:var(--lamp);border-color:var(--lamp)}
 .how-tabs .smash[aria-selected="true"]{background:#dbfc65;border-color:#dbfc65}
 .how-tabs .tray[aria-selected="true"]{background:#d8cfc4;border-color:#d8cfc4}
+.how-tabs .camp[aria-selected="true"]{background:#b9d79a;border-color:#b9d79a}
+.how-tabs .test[aria-selected="true"]{background:#c9b6f2;border-color:#c9b6f2}
+.steps.fade{animation:howFade 1.1s ease}
+@keyframes howFade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.steps.fade{animation:none}}
 .steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;counter-reset:s}
 @media (max-width:760px){.steps{grid-template-columns:minmax(0,1fr)}}
 .steps li{counter-increment:s;display:grid;gap:8px;padding-top:18px;border-top:2px solid var(--lamp)}
