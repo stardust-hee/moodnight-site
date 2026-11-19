@@ -53,6 +53,21 @@
     {
       "source": "/mansion/r/:slug",
       "destination": "/mansion/index.html"
+    },
+    {
+      "source": "/bakery/r/:id",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": ".*(kakaotalk-scrap|facebookexternalhit|Twitterbot|Slackbot|Discordbot|TelegramBot|Yeti|Daumoa).*"
+        }
+      ],
+      "destination": "/api/bake?id=:id"
+    },
+    {
+      "source": "/bakery/r/:id",
+      "destination": "/bakery/index.html"
     }
   ],
   "headers": [

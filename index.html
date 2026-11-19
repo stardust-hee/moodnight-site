@@ -23,7 +23,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&display=swap">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
-<link rel="stylesheet" href="/style.css?v=13">
+<link rel="stylesheet" href="/style.css?v=14">
 <meta name="google-adsense-account" content="ca-pub-2331460749309543">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2331460749309543" crossorigin="anonymous"></script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebSite", "name": "무드나잇", "alternateName": "moodnight", "url": "https://www.moodnight.co.kr/", "inLanguage": "ko"}</script>
@@ -54,6 +54,7 @@
         <a class="sub" href="/sansa/">🏯 무드나잇 산사</a>
         <a class="sub" href="/smash/">💥 박살방</a>
         <a class="sub" href="/camp/">⛺ MY LITTLE CAMP</a>
+        <a class="sub" href="/bakery/">🧁 한밤의 빵집</a>
         <a class="sub" href="/tray/">🍽 Silver Tray Studio</a>
         <a href="/contact">문의 · 건의</a>
       </nav>
@@ -181,6 +182,19 @@
           <div class="btns"><a class="btn" href="/camp/">내 텐트 치러 가기</a></div>
           <span class="addr">moodnight.co.kr/camp</span>
         </article>
+        <article class="svc bakery">
+          <div class="svc-top"><h3>한밤의 빵집</h3><span class="badge">새로 열었어요</span></div>
+          <a class="svc-shot" href="/bakery/"><img src="/bakery/preview.webp?v=1" alt="분홍 크림 컵케이크와 초를 꽂은 붕어빵, 그 뒤로 빼꼼 나온 고양이" width="800" height="600" loading="lazy"><span>빵집 들어가기</span></a>
+          <p>케이크, 컵케이크, 파이, 식빵, 붕어빵 중 하나를 골라 직접 꾸미고 편지를 넣어 친구에게 배달해요. 받은 친구는 상자를 열고 초를 꺼야 편지를 읽을 수 있어요.</p>
+          <ul>
+            <li>토핑 16가지를 원하는 자리에 톡톡 올려요</li>
+            <li>초콜릿 판 문구, 초 개수, 몰래 숨긴 고양이까지</li>
+            <li>로그인 없이 만들고, 받은 빵은 사진으로 저장해요</li>
+          </ul>
+          <p class="live-stats" data-stat="bakery" hidden></p>
+          <div class="btns"><a class="btn" href="/bakery/">빵 구워 보내기</a></div>
+          <span class="addr">moodnight.co.kr/bakery</span>
+        </article>
       </div>
     </div>
   </section>
@@ -210,6 +224,7 @@
         <button role="tab" class="smash" aria-selected="false" aria-controls="how-smash" id="tab-smash">박살방</button>
         <button role="tab" class="tray" aria-selected="false" aria-controls="how-tray" id="tab-tray">Silver Tray Studio</button>
         <button role="tab" class="camp" aria-selected="false" aria-controls="how-camp" id="tab-camp">MY LITTLE CAMP</button>
+        <button role="tab" class="bakery" aria-selected="false" aria-controls="how-bakery" id="tab-bakery">한밤의 빵집</button>
         <button role="tab" class="test" aria-selected="false" aria-controls="how-test" id="tab-test">심리테스트</button>
       </div>
       <ol class="steps" role="tabpanel" id="how-santa" aria-labelledby="tab-santa">
@@ -294,6 +309,20 @@
         <li>
           <h3>이웃이랑 놀기</h3>
           <p>이웃 텐트에 놀러 가 안까지 구경하고, 모닥불 옆 게시판에 쪽지를 남겨요. 마시멜로를 노릇하게 구워 랭킹에도 올라가 보세요.</p>
+        </li>
+      </ol>
+      <ol class="steps" role="tabpanel" id="how-bakery" aria-labelledby="tab-bakery" hidden>
+        <li>
+          <h3>빵 고르고 꾸미기</h3>
+          <p>케이크, 컵케이크, 파이, 식빵, 붕어빵 중에 골라 크림 색을 정하고, 토핑을 원하는 자리에 톡톡 올려요.</p>
+        </li>
+        <li>
+          <h3>편지 넣고 배달하기</h3>
+          <p>초 개수와 초콜릿 판 문구를 정하고 편지를 넣으면 배달 링크가 생겨요. 카톡으로 보내면 받는 사람 이름이 미리보기에 떠요.</p>
+        </li>
+        <li>
+          <h3>상자 열고 초 끄기</h3>
+          <p>받은 친구가 상자를 열고 소원을 빌며 초를 하나씩 끄면 편지가 열려요. 완성된 빵은 사진으로 저장할 수 있어요.</p>
         </li>
       </ol>
       <ol class="steps" role="tabpanel" id="how-test" aria-labelledby="tab-test" hidden>
@@ -459,7 +488,8 @@
       sansa:   { min: ["lanterns", 10], list: [["띄운 연등", "lanterns", "개", 1], ["올린 기와 소원", "tiles", "장", 5], ["목탁으로 비운 번뇌", "bonnoe", "번", 10]] },
       smash:   { min: ["smashed", 30], list: [["박살 낸 물건", "smashed", "개", 1]] },
       tray:    { min: ["tray_visitors", 10], list: [["트레이를 꾸미러 온 손님", "tray_visitors", "명", 1], ["저장한 트레이", "trays", "개", 10]] },
-      camp:    { min: ["tents", 10], list: [["쳐진 텐트", "tents", "동", 1], ["구운 마시멜로", "marsh", "개", 10], ["남긴 방명록", "camp_notes", "장", 10]] }
+      camp:    { min: ["tents", 10], list: [["쳐진 텐트", "tents", "동", 1], ["구운 마시멜로", "marsh", "개", 10], ["남긴 방명록", "camp_notes", "장", 10]] },
+      bakery:  { min: ["bakes", 10], list: [["배달된 빵", "bakes", "개", 1]] }
     };
     Object.keys(lines).forEach(k => {
       const L = lines[k], el = L.el || document.querySelector(`.live-stats[data-stat="${k}"]`);
