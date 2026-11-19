@@ -39,6 +39,7 @@
       <nav class="menu-panel" aria-label="전체 메뉴">
         <a href="/about">무드나잇 소개</a>
         <a href="/blog/">읽을거리</a>
+        <a href="/test/">심리테스트</a>
         <p class="menu-label">놀이터</p>
         <a class="sub" href="/santa/">🎁 산타의 선물가게</a>
         <a class="sub" href="/mansion/">🏢 성탄맨션</a>
@@ -182,5 +183,6 @@ document.addEventListener('click',function(e){if(m.open&&!m.contains(e.target))m
 document.addEventListener('keydown',function(e){if(e.key==='Escape'&&m.open){m.open=false;m.querySelector('summary').focus();}});
 m.querySelectorAll('.menu-panel a').forEach(function(a){a.addEventListener('click',function(){m.open=false;});});})();
 </script>
+<script src="/top.js" defer></script>
 </body>
 </html>
