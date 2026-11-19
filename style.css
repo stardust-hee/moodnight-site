@@ -218,11 +218,3 @@ section + section{border-top:1px solid var(--night-3)}
 .menu-panel a.sub{padding-left:20px;font-size:.95rem;color:#E4DCCB}
 .menu-label{margin:8px 12px 2px;font-size:.78rem;letter-spacing:.08em;color:var(--lamp)}
 
-/* 놀이터 한눈에 보기 */
-.svc-quick{list-style:none;margin:0 0 40px;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
-@media (min-width:900px){.svc-quick{grid-template-columns:repeat(6,minmax(0,1fr))}}
-.svc-quick a{display:grid;gap:2px;height:100%;padding:8px 8px 10px;border:1px solid var(--night-3);border-radius:14px;background:var(--night-2);color:var(--cream);text-decoration:none;min-width:0}
-.svc-quick a:hover,.svc-quick a:focus-visible{border-color:var(--lamp);outline:none}
-.svc-quick img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:9px;margin-bottom:6px;background:var(--night-3)}
-.svc-quick b{font-size:.86rem;line-height:1.35;font-weight:700}
-.svc-quick span{font-size:.74rem;line-height:1.4;color:var(--cream-soft)}
