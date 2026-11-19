@@ -49,7 +49,9 @@
 .oh-q{margin:0 0 6px;font-size:clamp(1.3rem,5vw,1.6rem);line-height:1.4;outline:none}
 .oh-opts{display:grid;gap:10px}
 .oh-opt{width:100%;text-align:left;border:1px solid var(--night-3);background:var(--night-2);color:var(--cream);border-radius:14px;padding:15px 16px;font:inherit;font-size:1rem;line-height:1.45;cursor:pointer;transition:border-color .15s,transform .1s}
-.oh-opt:hover{border-color:var(--lamp)}
+@media (hover:hover){.oh-opt:hover{border-color:var(--lamp)}}
+.oh-opt.picked{border-color:var(--lamp);background:color-mix(in srgb,var(--lamp) 18%,var(--night-2))}
+.oh-opts.lock{pointer-events:none}
 .oh-opt:active{transform:scale(.99)}
 .oh-back{justify-self:start;border:0;background:none;color:var(--cream-soft);font:inherit;font-size:.9rem;cursor:pointer;padding:6px 0}
 .oh-back[disabled]{visibility:hidden}
@@ -231,7 +233,8 @@ function render(){
   $("ohStep").textContent="Q"+(idx+1)+" / "+Q.length; $("ohBar").style.width=(idx/Q.length*100)+"%";
   $("ohQ").textContent=q[0]; var box=$("ohOpts"); box.textContent="";
   els.forEach(function(k){var i=ORDER.indexOf(k), b=document.createElement("button"); b.type="button"; b.className="oh-opt"; b.textContent=q[1][i];
-    b.onclick=function(){answers[idx]=k; if(idx<Q.length-1){idx++;render();} else finish();}; box.appendChild(b);});
+    b.onclick=function(){if(box.classList.contains("lock"))return; answers[idx]=k; b.classList.add("picked"); box.classList.add("lock"); b.blur();
+      setTimeout(function(){box.classList.remove("lock"); if(idx<Q.length-1){idx++;render();} else finish();},220);}; box.appendChild(b);});
   $("ohBack").disabled=idx===0; $("ohQ").focus({preventScroll:true});
 }
 function finish(){
