@@ -60,7 +60,7 @@
         {
           "type": "header",
           "key": "user-agent",
-          "value": ".*(kakaotalk-scrap|facebookexternalhit|Twitterbot|Slackbot|Discordbot|TelegramBot|Yeti|Daumoa).*"
+          "value": ".*(kakaotalk-scrap|facebookexternalhit|Twitterbot|Slackbot|Discordbot|TelegramBot).*"
         }
       ],
       "destination": "/api/bake?id=:id"
