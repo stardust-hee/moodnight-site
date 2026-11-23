@@ -648,8 +648,8 @@ function greet(){
     greetTimer=setInterval(()=>{
       el.textContent+=arr[i++];
       if(i>=arr.length){ clearInterval(greetTimer); ch.classList.add('on'); }
-    }, 55);
-  }, 600);
+    }, 26);
+  }, 300);
 }
 document.getElementById('enterBtn').addEventListener('click',()=>{ windChime(); greet(); });
 
