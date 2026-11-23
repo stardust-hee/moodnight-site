@@ -141,7 +141,8 @@
   #s-sky{justify-content:flex-start; padding:0}
   #skyHead{position:relative; z-index:6; margin-top:96px; font-size:16px; color:var(--dim); line-height:1.6}
   #skyHead b{color:var(--paper); font-size:18px; font-weight:700; display:block}
-  #lanterns{position:absolute; inset:0; z-index:5}
+  #lanterns{position:absolute; inset:0; z-index:5; overflow:hidden; touch-action:none}
+  #skyHead small{display:block; font-size:12px; color:#6f7696; margin-top:2px}
   .lantern{position:absolute; width:30px; cursor:pointer; transform:translate(-50%,-50%); padding:6px; box-sizing:content-box}
   .lantern .bob{animation:bob var(--dur,5s) ease-in-out infinite; animation-delay:var(--delay,0s)}
   .lantern svg{filter:drop-shadow(0 0 8px var(--glow)) drop-shadow(0 0 18px var(--glow))}
@@ -780,7 +781,7 @@ let skyItems=[];
 async function loadLanterns(){
   const mine=new Set(lsGet(MINE)), hid=new Set(lsGet(HIDDEN));
   const rows=await rpc('sansa_list',{p_kind:'lantern'});
-  skyItems=(rows||[]).filter(r=>!hid.has(r.id)).map(r=>({id:r.id, c:r.color, t:r.text, me:mine.has(r.id), ...spotOf(r.id)}));
+  skyItems=(rows||[]).filter(r=>!hid.has(r.id)).map(r=>({id:r.id, c:r.color, t:r.text, me:mine.has(r.id)}));
 }
 
 // 색 고르기
@@ -811,20 +812,69 @@ const lanternsEl=document.getElementById('lanterns');
 function addLantern(l, opts){
   const el=document.createElement('div');
   el.className='lantern'+(l.me?' mine':'')+(opts&&opts.rise?' rise':'');
-  el.style.left=l.x+'%'; el.style.top=l.y+'%';
   el.style.setProperty('--glow',(COLORS[l.c]||COLORS.red).glow);
   const bob=document.createElement('div'); bob.className='bob';
   bob.style.setProperty('--dur',(4+Math.random()*3)+'s'); bob.style.setProperty('--delay',(-Math.random()*5)+'s');
   bob.innerHTML=lanternSvg(l.c); el.appendChild(bob);
-  el.addEventListener('click',e=>{ e.stopPropagation(); openCard(l); });
+  el.addEventListener('click',e=>{ e.stopPropagation(); if(skyMoved>6) return; openCard(l); });
   lanternsEl.appendChild(el);
+  l.el=el;
   return el;
 }
+/* 연등 하늘: 격자 칸에 흩어 놓고, 좌우로 밀면 하늘이 빙글 돌아요 */
+const SKY_MAX=90;          // 한 번에 띄우는 연등 수 (넘으면 매번 무작위로 골라요)
+let skyShown=[], skyWW=0, skyOff=0, skyVel=0, skyMoved=0, skyDown=false, skyLastX=0, skyRaf=0;
+function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+function layoutSky(items){
+  const W=lanternsEl.clientWidth||390, H=lanternsEl.clientHeight||700;
+  const top=170, bot=Math.max(top+140, H-150);
+  const rows=Math.max(2, Math.floor((bot-top)/74)), cell=(bot-top)/rows;
+  const cols=Math.max(Math.ceil(items.length/rows*1.7), Math.ceil(W*1.6/cell));
+  skyWW=cols*cell;
+  const cells=[]; for(let c=0;c<cols;c++) for(let r=0;r<rows;r++) cells.push([c,r]);
+  shuffle(cells);
+  items.forEach((l,i)=>{
+    const [c,r]=cells[i];
+    l.wx=(c+.5+(Math.random()-.5)*.5)*cell;
+    l.wy=top+(r+.5+(Math.random()-.5)*.5)*cell;
+  });
+}
+function paintSky(){
+  skyShown.forEach(l=>{
+    let x=((l.wx-skyOff)%skyWW+skyWW)%skyWW;
+    if(x>skyWW-50) x-=skyWW;
+    l.el.style.left=x+'px'; l.el.style.top=l.wy+'px';
+  });
+}
+function skyLoop(){
+  if(!document.getElementById('s-sky').classList.contains('on')){ skyRaf=0; return; }
+  if(!skyDown){
+    skyOff+=skyVel; skyVel*=.94;
+    if(Math.abs(skyVel)<.05) skyVel=0;
+    if(skyVel===0 && !matchMedia('(prefers-reduced-motion: reduce)').matches) skyOff+=.12;   // 가만히 두면 천천히 흘러가요
+  }
+  paintSky();
+  skyRaf=requestAnimationFrame(skyLoop);
+}
+const skyScr=document.getElementById('s-sky');
+skyScr.addEventListener('pointerdown',e=>{ if(e.target.closest('#skyBtns,#menuBtn,#drawer')) return; skyDown=true; skyMoved=0; skyLastX=e.clientX; skyVel=0; });
+window.addEventListener('pointermove',e=>{ if(!skyDown) return; const dx=e.clientX-skyLastX; skyLastX=e.clientX; skyMoved+=Math.abs(dx); skyOff-=dx; skyVel=-dx; });
+['pointerup','pointercancel'].forEach(t=>window.addEventListener(t,()=>{ skyDown=false; setTimeout(()=>{ skyMoved=0; },0); }));
 function drawSky(newId){
   lanternsEl.innerHTML='';
-  skyItems.forEach(l=>addLantern(l, {rise: l.id===newId}));
+  let items=skyItems.slice();
+  if(items.length>SKY_MAX){
+    const must=items.filter(l=>l.me||l.id===newId), rest=shuffle(items.filter(l=>!(l.me||l.id===newId)));
+    items=must.concat(rest).slice(0,Math.max(SKY_MAX,must.length));
+  }
+  skyShown=items;
+  layoutSky(skyShown);
+  skyOff=0; skyVel=0;
+  skyShown.forEach(l=>addLantern(l, {rise: l.id===newId}));
+  paintSky();
   const head=document.getElementById('skyHead');
-  head.innerHTML = skyItems.length ? '<b>오늘 밤의 연등</b>연등을 누르면 소원이 보여요' : '<b>오늘 밤의 연등</b>아직 밤하늘이 비어 있어요. 첫 연등을 띄워 주세요';
+  head.innerHTML = skyShown.length ? '<b>오늘 밤의 연등</b>연등을 누르면 소원이 보여요<br><small>좌우로 밀어 하늘을 돌려 보세요</small>' : '<b>오늘 밤의 연등</b>아직 밤하늘이 비어 있어요. 첫 연등을 띄워 주세요';
+  if(!skyRaf) skyRaf=requestAnimationFrame(skyLoop);
 }
 async function openSky(newId){
   show('s-sky');
