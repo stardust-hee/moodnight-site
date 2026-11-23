@@ -236,6 +236,10 @@
   #menuBtn{position:absolute; z-index:30; left:12px; top:calc(10px + env(safe-area-inset-top)); width:40px; height:40px; border-radius:6px;
     background:rgba(10,14,29,.75); border:1px solid rgba(243,230,200,.25); display:flex; flex-direction:column; justify-content:center; align-items:center; gap:4px; cursor:pointer}
   #menuBtn i{display:block; width:18px; height:3px; background:var(--paper)}
+  #backBtn{position:absolute; z-index:30; left:60px; top:calc(10px + env(safe-area-inset-top)); height:40px; padding:0 14px 0 10px; border-radius:6px; display:none; align-items:center; gap:4px;
+    background:rgba(10,14,29,.75); border:1px solid rgba(243,230,200,.25); color:var(--paper); font:inherit; font-size:14px; cursor:pointer}
+  #app[data-scr="s-write"] #backBtn,#app[data-scr="s-moktak"] #backBtn,#app[data-scr="s-gwrite"] #backBtn,#app[data-scr="s-lwrite"] #backBtn,
+  #app[data-scr="s-roof"] #backBtn,#app[data-scr="s-sky"] #backBtn{display:flex}
   #drawer{position:absolute; inset:0; z-index:40; background:rgba(5,7,15,.6); opacity:0; pointer-events:none; transition:opacity .3s}
   #drawer.on{opacity:1; pointer-events:auto}
   #drawerIn{position:absolute; left:0; top:0; bottom:0; width:74%; max-width:300px; background:#10142a; border-right:2px solid #3a3420;
@@ -398,6 +402,7 @@
   <div id="card"><div id="cardIn"><div id="cardIcon"></div><p id="cardText"></p><p id="cardWho"></p><button id="reportBtn" type="button">신고하기</button><p id="reportMsg"></p></div></div>
 
   <button id="menuBtn" aria-label="메뉴 열기"><i></i><i></i><i></i></button>
+  <button id="backBtn" type="button" aria-label="선택 화면으로 돌아가기">‹ 뒤로</button>
   <div id="drawer">
     <nav id="drawerIn">
       <p class="dTitle">무드나잇 산사</p>
@@ -735,6 +740,7 @@ const LINES = [
 ];
 let typeTimer=null;
 function finish(){
+  if(!document.getElementById('s-moktak').classList.contains('on')) return;   // 도중에 뒤로 나갔으면 마무리하지 않아요
   addToday();
   const line=LINES[Math.floor(Math.random()*LINES.length)];
   const el=document.getElementById('monkText'), sign=document.getElementById('sign');
@@ -1141,6 +1147,7 @@ const GO = {
   roof:   ()=>document.getElementById('roofOnlyBtn').click(),
 };
 const drawer=document.getElementById('drawer');
+document.getElementById('backBtn').addEventListener('click',()=>{ try{ document.activeElement && document.activeElement.blur(); }catch(e){} tak(); greet(); });
 document.getElementById('menuBtn').addEventListener('click',()=>{ drawer.classList.add('on'); tak(); });
 drawer.addEventListener('click',e=>{ if(e.target===drawer) drawer.classList.remove('on'); });
 document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>{
