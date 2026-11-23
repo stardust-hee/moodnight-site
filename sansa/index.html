@@ -185,15 +185,23 @@
   #s-roof{justify-content:center; padding-top:80px}
   #roofHead{font-size:16px; color:var(--dim); line-height:1.6; margin-bottom:16px}
   #roofHead b{color:var(--paper); font-size:18px; font-weight:700; display:block}
-  #roofWrap{width:100%; max-width:340px; display:flex; flex-direction:column; align-items:center}
+  #roofScroll{width:100%; display:flex; overflow-x:auto; scroll-snap-type:x mandatory; scrollbar-width:none; -webkit-overflow-scrolling:touch; overscroll-behavior-x:contain}
+  #roofScroll::-webkit-scrollbar{display:none}
+  .rwrap{flex:0 0 100%; scroll-snap-align:center; display:flex; flex-direction:column; align-items:center}
+  .rin{width:100%; max-width:340px}
+  .rtitle{font-size:13px; color:var(--dim); margin-bottom:10px; text-align:center}
+  .rwrap.old .rin{opacity:.82}
+  #roofHint{display:none; font-size:12px; color:#6f7696; margin-top:2px}
+  #roofHint.on{display:block}
+  #roofWrap{display:flex; flex-direction:column; align-items:center}
   #roofWrap.thud{animation:shk .14s}
-  #ridge{width:100%; height:12px; background:#1d1f25; border-top:3px solid #3a3e48; position:relative; z-index:1}
-  #ridge:before,#ridge:after{content:''; position:absolute; top:-9px; width:10px; height:16px; background:#c9a35a; border:2px solid #1d1f25}
-  #ridge:before{left:-8px} #ridge:after{right:-8px}
-  #tiles{display:flex; flex-direction:column; align-items:center}
-  #tiles{width:100%; background:#0d0f14; box-shadow:0 0 0 3px #1d1f25}
-  #tiles svg{width:100%; height:auto}
-  #tiles g.tg:not(.empty){cursor:pointer}
+  #ridge,.ridge{width:100%; height:12px; background:#1d1f25; border-top:3px solid #3a3e48; position:relative; z-index:1}
+  .ridge:before,.ridge:after,#ridge:before,#ridge:after{content:''; position:absolute; top:-9px; width:10px; height:16px; background:#c9a35a; border:2px solid #1d1f25}
+  .ridge:before,#ridge:before{left:-8px} .ridge:after,#ridge:after{right:-8px}
+  #tiles,.otiles{display:flex; flex-direction:column; align-items:center}
+  #tiles,.otiles{width:100%; background:#0d0f14; box-shadow:0 0 0 3px #1d1f25}
+  #tiles svg,.otiles svg{width:100%; height:auto}
+  #tiles g.tg:not(.empty),.otiles g.tg:not(.empty){cursor:pointer}
   #tiles g.drop{animation:drop2 .7s cubic-bezier(.3,1.4,.6,1) both}
   @keyframes drop2{0%{transform:translateY(-40px); opacity:0}40%{opacity:1}100%{transform:none; opacity:1}}
   #tiles g.mine{animation:glint 2.4s ease-in-out infinite}
@@ -208,7 +216,7 @@
   .tile.mine svg{filter:drop-shadow(0 3px 0 rgba(0,0,0,.45)) drop-shadow(0 0 7px rgba(240,207,124,.9))}
   .tile.drop{animation:drop .7s cubic-bezier(.3,1.4,.6,1) both}
   @keyframes drop{0%{transform:translateY(-140px); opacity:0}40%{opacity:1}100%{transform:none; opacity:1}}
-  #eave{width:100%; height:10px; margin-top:-3px; background:repeating-linear-gradient(90deg,#6b3a17 0 10px,#8a4f22 10px 14px); border-bottom:3px solid #3a1d0e}
+  #eave,.eave{width:100%; height:10px; margin-top:-3px; background:repeating-linear-gradient(90deg,#6b3a17 0 10px,#8a4f22 10px 14px); border-bottom:3px solid #3a1d0e}
   #roofCount{margin-top:14px; font-size:15px; color:var(--dim)}
   #roofCount b{color:var(--gold)}
   .demo2{margin-top:6px; font-size:11px; color:#5d6380}
@@ -351,11 +359,13 @@
 
   <!-- 8. 기와 지붕 -->
   <section class="screen" id="s-roof">
-    <p id="roofHead"><b>대웅전 지붕</b>기와를 누르면 소원이 보여요</p>
-    <div id="roofWrap">
-      <div id="ridge"></div>
-      <div id="tiles"></div>
-      <div id="eave"></div>
+    <p id="roofHead"><b>대웅전 지붕</b>기와를 누르면 소원이 보여요<span id="roofHint">← 옆으로 밀면 지난 대웅전을 볼 수 있어요</span></p>
+    <div id="roofScroll">
+      <div class="rwrap" id="roofWrap"><div class="rin">
+        <div id="ridge"></div>
+        <div id="tiles"></div>
+        <div id="eave"></div>
+      </div></div>
     </div>
     <p id="roofCount"></p>
     <div class="row" style="margin-top:14px">
@@ -987,8 +997,7 @@ async function loadTiles(){
   roofItems=(rows||[]).filter(r=>!hid.has(r.id)).map(r=>({id:r.id, c:r.color, t:r.text, me:mine.has(r.id)}));
 }
 
-function drawRoof(newId){
-  const all=roofItems;
+function roofSvg(all,newId){
   const bySlot={}; all.forEach((x,i)=>{ if(i<SLOTS) bySlot[FILL[i]]={...x, last: newId && x.id===newId}; });
   const CW=14, GW=4, RP=10, TH=15, SH=4, W=GW+COLS*(CW+GW), H=(NROWS-1)*RP+TH;
   let s='';
@@ -1002,9 +1011,39 @@ function drawRoof(newId){
       s+=`<g class="${cls}" data-i="${i}"${d?'':' opacity="0.13"'}>${tileRects(x,y,CW+2,TH,col, d&&d.me?'#f0cf7c':'#101217', SH)}</g>`;
     }
   }
+  return {bySlot, svg:`<svg viewBox="0 0 ${W} ${H}" shape-rendering="crispEdges" xmlns="http://www.w3.org/2000/svg">${s}</svg>`};
+}
+// 지난 대웅전: 가득 찬 지붕을 왼쪽에 이어 붙여요
+let oldRoofs=[];
+async function loadOldRoofs(){
+  try{
+    const mine=new Set(lsGet(MINE)), hid=new Set(lsGet(HIDDEN));
+    const rows=await rpc('sansa_list_old_roofs',{p_max:5});
+    const g={}; (rows||[]).filter(r=>!hid.has(r.id)).forEach(r=>{ (g[r.roof]=g[r.roof]||[]).push({id:r.id,c:r.color,t:r.text,me:mine.has(r.id)}); });
+    oldRoofs=Object.keys(g).map(Number).sort((a,b)=>a-b).map(k=>({n:k+1, items:g[k]}));
+  }catch(e){ oldRoofs=[]; }
+}
+function drawOldRoofs(){
+  const sc=document.getElementById('roofScroll');
+  sc.querySelectorAll('.rwrap.old').forEach(e=>e.remove());
+  const cur=document.getElementById('roofWrap');
+  oldRoofs.forEach(o=>{
+    const {bySlot,svg}=roofSvg(o.items,null);
+    const w=document.createElement('div'); w.className='rwrap old';
+    w.innerHTML=`<div class="rin"><p class="rtitle">지난 대웅전 · ${o.n}번째</p><div class="ridge"></div><div class="otiles">${svg}</div><div class="eave"></div></div>`;
+    w.querySelector('.otiles').onclick=e=>{ const g=e.target.closest&&e.target.closest('g.tg'); if(!g) return; const d=bySlot[g.getAttribute('data-i')]; if(d) openTileCard(d); };
+    sc.insertBefore(w,cur);
+  });
+  document.getElementById('roofHint').classList.toggle('on', oldRoofs.length>0);
+  if(oldRoofs.length){ const keep=sc.style.scrollBehavior; sc.style.scrollBehavior='auto'; sc.scrollLeft=cur.offsetLeft; sc.style.scrollBehavior=keep; }
+}
+function drawRoof(newId){
+  const all=roofItems;
+  const {bySlot,svg}=roofSvg(all,newId);
   const wrap=document.getElementById('tiles');
-  wrap.innerHTML=`<svg viewBox="0 0 ${W} ${H}" shape-rendering="crispEdges" xmlns="http://www.w3.org/2000/svg">${s}</svg>`;
+  wrap.innerHTML=svg;
   wrap.onclick=e=>{ const g=e.target.closest && e.target.closest('g.tg'); if(!g) return; const d=bySlot[g.getAttribute('data-i')]; if(d) openTileCard(d); };
+  drawOldRoofs();
   const filled=Math.min(all.length,SLOTS), total=stats.tiles_total||filled;
   const done=Math.max(0, Math.floor((total-1)/SLOTS));
   const built = done>0 ? ` · 지금까지 지은 대웅전 <b>${done}</b>채` : '';
@@ -1048,7 +1087,7 @@ document.getElementById('tileBtn').addEventListener('click',()=>{
 async function openRoof(newId){
   show('s-roof');
   if(!newId){ document.getElementById('tiles').innerHTML=''; document.getElementById('roofCount').textContent='기와를 불러오는 중…'; }
-  try{ await Promise.all([loadTiles(), loadStats()]); if(!newId) drawRoof(null); return true; }
+  try{ await Promise.all([loadTiles(), loadStats(), loadOldRoofs()]); if(!newId) drawRoof(null); return true; }
   catch(e){ document.getElementById('roofCount').textContent='기와를 불러오지 못했어요. 잠시 뒤 다시 와 주세요'; return false; }
 }
 raiseBtn.addEventListener('click',async ()=>{
