@@ -44,11 +44,14 @@
       </div>
       <div class="editor" id="editor">
         <div class="pane" id="paneEdit">
-          <div class="f-label">LABEL</div>
-          <input class="field" id="fLabel" placeholder="AI PROMPT 001" style="font-size:14px;margin-bottom:10px">
-          <textarea class="field f-title" id="fTitle" rows="1" placeholder="제목"></textarea>
-          <textarea class="field f-sub" id="fSub" rows="1" placeholder="한 줄 소개"></textarea>
-          <textarea class="field f-body" id="fBody" placeholder="본문 (마크다운)"></textarea>
+          <label class="blk"><span class="cap">라벨 <i>예: AI PROMPT 001</i></span>
+            <input class="box" id="fLabel" placeholder="AI PROMPT 001"></label>
+          <label class="blk"><span class="cap">제목</span>
+            <textarea class="box box-title" id="fTitle" rows="1" placeholder="제목을 입력하세요"></textarea></label>
+          <label class="blk"><span class="cap">한 줄 소개</span>
+            <textarea class="box" id="fSub" rows="1" placeholder="한 줄로 소개해 주세요"></textarea></label>
+          <label class="blk"><span class="cap">본문 <i>마크다운으로 써요 · 아래 쓰는 법 참고</i></span>
+            <textarea class="box box-body" id="fBody" placeholder="본문을 입력하세요"></textarea></label>
           <div class="linkrow"><span id="linkText"></span></div>
           <p class="hint">
             <b>쓰는 법</b> · <code>## 제목</code> 소제목 · <code>1. </code> 번호 단계 · <code>- </code> 목록 · <code>&gt; </code> 안내 박스 · <code>---</code> 구분선 · <code>**굵게**</code><br>
