@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>MOODNIGHT · AI PROMPT</title>
+<link rel="stylesheet" href="/prompt/assets/style.css">
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">
+    <svg viewBox="0 0 40 40" fill="none" stroke="#3b3228" stroke-width="1.4" aria-hidden="true"><path d="M26 6a15 15 0 1 0 8 27A13 13 0 0 1 26 6z"/></svg>
+    <small>MOODNIGHT</small>
+    <h1 id="label"></h1>
+  </div>
+
+  <div id="view" class="center">불러오는 중…</div>
+
+  <footer class="pub" id="foot" hidden>
+    <span class="logo">MOODNIGHT</span>
+    <p class="copyright">본 자료는 자체 제작물로 저작권 보호를 받으며, 프롬프트의 무단 복제 및 2차 배포를 금지합니다.<br>공유 시 출처 @moodnight.official 기재 필수</p>
+  </footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/prompt/assets/common.js"></script>
+<script>
+(async function () {
+  var view = document.getElementById('view');
+  var slug = new URLSearchParams(location.search).get('s');
+
+  function msg(t) { view.className = 'center'; view.textContent = t; }
+
+  if (!slug) { msg('이 페이지는 공유받은 링크로만 열람할 수 있어요.'); return; }
+
+  try {
+    var res = await MN.sb().rpc('get_prompt', { p_slug: slug });
+    if (res.error) throw res.error;
+    var p = res.data && res.data[0];
+    if (!p) { msg('열람할 수 없는 링크예요. 링크가 바뀌었거나 비공개로 전환됐을 수 있어요.'); return; }
+
+    document.title = p.title + ' · MOODNIGHT';
+    document.getElementById('label').textContent = p.label || '';
+    view.className = '';
+    view.innerHTML =
+      '<section class="hero"><h2>' + MN.esc(p.title) + '</h2>' +
+      (p.subtitle ? '<p>' + MN.esc(p.subtitle) + '</p>' : '') + '</section>' +
+      '<div class="rule"></div><div class="doc" id="doc">' + MN.md(p.body) + '</div>' +
+      '<button type="button" class="bigcopy" id="bigcopy" hidden>프롬프트 전체 복사하기</button>';
+
+    var doc = document.getElementById('doc');
+    MN.bindCopy(doc);
+
+    var firstPre = doc.querySelector('.codeblock pre');
+    if (firstPre) {
+      var big = document.getElementById('bigcopy');
+      big.hidden = false;
+      big.addEventListener('click', function () {
+        MN.copyText(firstPre.textContent).then(function (ok) {
+          if (ok) { big.textContent = '복사 완료 ✓'; big.classList.add('done'); MN.toast('복사됐어요 ✓');
+            setTimeout(function () { big.textContent = '프롬프트 전체 복사하기'; big.classList.remove('done'); }, 2000); }
+          else MN.toast('복사에 실패했어요. 길게 눌러 직접 복사해 주세요');
+        });
+      });
+    }
+    document.getElementById('foot').hidden = false;
+  } catch (e) {
+    msg('불러오지 못했어요. 잠시 후 다시 시도해 주세요.');
+  }
+})();
+</script>
+</body>
+</html>
