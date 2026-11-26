@@ -672,5 +672,23 @@ render(); requestAnimationFrame(frame);
   if (location.hash.includes('access_token')) history.replaceState(null, '', '/mansion/');
   loadHost();
 })();
+/* ── 새 소식 팝업: 방 꾸미기 업데이트를 한 번만 알려줘요 ── */
+function newsOnce() {
+  let seen = false; try { seen = !!localStorage.getItem('mn_news_room1'); } catch (e) {}
+  if (seen || !S.slug || !$('#overlay').hidden) return;
+  try { localStorage.setItem('mn_news_room1', '1'); } catch (e) {}
+  const li = (ic, t, d) => `<li style="display:flex;gap:10px;align-items:flex-start"><span aria-hidden="true">${ic}</span><span><b>${t}</b><br><span class="hint">${d}</span></span></li>`;
+  openSheet(L('새 소식 · 방이 꾸며져요', "What's new · Decorate your room"), `<p class="hint">${L('성탄맨션 방을 내 마음대로 꾸밀 수 있게 됐어요.', 'You can now decorate your Christmas Mansion room your way.')}</p>
+  <ul style="list-style:none;padding:0;margin:12px 0;display:grid;gap:12px">
+   ${li('🛋️', L('방 꾸미기', 'Decorate your room'), L('내 방을 열고 "방 꾸미기"를 누르면 가구를 끌어서 원하는 곳에 놓을 수 있어요. 캐릭터, 옷 색, 바닥, 자세도 바꿔요.', 'Open your room and tap "Decorate my room" to drag furniture anywhere. You can also change your character, outfit color, floor and pose.'))}
+   ${li('🎁', L('이웃 선물', 'Neighbor gifts'), L('다른 입주자 방에 선물을 놓고 올 수 있어요. 받은 사람에게는 어느 호수 이웃인지만 보이고, 마음에 안 들면 돌려보낼 수 있어요. 선물 도감도 모아요.', "Leave a gift in another resident's room. The owner only sees which unit it came from, and can return gifts they don't want. Collect them all in the gift collection."))}
+   ${li('💌', L('집주인 입주 선물', 'Owner move-in gifts'), L('집주인이 "입주해 줘서 고마워요" 하는 마음으로 특별한 선물을 놓아 줘요.', 'The mansion owner leaves special thank-you gifts for new residents.'))}
+   ${li('📄', L('입주 전단지', 'Move-in flyers'), L('입주하면 짜장면, 치킨 같은 전단지가 창문에 붙어요. 건물 창문에서도 보이고, 내 방에서 눌러 떼어낼 수 있어요.', 'Flyers (noodles, chicken…) get stuck on your window when you move in. They show on the building too, and you can peel them off from your room.'))}
+   ${li('❄️', L('겨울 한정 가구', 'Winter-only furniture'), L('겨울에만 열리는 가구가 있어요. 겨울이 지나면 잠시 숨겨지고, 다음 겨울에 같은 자리로 돌아와요.', 'Some furniture only opens in winter. It hides after winter and returns to the same spot next year.'))}
+   ${li('👆', L('톡 눌러 보세요', 'Give it a tap'), L('방 안의 가구와 캐릭터를 누르면 말풍선으로 반응해요.', 'Tap furniture or your character in a room and they will react.'))}
+  </ul><button class="btn wide" id="newsOk">${L('확인했어요', 'Got it')}</button>`);
+  $('#newsOk').onclick = closeSheet;
+}
+setTimeout(newsOnce, 1800);
 sb.auth.onAuthStateChange((evt, s) => { if (MODE === 'host' && evt === 'SIGNED_IN' && !session) { session = s; loadHost(); } });
 })();
