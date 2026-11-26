@@ -10,7 +10,7 @@
 <meta property="og:title" content="나는 어떤 사람과 잘 맞을까? 인간관계 성향 테스트">
 <meta property="og:description" content="30문항, 6가지 지표, 12가지 유형으로 보는 나의 관계 스타일.">
 <meta property="og:url" content="https://www.moodnight.co.kr/test/relation/">
-<meta property="og:image" content="https://www.moodnight.co.kr/og.png">
+<meta property="og:image" content="https://www.moodnight.co.kr/test/og/relation.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
@@ -179,8 +179,8 @@
   <div class="wrap">
     <div class="foot-links">
       <a href="/about">무드나잇 소개</a>
-      <a class="strong" href="privacy.html">개인정보처리방침</a>
-      <a href="terms.html">이용약관</a>
+      <a class="strong" href="/privacy">개인정보처리방침</a>
+      <a href="/terms">이용약관</a>
       <a href="/blog/">읽을거리</a>
       <a href="/contact">문의 · 건의</a>
     </div>
@@ -236,9 +236,9 @@ function result(){var t=typeOf(cur.primary),s=typeOf(cur.secondary),c=$("rlCard"
 function start(){answers=[];idx=0;cur=null;shared=false;show("rlQuiz");render();track("act","relation_start");}
 $("rlStart").onclick=function(){if(!T){load().then(start,function(){$("rlStart").textContent="불러오지 못했어요. 새로고침해 주세요"});}else start();};
 $("rlBack").onclick=function(){if(idx>0){idx--;render();}};
-$("rlRetry").onclick=function(){history.replaceState(null,"",location.pathname);$("rlInvite").hidden=true;if(!T)load().then(start);else start();};
+$("rlRetry").onclick=function(){history.replaceState(null,"","/test/relation/");$("rlInvite").hidden=true;if(!T)load().then(start);else start();};
 $("rlShare").onclick=function(){if(shared){$("rlRetry").onclick();return;}
- var code=E.encode(cur.raw,T.version),url=location.origin+"/test/relation/?r="+code,t=typeOf(cur.primary),text="내 인간관계 유형은 '"+t.name+"'! 너는 어떤 유형이야?";track("share","relation");
+ var code=E.encode(cur.raw,T.version),url=location.origin+"/test/relation/s/"+code,t=typeOf(cur.primary),text="내 인간관계 유형은 '"+t.name+"'! 너는 어떤 유형이야?";track("share","relation");
  if(navigator.share){navigator.share({title:"나는 어떤 사람과 잘 맞을까?",text:text,url:url}).catch(function(){});return;}
  try{navigator.clipboard.writeText(text+" "+url).then(function(){$("rlMsg").textContent="링크를 복사했어요. 친구에게 보내 보세요!"},function(){prompt("아래 링크를 복사해 주세요",url)});}catch(err){prompt("아래 링크를 복사해 주세요",url)}};
 function rr(g,x,y,w,h,r){g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+h,r);g.arcTo(x+w,y+h,x,y+h,r);g.arcTo(x,y+h,x,y,r);g.arcTo(x,y,x+w,y,r);g.closePath();}
@@ -256,7 +256,7 @@ $("rlSave").onclick=function(){var t=typeOf(cur.primary),s=typeOf(cur.secondary)
  g.textAlign="center";g.fillStyle="#7a6f66";g.font="500 28px "+F;g.fillText("검증된 심리검사가 아닌 자기 탐색용 테스트예요",W/2,H-150);g.fillText("moodnight.co.kr/test · 무드나잇 심리테스트",W/2,H-105);
  cv.toBlob(function(bl){var a=document.createElement("a");a.href=URL.createObjectURL(bl);a.download="moodnight-relation-"+cur.primary+".png";document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(a.href)},2000);$("rlMsg").textContent="이미지를 저장했어요.";},"image/png");};
 /* 공유 링크로 들어온 경우 결과 바로 보기 */
-var rp=new URLSearchParams(location.search).get("r"),dec=rp&&E.decode(rp);
+var pm=/^\/test\/relation\/s\/([^\/]+)\/?$/.exec(location.pathname),rp=new URLSearchParams(location.search).get("r")||(pm&&decodeURIComponent(pm[1])),dec=rp&&E.decode(rp);
 if(dec&&dec.version===1){load().then(function(){cur=E.fromRaw(T,dec.raw);shared=true;var t=typeOf(cur.primary),inv=$("rlInvite");inv.hidden=false;inv.textContent="";var b=document.createElement("b");b.textContent="친구가 공유한 결과예요: "+t.emoji+" "+t.name;inv.append(b,document.createTextNode(" — 나도 해 보고 어떤 유형인지 비교해 봐요!"));result();},function(){});}
 })();
 
