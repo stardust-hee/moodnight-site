@@ -1,6 +1,7 @@
 User-agent: *
 Allow: /
 Disallow: /admin/
+Disallow: /prompt/admin/
 Disallow: /tools/
 
 Sitemap: https://www.moodnight.co.kr/sitemap.xml

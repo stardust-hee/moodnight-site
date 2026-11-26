@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>MOODNIGHT · 프롬프트 관리</title>
+<link rel="stylesheet" href="/prompt/assets/style.css">
+</head>
+<body>
+
+<!-- 로그인 -->
+<div id="loginView" class="login" hidden>
+  <h1>MOODNIGHT ADMIN</h1>
+  <p style="font-size:14px;color:var(--sub);margin-bottom:16px">관리자 로그인이 필요해요.<br>로그인한 뒤 이 페이지로 다시 와 주세요.</p>
+  <a href="/admin/" style="display:block;padding:13px;border-radius:10px;background:var(--ink);color:var(--paper);font-weight:600;text-decoration:none">관리자 로그인하러 가기</a>
+  <div class="err" id="loginErr"></div>
+</div>
+
+<!-- 관리 화면 -->
+<div id="app" class="app" hidden>
+  <aside class="side">
+    <div class="side-top"><b>PROMPTS</b><button id="newBtn" type="button">+ 새 글</button></div>
+    <div class="list" id="list"></div>
+    <div class="side-foot"><span id="who"></span><button id="logoutBtn" type="button">로그아웃</button></div>
+  </aside>
+
+  <section class="main" id="main">
+    <div class="empty" id="emptyMain">왼쪽에서 글을 고르거나 새 글을 만들어 주세요</div>
+
+    <div id="editWrap" style="display:none;flex-direction:column;min-height:0;flex:1">
+      <div class="bar">
+        <button class="back" id="backBtn" type="button" aria-label="목록">‹</button>
+        <span class="status" id="status"></span>
+        <button class="pill" id="pubBtn" type="button">비공개</button>
+        <button class="pill dark" id="linkBtn" type="button">링크 복사</button>
+        <button class="pill" id="openBtn" type="button">열어보기</button>
+        <button class="pill" id="dupBtn" type="button">복제</button>
+        <button class="pill danger" id="delBtn" type="button">삭제</button>
+      </div>
+      <div class="tabs" id="tabs">
+        <button type="button" class="on" data-t="edit">편집</button>
+        <button type="button" data-t="prev">미리보기</button>
+      </div>
+      <div class="editor" id="editor">
+        <div class="pane" id="paneEdit">
+          <div class="f-label">LABEL</div>
+          <input class="field" id="fLabel" placeholder="AI PROMPT 001" style="font-size:14px;margin-bottom:10px">
+          <textarea class="field f-title" id="fTitle" rows="1" placeholder="제목"></textarea>
+          <textarea class="field f-sub" id="fSub" rows="1" placeholder="한 줄 소개"></textarea>
+          <textarea class="field f-body" id="fBody" placeholder="본문 (마크다운)"></textarea>
+          <div class="linkrow"><span id="linkText"></span></div>
+          <p class="hint">
+            <b>쓰는 법</b> · <code>## 제목</code> 소제목 · <code>1. </code> 번호 단계 · <code>- </code> 목록 · <code>&gt; </code> 안내 박스 · <code>---</code> 구분선 · <code>**굵게**</code><br>
+            <code>```</code> 세 개로 감싼 부분은 <b>복사 버튼이 달린 프롬프트 상자</b>가 돼요. 글자는 입력하면 자동 저장돼요.
+          </p>
+        </div>
+        <div class="pane hide" id="panePrev"><div id="preview"></div></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/prompt/assets/common.js"></script>
+<script>
+(function () {
+  var sb = MN.sb();
+  var $ = function (id) { return document.getElementById(id); };
+  var items = [], cur = null, timer = null, saving = null;
+
+  /* ---------- auth ---------- */
+  function showLogin(err) { $('app').hidden = true; $('loginView').hidden = false; $('loginErr').textContent = err || ''; }
+
+  async function enter(session) {
+    var r = await sb.rpc('is_admin');
+    if (r.error || r.data !== true) {
+      await sb.auth.signOut();
+      showLogin('관리자 계정이 아니에요. /admin/에서 관리자 계정으로 로그인해 주세요.');
+      return;
+    }
+    $('who').textContent = (session.user.email || '').split('@')[0];
+    $('loginView').hidden = true; $('app').hidden = false;
+    await loadList();
+  }
+
+  $('logoutBtn').onclick = async function () { await flush(); await sb.auth.signOut(); location.href = '/admin/'; };
+
+  /* ---------- list ---------- */
+  function fmt(d) { var x = new Date(d); return (x.getMonth() + 1) + '/' + x.getDate(); }
+
+  function renderList() {
+    $('list').innerHTML = items.length ? items.map(function (p) {
+      return '<button class="item' + (cur && cur.id === p.id ? ' active' : '') + '" data-id="' + p.id + '">' +
+        '<span class="t">' + MN.esc(p.title || '제목 없음') + '</span>' +
+        '<span class="m"><span class="dot' + (p.published ? ' on' : '') + '"></span>' +
+        (p.published ? '공개' : '비공개') + ' · 👁 ' + p.view_count + ' · ' + fmt(p.updated_at) + '</span></button>';
+    }).join('') : '<div class="hint" style="padding:14px">아직 글이 없어요.</div>';
+  }
+
+  async function loadList() {
+    var r = await sb.from('prompts').select('id,slug,label,title,published,view_count,updated_at').order('created_at', { ascending: false });
+    items = r.data || [];
+    renderList();
+  }
+
+  $('list').addEventListener('click', function (e) {
+    var b = e.target.closest('.item'); if (b) openItem(b.dataset.id);
+  });
+
+  /* ---------- editor ---------- */
+  function grow(el) { el.style.height = 'auto'; el.style.height = el.scrollHeight + 'px'; }
+
+  function setStatus(t) { $('status').textContent = t; }
+
+  function renderPreview() {
+    if (!cur) return;
+    $('preview').innerHTML =
+      '<div class="hero"><div class="f-label">' + MN.esc($('fLabel').value) + '</div><h2>' + MN.esc($('fTitle').value) + '</h2>' +
+      ($('fSub').value ? '<p>' + MN.esc($('fSub').value) + '</p>' : '') + '</div><div class="rule"></div>' +
+      '<div class="doc">' + MN.md($('fBody').value) + '</div>';
+  }
+
+  function paintBar() {
+    var on = !!cur.published;
+    $('pubBtn').textContent = on ? '공개 중' : '비공개';
+    $('pubBtn').classList.toggle('on', on);
+    $('linkText').textContent = MN.shareUrl(cur.slug) + (on ? '' : '  (비공개 — 공개로 바꿔야 열려요)');
+  }
+
+  async function openItem(id) {
+    await flush();
+    var r = await sb.from('prompts').select('*').eq('id', id).single();
+    if (r.error) { MN.toast('불러오지 못했어요'); return; }
+    cur = r.data;
+    $('emptyMain').style.display = 'none'; $('editWrap').style.display = 'flex';
+    $('fLabel').value = cur.label; $('fTitle').value = cur.title; $('fSub').value = cur.subtitle; $('fBody').value = cur.body;
+    grow($('fTitle')); grow($('fSub'));
+    paintBar(); renderPreview(); setStatus('');
+    $('app').classList.add('editing');
+    renderList();
+  }
+
+  function schedule() {
+    setStatus('수정 중…');
+    clearTimeout(timer);
+    timer = setTimeout(save, 1000);
+    renderPreview();
+  }
+
+  async function save() {
+    clearTimeout(timer); timer = null;
+    if (!cur) return;
+    var id = cur.id;
+    var patch = { label: $('fLabel').value, title: $('fTitle').value.trim() || '제목 없음', subtitle: $('fSub').value, body: $('fBody').value };
+    setStatus('저장 중…');
+    saving = sb.from('prompts').update(patch).eq('id', id).select('updated_at').single();
+    var r = await saving; saving = null;
+    if (r.error) { setStatus('저장 실패 — 다시 시도 중이에요'); timer = setTimeout(save, 3000); return; }
+    Object.assign(cur, patch);
+    var it = items.find(function (x) { return x.id === id; });
+    if (it) { it.title = patch.title; it.label = patch.label; it.updated_at = r.data.updated_at; }
+    renderList();
+    if (cur && cur.id === id) setStatus('저장됨 ✓');
+  }
+
+  async function flush() { if (timer) await save(); if (saving) await saving; }
+
+  ['fLabel', 'fTitle', 'fSub', 'fBody'].forEach(function (id) {
+    $(id).addEventListener('input', function () {
+      if (id === 'fTitle' || id === 'fSub') grow($(id));
+      schedule();
+    });
+  });
+  document.addEventListener('keydown', function (e) {
+    if ((e.metaKey || e.ctrlKey) && e.key === 's') { e.preventDefault(); save(); }
+  });
+  window.addEventListener('beforeunload', function (e) { if (timer) { e.preventDefault(); e.returnValue = ''; } });
+
+  /* tab key in body = two spaces */
+  $('fBody').addEventListener('keydown', function (e) {
+    if (e.key === 'Tab') {
+      e.preventDefault();
+      var t = e.target, s = t.selectionStart;
+      t.value = t.value.slice(0, s) + '  ' + t.value.slice(t.selectionEnd);
+      t.selectionStart = t.selectionEnd = s + 2; schedule();
+    }
+  });
+
+  /* ---------- actions ---------- */
+  var TEMPLATE = '## 사용 방법\n\n1. ChatGPT에 사진 한 장을 첨부하세요.\n2. 아래 프롬프트 전체를 복사하여 입력하세요.\n3. 이미지 생성을 요청하세요.\n\n## 무료 이미지 생성 프롬프트\n\n```\n여기에 프롬프트를 붙여넣으세요\n```\n\n※ 원본 사진 및 이미지 생성 모델에 따라 결과가 달라질 수 있습니다.\n\n---\n\n더 많은 AI 콘텐츠는 @moodnight.official에서 만나보세요.';
+
+  async function create(base) {
+    await flush();
+    var n = String(items.length + 1); while (n.length < 3) n = '0' + n;
+    var row = base || { label: 'AI PROMPT ' + n, title: '제목 없음', subtitle: '', body: TEMPLATE };
+    var r = await sb.from('prompts').insert(row).select('id').single();
+    if (r.error) { MN.toast('만들지 못했어요'); return; }
+    await loadList();
+    openItem(r.data.id);
+  }
+
+  $('newBtn').onclick = function () { create(); };
+
+  $('dupBtn').onclick = function () {
+    if (!cur) return;
+    create({ label: cur.label, title: cur.title + ' (복사본)', subtitle: cur.subtitle, body: cur.body, published: false });
+  };
+
+  $('pubBtn').onclick = async function () {
+    if (!cur) return;
+    await flush();
+    var next = !cur.published;
+    var r = await sb.from('prompts').update({ published: next }).eq('id', cur.id);
+    if (r.error) { MN.toast('바꾸지 못했어요'); return; }
+    cur.published = next;
+    var it = items.find(function (x) { return x.id === cur.id; }); if (it) it.published = next;
+    paintBar(); renderList();
+    MN.toast(next ? '공개로 바꿨어요. 링크로 열 수 있어요' : '비공개로 바꿨어요. 링크가 닫혔어요');
+  };
+
+  $('linkBtn').onclick = function () {
+    if (!cur) return;
+    MN.copyText(MN.shareUrl(cur.slug)).then(function (ok) {
+      MN.toast(ok ? (cur.published ? '링크 복사됐어요 ✓' : '복사했어요 (아직 비공개라 열리지 않아요)') : '복사에 실패했어요');
+    });
+  };
+
+  $('openBtn').onclick = function () { if (cur) window.open(MN.shareUrl(cur.slug), '_blank', 'noopener'); };
+
+  $('delBtn').onclick = async function () {
+    if (!cur) return;
+    if (!confirm('「' + cur.title + '」을 삭제할까요? 되돌릴 수 없고, 보낸 링크도 모두 닫혀요.')) return;
+    clearTimeout(timer); timer = null;
+    var r = await sb.from('prompts').delete().eq('id', cur.id);
+    if (r.error) { MN.toast('삭제하지 못했어요'); return; }
+    cur = null;
+    $('editWrap').style.display = 'none'; $('emptyMain').style.display = 'flex';
+    $('app').classList.remove('editing');
+    await loadList();
+  };
+
+  $('backBtn').onclick = async function () { await flush(); $('app').classList.remove('editing'); };
+
+  /* mobile tabs */
+  $('tabs').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    [].forEach.call($('tabs').children, function (x) { x.classList.toggle('on', x === b); });
+    var prev = b.dataset.t === 'prev';
+    $('paneEdit').classList.toggle('hide', prev);
+    $('panePrev').classList.toggle('hide', !prev);
+    if (prev) renderPreview();
+  });
+  window.matchMedia('(min-width:821px)').addEventListener('change', function (m) {
+    if (m.matches) { $('paneEdit').classList.remove('hide'); $('panePrev').classList.remove('hide'); }
+    else { var p = $('tabs').querySelector('.on').dataset.t === 'prev'; $('paneEdit').classList.toggle('hide', p); $('panePrev').classList.toggle('hide', !p); }
+  });
+  if (window.matchMedia('(min-width:821px)').matches) { $('panePrev').classList.remove('hide'); }
+
+  MN.bindCopy($('preview'));
+
+  /* ---------- boot ---------- */
+  sb.auth.getSession().then(function (r) {
+    if (r.data.session) enter(r.data.session); else showLogin();
+  });
+})();
+</script>
+</body>
+</html>
