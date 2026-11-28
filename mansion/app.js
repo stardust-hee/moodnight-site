@@ -17,7 +17,7 @@ const POSS = n => /s$/i.test(n) ? `${n}'` : `${n}'s`;
 const MN = n => L(`${n}의 성탄맨션`, `${POSS(n)} Christmas Mansion`);
 const nameOk = n => EN ? n.length >= 2 && n.length <= 12 : n.length >= 2 && n.length <= 3;
 const cleanName = v => EN ? v.trim().replace(/\s+/g, ' ') : v.replace(/\s/g, '');
-const ERR_EN = { rate_limit: "Too many requests right now. Please try again later.", not_found: "We couldn't find that.", nick: 'Please choose a different nickname.', banned: "The owner has blocked you from this mansion.", dup: "You've already moved in. One home per person.", taken: 'Someone just took that unit. Pick another one.', full: 'The mansion is full. Leave a note on the board instead!', text: 'Please write something.', limit: 'You can post up to 5 notes.', login: 'Please log in first.' };
+const ERR_EN = { rate_limit: "Too many requests right now. Please try again later.", not_found: "We couldn't find that.", nick: 'Please choose a different nickname.', banned: "The owner has blocked you from this mansion.", dup: "You've already moved in. One home per person.", taken: 'Someone just took that unit. Pick another one.', full: 'The mansion is full. Leave a note on the board instead!', text: 'Please write something.', limit: 'You can post up to 5 notes.', login: 'Please log in first.', auth: "Only residents (or the owner) can do that.", self: "You can't give a gift to your own home.", have: 'That home already has this gift.', room: "That isn't allowed in a room." };
 const errMsg = e => { const m = (e && e.message) || L('잠시 후 다시 시도해 주세요.', 'Something went wrong. Please try again.'); const code = m.split(':')[0].trim();
   if (EN) return ERR_EN[code] || (/[가-힣]/.test(m) ? 'Something went wrong. Please try again.' : m);
   return m.includes(': ') ? m.split(': ').slice(1).join(': ') : m; };
@@ -81,6 +81,10 @@ function item(type,x,y){
   if(type==='candle'){SPR(x+4,y-8,['.K..','KKKK','KYYK','KYYK','KYYK','KKKK'],{K:'#2A2A30',Y:'#FFD27A'})}
   if(type==='snowman'){SPR(x+28,y-9,['.WW.','WKWW','.WW.','RRRR','WWWW','WWWW','.WW.'],{W:'#F4F7FC',K:'#2A2A30',R:'#C8423A'})}
 }
+/* 창문에 붙은 전단지: 방에 붙어 있는 장수만큼 작은 종이로 보여요 */
+const FLC={fl_jjajang:['#FFE8A0','#C8423A'],fl_chicken:['#FFF3C4','#E8A23A'],fl_key:['#D8ECFF','#3F6C8E'],fl_aircon:['#E3F4CF','#4A78C0'],fl_move:['#FFD9D2','#B5523B'],fl_pizza:['#FFF3C4','#C8423A']};
+const FSP=[[1,2],[8,1],[15,3],[21,2],[4,9],[11,8],[18,9],[23,8]];
+function flyers(r,wx,wy){(r.layout||[]).filter(i=>FLC[i.type]).slice(0,8).forEach((f,i)=>{const[a,b]=FSP[i],[pp,hh]=FLC[f.type];R(wx+a,wy+b,5,7,'#2A1E22');R(wx+a+1,wy+b+1,3,5,pp);R(wx+a+1,wy+b+1,3,1,hh);P(wx+a+2,wy+b-1,'#E8E0C8')})}
 function drawUnit(u,r){
   const{x,y}=u,wx=x+6,wy=y+5;
   R(x,y,40,36,'#3A2D33');R(x+1,y+1,38,1,'#46373D');
@@ -91,6 +95,7 @@ function drawUnit(u,r){
     R(wx,wy,4,18,mix(L,'#7A3A2A',.35));R(wx+24,wy,4,18,mix(L,'#7A3A2A',.35));
     sil(r.sil,wx,wy,L);
     R(wx+13,wy,2,18,'#2A1E22');R(wx,wy+8,28,1,mix(L,'#2A1E22',.5));
+    flyers(r,wx,wy);
   }else{
     R(wx,wy,28,18,'#1A2836');R(wx+2,wy+2,6,1,'#2B3E52');R(wx+2,wy+3,3,1,'#2B3E52');R(wx+13,wy,2,18,'#141E28');
   }
@@ -187,6 +192,7 @@ const AV={
  sit:['....hhhh........','...hhhhhh.......','...hssssh.......','...skssks.......','...ssssss.......','....ssss........','...rrrrrr.......','..bbbbbbbb......','.sbbbbbbbbs.....','..bbbbbbbb......','..pppppppppppp..','..ppppppppppppdd','cccccccccccc....','cccccccccccc....'],
  lie:['.hhhh..................','hhssss.rbbbbbbbbpppppdd','hsksks.rbbbbbbbbpppppdd','hhssss.rbbbbbbbbppppp..','.hhhh..s.......s.......']};
 function drawRoom(c,r,no,t){
+  if(r.layout&&r.layout.length&&window.MNRoom){MNRoom.draw(c,{...r,lightColor:lc(r.light)},t,{off:!S.seasonOpen,key:'v'+no});return}
   const g=c.getContext('2d');C=g;const L=lc(r.light),wall=mix(L,'#4A2A22',.55);
   for(let i=0;i<88;i++)R(0,i,200,1,mix(mix(wall,'#FFFFFF',.08),wall,i/88));
   R(0,88,200,37,'#5C3E2E');for(let i=0;i<200;i+=22)R(i,88,1,37,'#4A3024');R(0,88,200,2,'#3A261C');
@@ -218,8 +224,8 @@ const mineUnit = () => order().find(no => S.res[no].mine) || null;
 const shareUrl = () => `${location.origin}/mansion/r/${S.slug}${EN ? '?lang=en' : ''}`;
 const HO = no => L(`${no}호`, `#${no}`);
 function apply(d) {
-  S = { name: d.display_name, slug: d.slug, owner: !!d.is_owner, res: {}, notes: (d.notes || []).map(n => ({ id: n.id, who: n.who, text: n.text })) };
-  (d.residents || []).forEach(r => { S.res[r.unit] = { id: r.id, who: r.nick, light: r.light, sil: r.sil, item: r.item, pose: r.pose, msg: r.msg, vis: r.vis, mine: !!r.mine }; });
+  S = { name: d.display_name, slug: d.slug, owner: !!d.is_owner, seasonOpen: d.season_open !== false, res: {}, notes: (d.notes || []).map(n => ({ id: n.id, who: n.who, text: n.text })) };
+  (d.residents || []).forEach(r => { S.res[r.unit] = { id: r.id, who: r.nick, light: r.light, sil: r.sil, item: r.item, pose: r.pose, msg: r.msg, vis: r.vis, mine: !!r.mine, avatar: r.avatar || 'old', sweater: r.sweater | 0, floor_kind: r.floor_kind | 0, layout: r.layout || [], gifts: r.gifts || [] }; });
   view = S.owner ? 'owner' : 'visit';
 }
 async function reload() {
@@ -371,7 +377,64 @@ function openUnit(no) {
       lastNew = null; closeSheet(); await reload(); stamp(L(`${no}호 방 빼!`, `#${no}, out!`)); toast(L(`${whoOf(r)}님을 퇴거시켰어요. ${no}호가 빈 집이 됐어요`, `${whoOf(r)} was evicted. #${no} is empty now`));
     };
   };
+  roomExtras(no, r);
   const rc = $('#roomCv'); let tt = 0; const loop = () => { if ($('#overlay').hidden || !document.body.contains(rc)) return; drawRoom(rc, r, no, tt); tt += 16; roomTimer = reduce ? null : setTimeout(loop, 60); }; loop();
+}
+/* ── 방 꾸미기 · 선물 · 전단지 ── */
+function roomExtras(no, r) {
+  const rm = $('.room'); if (!rm || !window.MNRoom) return;
+  const ex = document.createElement('div'); ex.className = 'rm-extra'; ex.id = 'roomExtra'; rm.after(ex);
+  MNRoom.injectCss();
+  const mine = !!r.mine, nFly = (r.layout || []).filter(i => /^fl_/.test(i.type)).length, resident = !!mineUnit();
+  let h = `<p class="hint">${L('가구를 톡 누르면 반응해요.', 'Tap furniture to see it react.')}${mine && nFly ? L(' 창문에 붙은 전단지를 누르면 떼어낼 수 있어요.', ' Tap a flyer on your window to peel it off.') : ''}</p><div id="flyBox"></div><div class="row">`;
+  if (mine) h += `<button class="btn" id="decorBtn">${L('방 꾸미기', 'Decorate my room')}</button>`;
+  if (!mine && resident && !S.owner) h += `<button class="btn" id="giftBtn">${L('이 집에 선물 놓고 가기', 'Leave a gift here')}</button>`;
+  if (S.owner) h += `<button class="btn" id="ogiftBtn">${L('집주인 입주 선물 놓기', 'Give a move-in gift')}</button>`;
+  h += '</div>';
+  if (!mine && !resident && !S.owner) h += `<p class="hint">${L('입주하면 이웃 방에 선물을 놓고 올 수 있어요.', 'Move in and you can leave gifts in neighbors’ homes.')}</p>`;
+  ex.innerHTML = h;
+  if ($('#decorBtn')) $('#decorBtn').onclick = () => openDecor(no);
+  if ($('#giftBtn')) $('#giftBtn').onclick = () => openGift(no, false);
+  if ($('#ogiftBtn')) $('#ogiftBtn').onclick = () => openGift(no, true);
+  const rc = $('#roomCv'), redraw = () => { if (reduce) drawRoom(rc, r, no, 0); };
+  MNRoom.bindReact(rc, rm, () => (r.layout && r.layout.length ? { st: { ...r, lightColor: lc(r.light) }, off: !S.seasonOpen, mine } : null), 'v' + no, redraw, it => {
+    const box = $('#flyBox'); if (!box) return;
+    box.innerHTML = `<p class="hint">${L(`'${esc(MNRoom.nm(it.type))}'을(를) 떼어낼까요? 떼면 다시 붙일 수 없어요.`, `Peel off the '${esc(MNRoom.nm(it.type))}'? You can't put it back.`)}</p><div class="row"><button class="btn sm" id="flyYes">${L('떼어내기', 'Peel off')}</button><button class="btn ghost sm" id="flyNo">${L('그만두기', 'Cancel')}</button></div>`;
+    $('#flyNo').onclick = () => { box.innerHTML = ''; };
+    $('#flyYes').onclick = async () => {
+      $('#flyYes').disabled = true;
+      const lay = r.layout.filter(i => i.id !== it.id).map(({ id, type, x, y, flip }) => ({ id, type, x, y, flip }));
+      const { error } = await sb.rpc('update_my_room', { p_slug: S.slug, p_device: DEVICE, p_layout: lay });
+      if (error) { toast(errMsg(error)); box.innerHTML = ''; return; }
+      window.mnTrack && mnTrack('act', 'peel'); await reload(); openUnit(no); toast(L('전단지를 떼어냈어요', 'Flyer peeled off'));
+    };
+  });
+}
+function openDecor(no) {
+  const r = S.res[no]; if (!r || !r.mine) return;
+  openSheet(L(`${HO(no)} 방 꾸미기`, `Decorate ${HO(no)}`), '<div id="decorRoot"></div>');
+  MNRoom.openEditor({
+    root: $('#decorRoot'), layout: r.layout, light: r.light, floor_kind: r.floor_kind, avatar: r.avatar, sweater: r.sweater, pose: r.pose, lights: LIGHTS, gifts: r.gifts, seasonOpen: S.seasonOpen, toast,
+    onSave: async p => {
+      const { error } = await sb.rpc('update_my_room', { p_slug: S.slug, p_device: DEVICE, p_layout: p.layout, p_light: p.light, p_floor: p.floor_kind, p_avatar: p.avatar, p_sweater: p.sweater, p_pose: p.pose });
+      if (error) return errMsg(error);
+      window.mnTrack && mnTrack('act', 'decor'); await reload(); openUnit(no); toast(L('방을 저장했어요', 'Room saved')); return null;
+    },
+    onBack: () => openUnit(no),
+    onRemoveGift: async id => { const { error } = await sb.rpc('remove_gift', { p_gift_id: id, p_device: DEVICE }); if (error) return errMsg(error); await reload(); return null; }
+  });
+}
+function openGift(no, owner) {
+  const r = S.res[no]; if (!r) return;
+  openSheet(owner ? L(`${HO(no)}에 입주 선물`, `Move-in gift for ${HO(no)}`) : L(`${HO(no)}에 선물 놓기`, `Gift for ${HO(no)}`), '<div id="giftRoot"></div>');
+  MNRoom.openGiftPicker({
+    root: $('#giftRoot'), owner, unitLabel: HO(no), have: (r.gifts || []).map(g => g.type), onBack: () => openUnit(no),
+    onGive: async type => {
+      const { error } = owner ? await sb.rpc('give_owner_gift', { p_slug: S.slug, p_unit: no, p_type: type }) : await sb.rpc('give_gift', { p_slug: S.slug, p_unit: no, p_type: type, p_device: DEVICE });
+      if (error) return errMsg(error);
+      window.mnTrack && mnTrack('act', owner ? 'ogift' : 'gift'); closeSheet(); await reload(); stamp(L(`${HO(no)}에 선물 도착`, `Gift left at ${HO(no)}`)); toast(L(`${HO(no)}에 선물을 놓고 왔어요`, `You left a gift at ${HO(no)}`)); return null;
+    }
+  });
 }
 function stamp(t) { $('#stampText').textContent = t; const s = $('#stamp'); s.hidden = false; clearTimeout(stamp.t); stamp.t = setTimeout(() => s.hidden = true, 1500); }
 
@@ -609,5 +672,23 @@ render(); requestAnimationFrame(frame);
   if (location.hash.includes('access_token')) history.replaceState(null, '', '/mansion/');
   loadHost();
 })();
+/* ── 새 소식 팝업: 방 꾸미기 업데이트를 한 번만 알려줘요 ── */
+function newsOnce() {
+  let seen = false; try { seen = !!localStorage.getItem('mn_news_room1'); } catch (e) {}
+  if (seen || !S.slug || !$('#overlay').hidden) return;
+  try { localStorage.setItem('mn_news_room1', '1'); } catch (e) {}
+  const li = (ic, t, d) => `<li style="display:flex;gap:10px;align-items:flex-start"><span aria-hidden="true">${ic}</span><span><b>${t}</b><br><span class="hint">${d}</span></span></li>`;
+  openSheet(L('새 소식 · 방이 꾸며져요', "What's new · Decorate your room"), `<p class="hint">${L('성탄맨션 방을 내 마음대로 꾸밀 수 있게 됐어요.', 'You can now decorate your Christmas Mansion room your way.')}</p>
+  <ul style="list-style:none;padding:0;margin:12px 0;display:grid;gap:12px">
+   ${li('🛋️', L('방 꾸미기', 'Decorate your room'), L('내 방을 열고 "방 꾸미기"를 누르면 가구를 끌어서 원하는 곳에 놓을 수 있어요. 캐릭터, 옷 색, 바닥, 자세도 바꿔요.', 'Open your room and tap "Decorate my room" to drag furniture anywhere. You can also change your character, outfit color, floor and pose.'))}
+   ${li('🎁', L('이웃 선물', 'Neighbor gifts'), L('다른 입주자 방에 선물을 놓고 올 수 있어요. 받은 사람에게는 어느 호수 이웃인지만 보이고, 마음에 안 들면 돌려보낼 수 있어요. 선물 도감도 모아요.', "Leave a gift in another resident's room. The owner only sees which unit it came from, and can return gifts they don't want. Collect them all in the gift collection."))}
+   ${li('💌', L('집주인 입주 선물', 'Owner move-in gifts'), L('집주인이 "입주해 줘서 고마워요" 하는 마음으로 특별한 선물을 놓아 줘요.', 'The mansion owner leaves special thank-you gifts for new residents.'))}
+   ${li('📄', L('입주 전단지', 'Move-in flyers'), L('입주하면 짜장면, 치킨 같은 전단지가 창문에 붙어요. 건물 창문에서도 보이고, 내 방에서 눌러 떼어낼 수 있어요.', 'Flyers (noodles, chicken…) get stuck on your window when you move in. They show on the building too, and you can peel them off from your room.'))}
+   ${li('❄️', L('겨울 한정 가구', 'Winter-only furniture'), L('겨울에만 열리는 가구가 있어요. 겨울이 지나면 잠시 숨겨지고, 다음 겨울에 같은 자리로 돌아와요.', 'Some furniture only opens in winter. It hides after winter and returns to the same spot next year.'))}
+   ${li('👆', L('톡 눌러 보세요', 'Give it a tap'), L('방 안의 가구와 캐릭터를 누르면 말풍선으로 반응해요.', 'Tap furniture or your character in a room and they will react.'))}
+  </ul><button class="btn wide" id="newsOk">${L('확인했어요', 'Got it')}</button>`);
+  $('#newsOk').onclick = closeSheet;
+}
+setTimeout(newsOnce, 1800);
 sb.auth.onAuthStateChange((evt, s) => { if (MODE === 'host' && evt === 'SIGNED_IN' && !session) { session = s; loadHost(); } });
 })();

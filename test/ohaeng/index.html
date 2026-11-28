@@ -10,7 +10,7 @@
 <meta property="og:title" content="나의 겨울밤 기운은? 오행 심리테스트">
 <meta property="og:description" content="질문 10개로 알아보는 나의 오행 캐릭터. 친구랑 궁합도 봐요.">
 <meta property="og:url" content="https://www.moodnight.co.kr/test/ohaeng/">
-<meta property="og:image" content="https://www.moodnight.co.kr/og.png">
+<meta property="og:image" content="https://www.moodnight.co.kr/test/og/ohaeng.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
@@ -196,8 +196,8 @@
   <div class="wrap">
     <div class="foot-links">
       <a href="/about">무드나잇 소개</a>
-      <a class="strong" href="privacy.html">개인정보처리방침</a>
-      <a href="terms.html">이용약관</a>
+      <a class="strong" href="/privacy">개인정보처리방침</a>
+      <a href="/terms">이용약관</a>
       <a href="/blog/">읽을거리</a>
       <a href="/contact">문의 · 건의</a>
     </div>
@@ -219,7 +219,7 @@ var EL={"wood": {"ko": "나무", "han": "木", "emoji": "🦌", "color": "#5FAF6
 var GEN={wood:"fire",fire:"earth",earth:"metal",metal:"water",water:"wood"}, CTRL={wood:"earth",earth:"water",water:"fire",fire:"metal",metal:"wood"};
 var $=function(id){return document.getElementById(id)};
 var answers=[], idx=0, mine=null;
-var qs=new URLSearchParams(location.search), from=qs.get("from"); if(!EL[from]) from=null;
+var qs=new URLSearchParams(location.search), pm=/^\/test\/ohaeng\/s\/([a-z]+)\/?$/.exec(location.pathname), from=qs.get("from")||(pm&&pm[1]); if(!EL[from]) from=null;
 function track(k,d){try{window.mnTrack&&window.mnTrack(k,d)}catch(e){}}
 // 보기 순서를 질문마다 섞되 항상 같은 순서가 되게(새로고침해도 같은 순서)
 function order(i){var a=ORDER.slice(), s=(i*7+3)%97; for(var j=a.length-1;j>0;j--){s=(s*31+11)%97; var r=s%(j+1); var t=a[j];a[j]=a[r];a[r]=t;} return a;}
@@ -278,7 +278,7 @@ $("ohStart").onclick=function(){answers=[];idx=0;show("ohQuiz");render();track("
 $("ohBack").onclick=function(){if(idx>0){idx--;render();}};
 $("ohRetry").onclick=function(){answers=[];idx=0;show("ohQuiz");render();};
 $("ohShare").onclick=function(){
-  var url=location.origin+"/test/ohaeng/?from="+mine, e=EL[mine], text="나는 "+e.ko+" 기운 '"+e.name+"'! 너는 어떤 기운이야? 우리 궁합 보자";
+  var url=location.origin+"/test/ohaeng/s/"+mine, e=EL[mine], text="나는 "+e.ko+" 기운 '"+e.name+"'! 너는 어떤 기운이야? 우리 궁합 보자";
   track("share","ohaeng");
   if(navigator.share){navigator.share({title:"나의 겨울밤 기운은? 오행 심리테스트",text:text,url:url}).catch(function(){});return;}
   var done=function(){$("ohMsg").textContent="링크를 복사했어요. 친구에게 보내 보세요!"};

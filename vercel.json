@@ -1,6 +1,21 @@
 {
   "rewrites": [
     {
+      "source": "/test/:t(gift|ohaeng|relation)/s/:k",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": ".*(kakaotalk-scrap|facebookexternalhit|Twitterbot|Slackbot|Discordbot|TelegramBot|Yeti|WhatsApp|LinkedInBot).*"
+        }
+      ],
+      "destination": "/api/testog?t=:t&k=:k"
+    },
+    {
+      "source": "/test/:t(gift|ohaeng|relation)/s/:k",
+      "destination": "/test/:t/index.html"
+    },
+    {
       "source": "/contact",
       "destination": "/contact.html"
     },
@@ -152,6 +167,15 @@
     },
     {
       "source": "/mansion/demo",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex"
+        }
+      ]
+    },
+    {
+      "source": "/test/:t(gift|ohaeng|relation)/s/:k",
       "headers": [
         {
           "key": "X-Robots-Tag",
