@@ -130,7 +130,7 @@
 
 <div class="top">
   <div class="logo">⛺ MY LITTLE CAMP<small>숲속 호숫가</small></div>
-  <div style="display:flex;gap:6px"><button class="chip snd" id="snd" aria-label="소리 켜기/끄기">🔇</button><div class="chip" id="count">12자리 중 <b>0</b>자리 사용 중</div></div>
+  <div style="display:flex;gap:6px"><button class="chip" id="loginChip" type="button">로그인</button><button class="chip snd" id="snd" aria-label="소리 켜기/끄기">🔇</button><div class="chip" id="count">12자리 중 <b>0</b>자리 사용 중</div></div>
 </div>
 
 <div class="tool" id="tool">
@@ -998,7 +998,20 @@ const Sound=(()=>{
   const q=new URLSearchParams(location.search); const qc=parseInt(q.get('c'))||null, qs=parseInt(q.get('s'))||null;
   const {data}=await sb.auth.getSession(); user=data.session?data.session.user:null;
   if(location.hash.includes('access_token')) history.replaceState(null,'',location.pathname+location.search);
-  sb.auth.onAuthStateChange((ev,ss)=>{ user=ss?ss.user:null; });
+  const loginChip=$('loginChip');
+  const nameOf=u=>{ const m=(u&&u.user_metadata)||{}; return ((m.name||m.full_name||m.nickname||'').trim().split(/\s+/)[0]||'내 계정').slice(0,6); };
+  const paintLogin=()=>{ loginChip.textContent=user?nameOf(user)+' ▾':'로그인'; };
+  loginChip.onclick=()=>{
+    if(!user){ loginCard(null); return; }
+    setCard(`<h3>${nameOf(user)}님</h3><p class="sub">무드나잇 계정으로 로그인되어 있어요</p>
+    <div class="row"><button class="btn ghost" id="lgS">내 선물가게</button><button class="btn ghost" id="lgM">내 맨션</button></div>
+    <div class="row" style="margin-top:6px"><button class="btn ghost" id="lgO">로그아웃</button><button class="btn" id="lgX">닫기</button></div>`);
+    setTimeout(()=>{ $('lgS').onclick=()=>{ location.href='/santa/'; }; $('lgM').onclick=()=>{ location.href='/mansion/'; };
+      $('lgX').onclick=()=>{ focusWorld(); showWorldCard(); };
+      $('lgO').onclick=async()=>{ try{ await sb.auth.signOut(); }catch(e){} location.reload(); }; },140);
+  };
+  sb.auth.onAuthStateChange((ev,ss)=>{ user=ss?ss.user:null; paintLogin(); });
+  paintLogin();
   let after=null; try{ after=JSON.parse(sessionStorage.getItem('mlc-after')||'null'); sessionStorage.removeItem('mlc-after'); }catch(e){}
   await loadCamp(after&&user?after.camp:qc); buildAll();
   try{ const {data:w}=await sb.rpc('camp_world_get'); if(w){ isAdmin=!!w.admin; if(Array.isArray(w.items)&&w.items.length) buildCommon(w.items); } }catch(e){}
