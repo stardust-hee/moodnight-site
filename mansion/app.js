@@ -42,7 +42,7 @@ const rgba=(h,a)=>{const[r,g,b]=hex(h);return `rgba(${r},${g},${b},${a})`};
 const LIGHTS=[{id:'amber',name:L('호박빛','Amber'),c:'#FF9A3C'},{id:'candle',name:L('촛불빛','Candle'),c:'#FFD27A'},{id:'rose',name:L('장밋빛','Rose'),c:'#FF8F7A'},{id:'leaf',name:L('풀빛','Leaf'),c:'#D4E89A'},{id:'moon',name:L('달빛','Moonlight'),c:'#A9C8F0'}];
 const SILS=[{id:'party',name:L('신나는 파티','Party time')},{id:'blanket',name:L('이불 쓰고 컴퓨터','Blanket + laptop')},{id:'lean',name:L('창가에 기대기','By the window')},{id:'cat',name:L('고양이랑 쉬기','Chilling with a cat')},{id:'cook',name:L('뭔가 끓이는 중','Cooking something')},{id:'dance',name:L('혼자 춤추기','Dancing alone')}];
 const ITEMS=[{id:'none',name:L('없음','None')},{id:'sock',name:L('양말','Stocking')},{id:'wreath',name:L('리스','Wreath')},{id:'tree',name:L('작은 트리','Mini tree')},{id:'lights',name:L('전구 줄','String lights')},{id:'candle',name:L('촛불 랜턴','Candle lantern')},{id:'snowman',name:L('꼬마 눈사람','Little snowman')}];
-const POSES=[{id:'stand',name:L('서 있기','Standing')},{id:'sit',name:L('앉아 있기','Sitting')},{id:'manse',name:L('만세','Hands up')},{id:'lie',name:L('드러눕기','Lying down')}];
+const POSES=[{id:'stand',name:L('서 있기','Standing')},{id:'sit',name:L('앉아 있기','Sitting')},{id:'manse',name:L('만세','Hands up')},{id:'lie',name:L('드러눕기','Lying down')},{id:'back',name:L('뒷모습','Back view')}];
 const SWEATERS=['#C8553D','#3F6C8E','#5B8C5A','#B88B4A','#8A5A9E','#D07A8C','#4E8C8A'];
 const nm=(arr,id)=>arr.find(x=>x.id===id).name;
 const lc=id=>LIGHTS.find(l=>l.id===id).c;
